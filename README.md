@@ -146,14 +146,9 @@ Isso confirma:
 - `documentado como evolucao`: `GCP`
 - `mantido apenas como referencia opcional`: arquivos de `Azure` em `infra/` e `orchestration/adf/`
 
-## Referencias usadas
+## Referencias
 
-- [ocamposfaria/bees-data-engineering-case](https://github.com/ocamposfaria/bees-data-engineering-case)
-- [Gabriel0598/BEES-Breweries-Case](https://github.com/Gabriel0598/BEES-Breweries-Case)
-- [brunobws/aws-api-capture-dl-medallion](https://github.com/brunobws/aws-api-capture-dl-medallion)
-- [wuldson-franco/breweries_case](https://github.com/wuldson-franco/breweries_case)
-
-Referencias opcionais de cloud:
-
-- materiais `Azure` mantidos como referencia no proprio repositorio
-- trilha `GCP` documentada em [gcp-colab-guide.md](./docs/gcp-colab-guide.md)
+- [Open Brewery DB](https://www.openbrewerydb.org/)
+- [Google Colab](https://colab.research.google.com/)
+- [PySpark Documentation](https://spark.apache.org/docs/latest/api/python/)
+- [Streamlit Documentation](https://docs.streamlit.io/)
