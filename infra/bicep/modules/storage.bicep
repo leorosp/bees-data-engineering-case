@@ -4,10 +4,7 @@ param tags object = {}
 param skuName string = 'Standard_LRS'
 param accessTier string = 'Hot'
 param containers array = [
-  'bronze'
-  'silver'
-  'gold'
-  'ops'
+  'lake'
 ]
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -45,5 +42,6 @@ resource storageContainers 'Microsoft.Storage/storageAccounts/blobServices/conta
 
 output storageAccountId string = storageAccount.id
 output storageAccountName string = storageAccount.name
+output defaultFileSystem string = containers[0]
 output dfsEndpoint string = storageAccount.properties.primaryEndpoints.dfs
 output blobEndpoint string = storageAccount.properties.primaryEndpoints.blob

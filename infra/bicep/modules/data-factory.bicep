@@ -12,25 +12,13 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
   tags: tags
   properties: {
     globalParameters: {
-      bronzeContainer: {
-        type: 'String'
-        value: 'bronze'
-      }
-      goldContainer: {
-        type: 'String'
-        value: 'gold'
-      }
       lakehouseBasePath: {
         type: 'String'
         value: lakehouseBasePath
       }
-      opsContainer: {
+      lakehouseFileSystem: {
         type: 'String'
-        value: 'ops'
-      }
-      silverContainer: {
-        type: 'String'
-        value: 'silver'
+        value: split(split(lakehouseBasePath, '://')[1], '@')[0]
       }
     }
     publicNetworkAccess: 'Enabled'

@@ -1,7 +1,27 @@
 # Databricks notebook source
 import json
+import sys
+from pathlib import Path
 
 from pyspark.sql import functions as F
+
+
+def add_repo_src_to_path() -> str:
+    notebook_path = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+    workspace_notebook_path = Path("/Workspace") / notebook_path.lstrip("/")
+    for candidate in [workspace_notebook_path.parent, *workspace_notebook_path.parents]:
+        src_path = candidate / "src"
+        if (src_path / "bees_case").exists():
+            resolved_src_path = str(src_path)
+            if resolved_src_path not in sys.path:
+                sys.path.append(resolved_src_path)
+            return resolved_src_path
+    raise FileNotFoundError(
+        "Could not resolve the repository src path. Run this notebook from the Databricks Git folder."
+    )
+
+
+add_repo_src_to_path()
 
 from bees_case.config import PipelineRunConfig
 

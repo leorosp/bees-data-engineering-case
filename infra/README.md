@@ -44,6 +44,8 @@ az deployment group create \
 ## Observacoes
 
 - O arquivo `dev.bicepparam` ainda deixa `notificationEmail` em branco.
+- O template cria um filesystem `lake` no ADLS Gen2.
+- As camadas `bronze`, `silver`, `gold` e `ops` sao pastas dentro desse filesystem.
 - O template provisiona a fundacao da plataforma, mas ainda nao cria:
   - role assignments
   - diagnosticos detalhados por recurso

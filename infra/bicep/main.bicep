@@ -34,6 +34,7 @@ param databricksEnableNoPublicIp bool = false
 var nameSuffix = substring(uniqueString(resourceGroup().id, projectName, environment), 0, 6)
 var resourcePrefix = '${projectName}-${environment}'
 var storageAccountName = 'st${uniqueString(resourceGroup().id, projectName, environment)}'
+var lakehouseFileSystem = 'lake'
 var keyVaultName = 'kv-${projectName}-${environment}-${nameSuffix}'
 var dataFactoryName = '${resourcePrefix}-adf'
 var dataBricksWorkspaceName = '${resourcePrefix}-dbw'
@@ -55,10 +56,7 @@ module storage './modules/storage.bicep' = {
     location: location
     tags: tags
     containers: [
-      'bronze'
-      'silver'
-      'gold'
-      'ops'
+      lakehouseFileSystem
     ]
   }
 }
@@ -98,7 +96,7 @@ module dataFactory './modules/data-factory.bicep' = {
   params: {
     dataFactoryName: dataFactoryName
     location: location
-    lakehouseBasePath: storage.outputs.dfsEndpoint
+    lakehouseBasePath: 'abfss://${storage.outputs.defaultFileSystem}@${storage.outputs.storageAccountName}.dfs.core.windows.net'
     tags: tags
   }
 }
@@ -147,4 +145,10 @@ output resourceIds object = {
 output observability object = {
   logAnalyticsWorkspaceName: logAnalytics.outputs.workspaceName
   actionGroupName: actionGroup.outputs.actionGroupName
+}
+
+output lakehouse object = {
+  storageAccountName: storage.outputs.storageAccountName
+  fileSystem: storage.outputs.defaultFileSystem
+  basePath: 'abfss://${storage.outputs.defaultFileSystem}@${storage.outputs.storageAccountName}.dfs.core.windows.net'
 }

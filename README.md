@@ -90,6 +90,7 @@ bees-data-engineering-case/
 - [Escolha dos servicos](./docs/services.md)
 - [Backlog de implementacao](./docs/backlog.md)
 - [Runbook](./docs/runbook.md)
+- [Guia de teste Azure](./docs/azure-test-guide.md)
 - [Infraestrutura](./infra/README.md)
 
 ## O que esta implementado agora
