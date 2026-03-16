@@ -140,6 +140,28 @@ Isso confirma:
 - deteccao de campos obrigatorios ausentes
 - deteccao de chaves duplicadas no `bronze`
 
+## Como abrir o dashboard
+
+O dashboard local faz parte do caminho principal do projeto e le os artefatos gerados pelo fluxo `PySpark`.
+
+No `PowerShell`, rode a partir da pasta do repositorio:
+
+```powershell
+cd "C:\Users\leona\Documents\GitHub\bees-data-engineering-case"
+pip install -e ".[local,dashboard]"
+python scripts/run_local_pyspark_demo.py
+python -m streamlit run dashboard/app.py
+```
+
+Depois abra `http://localhost:8501`.
+
+Uso esperado:
+
+- `Artifacts folder = local_output`: mostra o cenario saudavel
+- `Artifacts folder = local_output_bad`: mostra o cenario com falhas de qualidade
+
+Se aparecer erro de `pyproject.toml`, `scripts/run_local_pyspark_demo.py` ou `dashboard/app.py` inexistente, isso normalmente significa que o terminal nao esta na pasta do projeto.
+
 ## Escopo atual
 
 - `implementado e validado`: `Google Colab + PySpark + Streamlit`
