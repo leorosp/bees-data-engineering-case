@@ -48,6 +48,7 @@ Se o projeto ainda nao tiver `local_output/`, o app abre automaticamente com um 
 - `Gerar local_output`: tenta executar `scripts/run_local_pyspark_demo.py` a partir do proprio app
 
 O layout atual concentra os controles e filtros na sidebar recolhida, deixando a area principal mais limpa e direta.
+O painel tambem possui um bloco `Guia operacional do projeto` com status do ambiente, comandos principais e proximos passos.
 
 ## Pastas de entrada esperadas
 
