@@ -24,10 +24,11 @@ SOURCE_MODE_LABELS = {
     "artifacts": "Artefatos locais",
 }
 
-ABI_BLUE = "#325a6d"
-ABI_GOLD = "#e5b611"
-ABI_RED = "#921a28"
-ABI_SAGE = "#959b7b"
+BEES_YELLOW = "#f5c400"
+BEES_BLACK = "#141414"
+BEES_CHARCOAL = "#232323"
+BEES_RED = "#a52333"
+BEES_GREEN = "#6f8a4b"
 
 
 def inject_styles() -> None:
@@ -38,8 +39,8 @@ def inject_styles() -> None:
 
         .stApp {{
             background:
-                radial-gradient(circle at top left, rgba(229, 182, 17, 0.10), transparent 24%),
-                linear-gradient(180deg, #fbfaf7 0%, #f3f0ea 100%);
+                radial-gradient(circle at top left, rgba(245, 196, 0, 0.12), transparent 24%),
+                linear-gradient(180deg, #fffef9 0%, #f5f1e7 100%);
             font-family: "Sora", "Segoe UI", sans-serif;
         }}
 
@@ -48,7 +49,7 @@ def inject_styles() -> None:
         }}
 
         [data-testid="stSidebar"] {{
-            background: linear-gradient(180deg, {ABI_BLUE} 0%, #243d4b 100%);
+            background: linear-gradient(180deg, {BEES_BLACK} 0%, {BEES_CHARCOAL} 100%);
         }}
 
         [data-testid="stSidebar"] * {{
@@ -56,8 +57,8 @@ def inject_styles() -> None:
         }}
 
         .hero-box {{
-            background: linear-gradient(135deg, {ABI_BLUE} 0%, #243d4b 100%);
-            border: 1px solid rgba(229, 182, 17, 0.30);
+            background: linear-gradient(135deg, {BEES_BLACK} 0%, {BEES_CHARCOAL} 100%);
+            border: 1px solid rgba(245, 196, 0, 0.34);
             border-radius: 24px;
             padding: 1.4rem 1.5rem;
             color: #fbfcfd;
@@ -101,12 +102,12 @@ def inject_styles() -> None:
         }}
 
         .info-ok {{
-            background: rgba(149, 155, 123, 0.22);
+            background: rgba(111, 138, 75, 0.24);
             color: #f4f8ee;
         }}
 
         .info-warn {{
-            background: rgba(146, 26, 40, 0.22);
+            background: rgba(165, 35, 51, 0.24);
             color: #fff3f4;
         }}
         </style>
@@ -329,7 +330,7 @@ def prepare_type_chart(filtered_gold: pd.DataFrame):
         y="Tipo",
         orientation="h",
         text="Quantidade",
-        color_discrete_sequence=[ABI_BLUE],
+        color_discrete_sequence=[BEES_BLACK],
     )
     fig.update_layout(
         height=340,
@@ -356,7 +357,7 @@ def prepare_state_chart(filtered_gold: pd.DataFrame):
         y="Quantidade",
         text="Quantidade",
         color="Quantidade",
-        color_continuous_scale=[ABI_GOLD, ABI_BLUE],
+        color_continuous_scale=[BEES_YELLOW, BEES_BLACK],
     )
     fig.update_layout(
         height=340,
@@ -388,7 +389,7 @@ def prepare_quality_chart(quality_df: pd.DataFrame):
         color="resultado",
         barmode="group",
         text="checks",
-        color_discrete_map={"Passou": ABI_SAGE, "Falhou": ABI_RED},
+        color_discrete_map={"Passou": BEES_GREEN, "Falhou": BEES_RED},
     )
     fig.update_layout(
         height=320,
