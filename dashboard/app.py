@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from bees_case.dashboard_data import DashboardData, load_dashboard_data
+from bees_case.dashboard_data import DashboardData, load_dashboard_data, load_demo_dashboard_data
 
 
 st.set_page_config(
@@ -15,6 +15,7 @@ st.set_page_config(
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 KNOWN_OUTPUTS = ("local_output", "local_output_bad")
+DEMO_ROOT = REPO_ROOT / "dashboard" / "demo_data"
 
 
 def inject_styles() -> None:
@@ -463,8 +464,17 @@ def main() -> None:
     try:
         data = load_dashboard_data(output_root)
     except Exception as error:
-        render_missing_state(str(output_root), error)
-        return
+        try:
+            data = load_demo_dashboard_data(DEMO_ROOT)
+            st.sidebar.markdown("---")
+            st.sidebar.info("Using bundled demo data because no local artifacts were found.")
+            st.warning(
+                "The dashboard could not find local artifacts, so it loaded the bundled demo dataset."
+            )
+            st.caption(f"Original issue: {error}")
+        except Exception:
+            render_missing_state(str(output_root), error)
+            return
 
     tabs = st.tabs(["Executive View", "Operational View"])
 
@@ -475,6 +485,7 @@ def main() -> None:
         render_operational_view(data)
 
     st.sidebar.markdown("---")
+    st.sidebar.metric("Source mode", str(data.source_mode))
     st.sidebar.metric("Artifacts root", str(output_root))
     st.sidebar.metric("Rows in gold", str(len(data.gold)))
     st.sidebar.metric(

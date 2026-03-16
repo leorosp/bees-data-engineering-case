@@ -1,0 +1,4 @@
+check_name,checked_at_utc,layer,message,metric_name,metric_value,run_id,status
+required_fields,2026-03-16T17:52:27Z,silver,"{""brewery_id"": 0, ""brewery_type"": 0, ""city"": 0, ""country"": 0, ""name"": 0}",missing_required_fields,0,demo-run-001,pass
+duplicate_primary_keys,2026-03-16T17:52:27Z,bronze,No duplicates found in bronze.,duplicate_primary_keys,0,demo-run-001,pass
+negative_brewery_count,2026-03-16T17:52:27Z,gold,Gold aggregations must not produce negative counts.,negative_brewery_count,0,demo-run-001,pass

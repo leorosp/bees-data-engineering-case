@@ -37,6 +37,8 @@ python -m streamlit run dashboard/app.py
 
 `http://localhost:8501`
 
+Se o projeto ainda nao tiver `local_output/`, o app abre automaticamente com um dataset demo embutido no repositorio.
+
 ## Pastas de entrada esperadas
 
 Por padrao, o app le:

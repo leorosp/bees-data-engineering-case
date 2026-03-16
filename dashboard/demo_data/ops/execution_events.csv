@@ -1,0 +1,2 @@
+layer,stage,status,run_id,records_in,records_out,details,event_timestamp_utc
+ops,local_pyspark_pipeline,success,demo-run-001,4,3,Demo dataset loaded for dashboard presentation.,2026-03-16T17:52:35Z
