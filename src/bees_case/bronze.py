@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from typing import Iterable
 from urllib.parse import urlencode
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from bees_case.config import PipelineRunConfig
 
@@ -14,7 +14,14 @@ def build_api_url(base_url: str, page: int, per_page: int) -> str:
 
 def fetch_page(base_url: str, page: int, per_page: int, timeout: int = 30) -> list[dict]:
     request_url = build_api_url(base_url, page, per_page)
-    with urlopen(request_url, timeout=timeout) as response:
+    request = Request(
+        request_url,
+        headers={
+            "User-Agent": "bees-data-engineering-case/0.1 (+https://github.com/leorosp/bees-data-engineering-case)",
+            "Accept": "application/json",
+        },
+    )
+    with urlopen(request, timeout=timeout) as response:
         payload = response.read().decode("utf-8")
     return json.loads(payload)
 
