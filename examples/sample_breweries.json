@@ -1,0 +1,58 @@
+[
+  {
+    "id": "brew-1",
+    "name": "Sample Brewery A",
+    "brewery_type": "micro",
+    "street": "1 Main St",
+    "city": "Denver",
+    "state_province": "Colorado",
+    "postal_code": "80202",
+    "country": "United States",
+    "longitude": "-104.9903",
+    "latitude": "39.7392",
+    "phone": "3030000001",
+    "website_url": "https://example-a.com"
+  },
+  {
+    "id": "brew-2",
+    "name": "Sample Brewery B",
+    "brewery_type": "brewpub",
+    "street": "2 Oak Ave",
+    "city": "Denver",
+    "state_province": "Colorado",
+    "postal_code": "80203",
+    "country": "United States",
+    "longitude": "-104.9800",
+    "latitude": "39.7400",
+    "phone": "3030000002",
+    "website_url": "https://example-b.com"
+  },
+  {
+    "id": "brew-3",
+    "name": "Sample Brewery C",
+    "brewery_type": "micro",
+    "street": "3 Pine Rd",
+    "city": "Austin",
+    "state_province": "Texas",
+    "postal_code": "73301",
+    "country": "United States",
+    "longitude": "-97.7431",
+    "latitude": "30.2672",
+    "phone": "5120000003",
+    "website_url": "https://example-c.com"
+  },
+  {
+    "id": "brew-4",
+    "name": "Sample Brewery D",
+    "brewery_type": "micro",
+    "street": "4 Lake Ave",
+    "city": "Austin",
+    "state_province": "Texas",
+    "postal_code": "73344",
+    "country": "United States",
+    "longitude": "-97.7500",
+    "latitude": "30.2700",
+    "phone": "5120000004",
+    "website_url": "https://example-d.com"
+  }
+]

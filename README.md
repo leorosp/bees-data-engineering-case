@@ -90,6 +90,7 @@ bees-data-engineering-case/
 - [Escolha dos servicos](./docs/services.md)
 - [Backlog de implementacao](./docs/backlog.md)
 - [Runbook](./docs/runbook.md)
+- [Quickstart local](./docs/local-quickstart.md)
 - [Guia de teste Azure](./docs/azure-test-guide.md)
 - [Infraestrutura](./infra/README.md)
 
@@ -97,6 +98,7 @@ bees-data-engineering-case/
 
 - infraestrutura Azure modular em Bicep
 - fluxo orquestrado no ADF via notebooks Databricks
+- fluxo local e Google Colab em `PySpark` para validar `bronze/silver/gold/ops` sem Azure
 - notebook bronze para ingestao paginada da API
 - notebook silver para limpeza, tipagem e deduplicacao
 - notebook gold para agregacoes finais
