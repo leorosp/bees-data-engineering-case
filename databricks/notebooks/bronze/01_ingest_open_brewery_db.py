@@ -7,15 +7,21 @@ from pathlib import Path
 def add_repo_src_to_path() -> str:
     notebook_path = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
     workspace_notebook_path = Path("/Workspace") / notebook_path.lstrip("/")
+    checked_paths: list[str] = []
     for candidate in [workspace_notebook_path.parent, *workspace_notebook_path.parents]:
         src_path = candidate / "src"
-        if (src_path / "bees_case").exists():
-            resolved_src_path = str(src_path)
-            if resolved_src_path not in sys.path:
-                sys.path.append(resolved_src_path)
-            return resolved_src_path
+        checked_paths.append(str(src_path))
+        try:
+            if (src_path / "bees_case").is_dir():
+                resolved_src_path = str(src_path)
+                if resolved_src_path not in sys.path:
+                    sys.path.append(resolved_src_path)
+                return resolved_src_path
+        except OSError:
+            continue
     raise FileNotFoundError(
-        "Could not resolve the repository src path. Run this notebook from the Databricks Git folder."
+        "Could not resolve the repository src path. "
+        f"Checked: {checked_paths}. Run this notebook from the Databricks Git folder."
     )
 
 
