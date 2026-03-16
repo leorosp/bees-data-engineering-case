@@ -44,10 +44,10 @@ Se o projeto ainda nao tiver `local_output/`, o app abre automaticamente com um 
 
 - `Demo do projeto`: modo padrao e mais simples para apresentacao
 - `Artefatos locais`: aparece quando o pipeline local ja gerou `local_output`
-- `Atualizar`: recarrega os dados exibidos
+- `Atualizar painel`: recarrega os dados exibidos
 - `Gerar local_output`: tenta executar `scripts/run_local_pyspark_demo.py` a partir do proprio app
 
-O dashboard agora usa uma barra de controles no topo da pagina, sem depender da sidebar, e tambem oferece filtros de `tipo` e `estado` para a visao executiva.
+O layout atual concentra os controles e filtros na sidebar recolhida, deixando a area principal mais limpa e direta.
 
 ## Pastas de entrada esperadas
 
@@ -64,7 +64,7 @@ Voce tambem pode apontar o dashboard para `local_output_bad` para mostrar um cen
 - `local_output`: execucao saudavel com checks em `pass`
 - `local_output_bad`: execucao com falhas controladas de qualidade
 
-Troque a fonte para `Artefatos locais` e selecione o conjunto desejado na barra de controles do topo.
+Troque a fonte para `Artefatos locais` e selecione o conjunto desejado na sidebar.
 
 ## Erro mais comum
 
