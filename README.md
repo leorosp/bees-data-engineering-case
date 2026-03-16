@@ -107,6 +107,30 @@ bees-data-engineering-case/
 - testes unitarios e de integracao basicos
 - workflow de CI no GitHub Actions
 
+## Evidencia de validacao em PySpark
+
+O projeto ja foi validado em `Google Colab` com `PySpark` em dois cenarios:
+
+- cenario feliz:
+  - `source_record_count = 4`
+  - `silver_record_count = 4`
+  - `gold_record_count = 3`
+  - todas as regras de qualidade em `pass`
+- cenario com falha controlada:
+  - `source_record_count = 3`
+  - `silver_record_count = 2`
+  - `required_fields = fail`
+  - `duplicate_primary_keys = fail`
+  - `negative_brewery_count = pass`
+
+Isso confirma:
+
+- preservacao do payload bruto no `bronze`
+- deduplicacao no `silver`
+- agregacao correta no `gold`
+- deteccao de campos obrigatorios ausentes
+- deteccao de chaves duplicadas no `bronze`
+
 ## Referencias usadas
 
 - [ocamposfaria/bees-data-engineering-case](https://github.com/ocamposfaria/bees-data-engineering-case)

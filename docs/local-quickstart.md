@@ -53,6 +53,72 @@ Depois disso, voce pode abrir o notebook:
 
 - `output/jupyter-notebook/bees-case-local-validation.ipynb`
 
+## Como forcar um cenario de falha
+
+1. Crie um arquivo de teste com duplicidade e campos obrigatorios faltando:
+
+```python
+import json
+from pathlib import Path
+
+bad_records = [
+    {
+        "id": "brew-1",
+        "name": "Sample Brewery A",
+        "brewery_type": "micro",
+        "city": "Denver",
+        "state_province": "Colorado",
+        "country": "United States"
+    },
+    {
+        "id": "brew-1",
+        "name": "Sample Brewery A Duplicate",
+        "brewery_type": "micro",
+        "city": "Denver",
+        "state_province": "Colorado",
+        "country": "United States"
+    },
+    {
+        "id": "brew-9",
+        "name": "",
+        "brewery_type": "micro",
+        "city": "Austin",
+        "state_province": "Texas",
+        "country": ""
+    }
+]
+
+Path("examples/sample_breweries_bad.json").write_text(
+    json.dumps(bad_records, indent=2),
+    encoding="utf-8"
+)
+```
+
+2. Rode o pipeline com esse arquivo:
+
+```bash
+python scripts/run_local_pyspark_demo.py \
+  --source-file examples/sample_breweries_bad.json \
+  --output-dir local_output_bad \
+  --run-id bad-case-001 \
+  --landing-date 2026-03-16
+```
+
+3. Confira a qualidade:
+
+```python
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+spark.read.parquet("local_output_bad/ops/quality_results").show(truncate=False)
+```
+
+Saida esperada:
+
+- `required_fields = fail`
+- `duplicate_primary_keys = fail`
+- `negative_brewery_count = pass`
+
 ## Observacao importante
 
 Para esse caminho local, `silver`, `gold` e `ops` sao gravados em `parquet` para manter compatibilidade com `PySpark` puro fora do Databricks.
