@@ -25,3 +25,9 @@ orchestration/adf/
 |- pipelines/
 `- triggers/
 ```
+
+Arquivos ja adicionados:
+
+- `linkedServices/ls_key_vault.json`
+- `linkedServices/ls_azure_databricks_workspace.json`
+- `pipelines/pl_bees_orchestration.json`

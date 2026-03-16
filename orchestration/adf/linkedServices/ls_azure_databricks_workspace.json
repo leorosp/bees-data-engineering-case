@@ -1,0 +1,19 @@
+{
+  "name": "ls_azure_databricks_workspace",
+  "properties": {
+    "annotations": [],
+    "type": "AzureDatabricks",
+    "typeProperties": {
+      "domain": "https://<replace-with-databricks-workspace-url>",
+      "accessToken": {
+        "type": "AzureKeyVaultSecret",
+        "store": {
+          "referenceName": "ls_key_vault",
+          "type": "LinkedServiceReference"
+        },
+        "secretName": "databricks-pat"
+      },
+      "existingClusterId": "<replace-with-existing-cluster-id>"
+    }
+  }
+}

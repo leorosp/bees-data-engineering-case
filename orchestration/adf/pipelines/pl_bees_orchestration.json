@@ -1,0 +1,133 @@
+{
+  "name": "pl_bees_orchestration",
+  "properties": {
+    "annotations": [],
+    "parameters": {
+      "basePath": {
+        "type": "String",
+        "defaultValue": "abfss://lake@<replace-with-storage-account>.dfs.core.windows.net"
+      },
+      "landingDate": {
+        "type": "String",
+        "defaultValue": ""
+      },
+      "runId": {
+        "type": "String",
+        "defaultValue": ""
+      }
+    },
+    "activities": [
+      {
+        "name": "nb_bronze_ingest",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 60,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookPath": "/Shared/bees/bronze/01_ingest_open_brewery_db",
+          "baseParameters": {
+            "base_path": "@pipeline().parameters.basePath",
+            "landing_date": "@pipeline().parameters.landingDate",
+            "run_id": "@pipeline().parameters.runId",
+            "per_page": "200",
+            "max_pages": "25"
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_azure_databricks_workspace",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "nb_build_silver",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_bronze_ingest",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookPath": "/Shared/bees/silver/02_build_silver",
+          "baseParameters": {
+            "base_path": "@pipeline().parameters.basePath",
+            "landing_date": "@pipeline().parameters.landingDate",
+            "run_id": "@pipeline().parameters.runId"
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_azure_databricks_workspace",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "nb_build_gold",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_build_silver",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookPath": "/Shared/bees/gold/03_build_gold",
+          "baseParameters": {
+            "base_path": "@pipeline().parameters.basePath",
+            "run_id": "@pipeline().parameters.runId"
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_azure_databricks_workspace",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "nb_quality_and_ops",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_build_gold",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookPath": "/Shared/bees/gold/04_quality_and_ops",
+          "baseParameters": {
+            "base_path": "@pipeline().parameters.basePath",
+            "run_id": "@pipeline().parameters.runId"
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_azure_databricks_workspace",
+          "type": "LinkedServiceReference"
+        }
+      }
+    ]
+  }
+}

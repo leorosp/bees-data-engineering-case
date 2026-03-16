@@ -2,8 +2,8 @@
 
 O codigo Python compartilhado do projeto deve ficar aqui.
 
-- `common/`: utilitarios, configuracao e logging
-- `jobs/bronze/`: funcoes auxiliares da camada bronze
-- `jobs/silver/`: transformacoes silver
-- `jobs/gold/`: agregacoes gold
-- `quality/`: regras e contratos de qualidade
+- `bees_case/config.py`: parametros do pipeline e paths medallion
+- `bees_case/bronze.py`: ingestao HTTP e preparacao de rows raw
+- `bees_case/contracts.py`: contratos de colunas e campos obrigatorios
+- `bees_case/observability.py`: eventos estruturados de execucao
+- `bees_case/quality.py`: checks reutilizaveis de qualidade

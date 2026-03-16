@@ -28,11 +28,14 @@ Detalhes e justificativas estao em [docs/services.md](./docs/services.md).
 
 ```text
 bees-data-engineering-case/
+|- pyproject.toml
+|- requirements-dev.txt
 |- README.md
 |- docs/
 |  |- architecture.md
 |  |- services.md
-|  `- backlog.md
+|  |- backlog.md
+|  `- runbook.md
 |- infra/
 |  |- README.md
 |  `- bicep/
@@ -48,25 +51,36 @@ bees-data-engineering-case/
 |        `- dev.bicepparam
 |- orchestration/
 |  `- adf/
-|     `- README.md
+|     |- README.md
+|     |- linkedServices/
+|     |  |- ls_key_vault.json
+|     |  `- ls_azure_databricks_workspace.json
+|     `- pipelines/
+|        `- pl_bees_orchestration.json
 |- databricks/
 |  `- notebooks/
 |     |- README.md
-|     |- bronze/.gitkeep
-|     |- silver/.gitkeep
-|     `- gold/.gitkeep
+|     |- bronze/01_ingest_open_brewery_db.py
+|     |- silver/02_build_silver.py
+|     |- gold/03_build_gold.py
+|     `- gold/04_quality_and_ops.py
+|- .github/
+|  `- workflows/
+|     `- ci.yml
 |- src/
 |  |- README.md
-|  |- common/.gitkeep
-|  |- jobs/
-|  |  |- bronze/.gitkeep
-|  |  |- silver/.gitkeep
-|  |  `- gold/.gitkeep
-|  `- quality/.gitkeep
+|  `- bees_case/
+|     |- __init__.py
+|     |- bronze.py
+|     |- config.py
+|     |- contracts.py
+|     |- observability.py
+|     `- quality.py
 `- tests/
    |- README.md
-   |- unit/.gitkeep
-   |- integration/.gitkeep
+   |- unit/test_config.py
+   |- unit/test_quality.py
+   |- integration/test_bronze.py
    `- data_quality/.gitkeep
 ```
 
@@ -75,7 +89,19 @@ bees-data-engineering-case/
 - [Arquitetura](./docs/architecture.md)
 - [Escolha dos servicos](./docs/services.md)
 - [Backlog de implementacao](./docs/backlog.md)
+- [Runbook](./docs/runbook.md)
 - [Infraestrutura](./infra/README.md)
+
+## O que esta implementado agora
+
+- infraestrutura Azure modular em Bicep
+- fluxo orquestrado no ADF via notebooks Databricks
+- notebook bronze para ingestao paginada da API
+- notebook silver para limpeza, tipagem e deduplicacao
+- notebook gold para agregacoes finais
+- notebook de quality e observabilidade
+- testes unitarios e de integracao basicos
+- workflow de CI no GitHub Actions
 
 ## Referencias usadas
 
