@@ -5,6 +5,8 @@ Este dashboard enriquece o projeto com duas visoes:
 - executiva: distribuicao de breweries por tipo e por estado
 - operacional: checks de qualidade e ultima execucao
 
+Ele faz parte do caminho principal `Colab + PySpark` do projeto.
+
 ## Como rodar
 
 1. Gere os artefatos locais:

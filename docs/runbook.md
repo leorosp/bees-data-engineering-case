@@ -2,44 +2,40 @@
 
 ## Ordem de execucao recomendada
 
-1. Provisionar a infraestrutura com `Bicep`
-2. Executar primeiro os notebooks manualmente no Azure Databricks
-3. Validar as camadas `bronze`, `silver`, `gold` e `ops`
-4. Ajustar os placeholders dos linked services do ADF
-5. Publicar o pipeline `pl_bees_orchestration`
-6. Executar a orquestracao completa pelo ADF
+1. Rodar o pipeline em `Google Colab` ou local com `PySpark`
+2. Validar as camadas `bronze`, `silver`, `gold` e `ops`
+3. Abrir o dashboard em `Streamlit`
+4. Demonstrar o cenario feliz
+5. Demonstrar o cenario com falha controlada
+6. So depois considerar evolucao para `GCP`
 
-## Parametros minimos do pipeline
+## Parametros minimos do demo
 
-- `basePath`: caminho raiz do filesystem `lake` no ADLS Gen2
-- `landingDate`: data logica da ingestao
-- `runId`: identificador unico da execucao
-
-Formato esperado de `basePath`:
-
-```text
-abfss://lake@<storage-account>.dfs.core.windows.net
-```
+- `source-file`: arquivo JSON com breweries
+- `output-dir`: pasta onde os artefatos serao escritos
+- `landing-date`: data logica da ingestao
+- `run-id`: identificador unico da execucao
 
 ## Evidencias de sucesso
 
 - arquivos raw em `bronze/landing_date=...`
-- Delta table em `silver/breweries`
-- Delta table em `gold/breweries_by_type_location`
+- artefato `silver/breweries`
+- artefato `gold/breweries_by_type_location`
 - quality logs em `ops/quality_results`
 - execution logs em `ops/execution_events`
+- dashboard carregando `gold` e `ops`
 
 ## Sequencia de teste recomendada
 
-1. Fazer o deploy do `Bicep` e anotar o nome final da `Storage Account`.
-2. Montar o `basePath` com o formato `abfss://lake@<storage-account>.dfs.core.windows.net`.
-3. Abrir o Azure Databricks, criar um cluster simples de teste e clonar este repositorio em um `Git folder`.
-4. Rodar os notebooks na ordem `bronze`, `silver`, `gold` e `quality` usando o mesmo `basePath`.
-5. So depois configurar o `ADF` para chamar esses mesmos notebooks de forma orquestrada.
+1. Rodar `python scripts/run_local_pyspark_demo.py`
+2. Inspecionar os artefatos gerados
+3. Rodar `streamlit run dashboard/app.py`
+4. Reexecutar com um dataset ruim
+5. Confirmar `fail` nas regras esperadas
 
 ## Pendencias para producao
 
-- role assignments dos managed identities
-- diagnosticos completos do ADF para Log Analytics
-- alertas de monitoramento conectados ao Action Group
-- automacao do deploy via GitHub Actions
+- falha automatica da execucao quando regras criticas forem violadas
+- persistencia em cloud
+- monitoramento real
+- camada de BI em GCP

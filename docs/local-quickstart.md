@@ -1,6 +1,6 @@
 # Local Quickstart
 
-Este e o caminho mais facil para validar o projeto com `PySpark`, sem Azure e sem Databricks.
+Este e o caminho principal do projeto para validar o case com `PySpark`, sem depender de Azure ou Databricks.
 
 ## O que esse fluxo valida
 
@@ -132,7 +132,10 @@ Para esse caminho local, `silver`, `gold` e `ops` sao gravados em `parquet` para
 
 ## Proximo passo recomendado
 
-Depois que esse fluxo passar, ai sim vale voltar para a versao Azure, porque voce ja vai estar com a logica do pipeline validada.
+Depois que esse fluxo passar, o melhor proximo passo e:
+
+- enriquecer a apresentacao com o dashboard
+- ou evoluir a persistencia para `GCP`
 
 ## Cenarios esperados
 

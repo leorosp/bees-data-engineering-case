@@ -2,96 +2,72 @@
 
 ## Fase 0 - Foundation
 
-- [ ] Definir nome final do projeto, naming convention e tags Azure
-- [ ] Criar Resource Group de `dev`
-- [ ] Criar Bicep base para infraestrutura
-- [ ] Configurar repositorio no GitHub com branch protection e templates
+- [x] Definir nome final do projeto
+- [x] Organizar repositorio no GitHub
+- [x] Definir arquitetura medallion
+- [x] Criar documentacao inicial
 
 **Saida esperada**
 - repositorio organizado
-- padroes de nomenclatura definidos
-- infraestrutura pronta para evoluir
+- narrativa tecnica clara
+- base pronta para evoluir
 
-## Fase 1 - Infraestrutura Azure
+## Fase 1 - Pipeline Colab/PySpark
 
-- [x] Provisionar ADLS Gen2
-- [x] Provisionar Azure Data Factory
-- [x] Provisionar Azure Databricks
-- [x] Provisionar Azure Key Vault
-- [x] Provisionar Log Analytics Workspace
-- [x] Provisionar Azure Monitor Action Group
+- [x] Criar ingestao `bronze`
+- [x] Criar transformacao `silver`
+- [x] Criar agregacoes `gold`
+- [x] Criar camada `ops`
 
 **Saida esperada**
-- stack Azure minima criada e acessivel
+- pipeline funcional ponta a ponta em `PySpark`
 
-## Fase 2 - Bronze ingestion
+## Fase 2 - Data quality
 
-- [x] Modelar pipeline ADF para consumir a Open Brewery DB API
-- [x] Configurar paginacao e politicas de retry
-- [x] Persistir json bruto em `bronze`
-- [x] Criar naming pattern por data de ingestao
-- [x] Registrar logs de execucao
-
-**Saida esperada**
-- ingestao funcionando ponta a ponta
-
-## Fase 3 - Silver transformation
-
-- [x] Criar notebook/job Databricks para leitura do bronze
-- [x] Padronizar schema e tipos
-- [x] Tratar duplicidades
-- [x] Criar tabela Delta silver
-- [x] Particionar por `country` e `state_province`
-
-**Saida esperada**
-- camada silver confiavel e reprocessavel
-
-## Fase 4 - Gold analytics
-
-- [x] Criar agregacoes por `brewery_type`
-- [x] Criar agregacoes por localizacao
-- [x] Criar agregacao combinada por tipo e localizacao
-- [x] Publicar tabela gold final
-
-**Saida esperada**
-- camada gold pronta para consumo
-
-## Fase 5 - Data quality
-
-- [x] Definir contratos minimos de qualidade
-- [x] Implementar checks de null, schema drift, duplicidade e contagem minima
-- [x] Persistir resultados em `ops.quality_logs`
-- [ ] Falhar pipeline quando regras criticas forem violadas
+- [x] Definir contratos minimos
+- [x] Implementar checks de campos obrigatorios
+- [x] Implementar checks de duplicidade
+- [x] Persistir resultados em `ops`
+- [ ] Falhar execucao automaticamente quando regra critica for violada
 
 **Saida esperada**
 - qualidade de dados automatizada
 
-## Fase 6 - Observabilidade
+## Fase 3 - Evidencia do case
 
-- [ ] Enviar diagnosticos do ADF para Log Analytics
-- [x] Enviar logs do Databricks para monitoramento
-- [ ] Criar alertas para falha de pipeline e falha de qualidade
-- [ ] Configurar notificacao por e-mail/webhook
-
-**Saida esperada**
-- monitoramento e alertas operacionais ativos
-
-## Fase 7 - Consumo
-
-- [ ] Publicar dataset para Power BI
-- [ ] Criar dashboard executivo basico
-- [ ] Criar pagina tecnica com metricas do pipeline
+- [x] Validar cenario feliz
+- [x] Validar cenario com falha controlada
+- [x] Documentar evidencias no repositorio
 
 **Saida esperada**
-- camada de consumo pronta para demonstracao
+- projeto defensavel tecnicamente
 
-## Fase 8 - CI/CD e hardening
+## Fase 4 - Consumo
 
-- [x] Criar pipeline GitHub Actions para lint e testes
-- [ ] Automatizar deploy do Bicep
-- [ ] Versionar notebooks e configuracoes
-- [ ] Documentar runbook de operacao
-- [ ] Revisar custo e otimizar jobs
+- [x] Criar dashboard executivo e operacional em Streamlit
+- [ ] Capturar screenshots e publicar no README
+- [ ] Criar versao resumida para apresentacao
 
 **Saida esperada**
-- projeto pronto para entrega tecnica
+- camada de demonstracao pronta
+
+## Fase 5 - Evolucao para GCP
+
+- [ ] Adaptar persistencia para `Google Cloud Storage`
+- [ ] Executar o pipeline em `Dataproc Serverless`
+- [ ] Publicar camada analitica em `BigQuery`
+- [ ] Criar dashboard em `Looker Studio`
+- [ ] Configurar monitoramento em `Cloud Monitoring`
+
+**Saida esperada**
+- versao cloud-native em GCP
+
+## Fase 6 - Hardening
+
+- [x] Criar pipeline GitHub Actions para testes basicos
+- [ ] Expandir testes para o fluxo PySpark completo
+- [ ] Automatizar validacao do dashboard
+- [ ] Revisar custo e simplificar operacao
+
+**Saida esperada**
+- projeto pronto para entrega mais madura

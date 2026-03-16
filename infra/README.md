@@ -1,6 +1,12 @@
-# Infraestrutura Azure
+# Infraestrutura Azure Opcional
 
-Esta pasta contem a base de infraestrutura como codigo para a stack inicial do projeto.
+Esta pasta contem uma referencia opcional de infraestrutura como codigo para uma evolucao enterprise em Azure.
+
+Ela nao faz parte do caminho principal do projeto, que hoje e:
+
+- `Google Colab`
+- `PySpark`
+- `Streamlit`
 
 ## O que ja esta provisionado no template
 
@@ -52,4 +58,4 @@ az deployment group create \
   - pipelines do ADF
   - notebooks/jobs do Databricks
 
-Esses itens entram nas proximas etapas.
+Esses itens entram apenas se voce decidir seguir pela trilha opcional de Azure.

@@ -1,6 +1,8 @@
-# Guia de teste na Azure
+# Guia de teste na Azure (Opcional)
 
-Este e o caminho mais seguro para validar a solucao sem tentar testar tudo de uma vez.
+Este documento ficou mantido apenas como referencia opcional.
+
+O caminho principal do projeto e `Google Colab + PySpark`.
 
 ## 1. Deploy da infraestrutura
 

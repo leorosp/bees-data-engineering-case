@@ -1,6 +1,10 @@
-# Azure Data Factory
+# Azure Data Factory (Opcional)
 
-Esta pasta vai concentrar os artefatos de orquestracao:
+Esta pasta guarda artefatos de uma trilha opcional em Azure.
+
+Ela nao e necessaria para executar o projeto principal em `Google Colab + PySpark`.
+
+Os artefatos abaixo existem apenas como referencia de evolucao:
 
 - pipelines
 - datasets

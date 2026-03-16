@@ -1,4 +1,8 @@
-# Databricks notebooks
+# Databricks notebooks (Opcional)
+
+Esta pasta guarda notebooks de uma trilha opcional em Azure/Databricks.
+
+O caminho principal do projeto nao depende dela.
 
 Organizacao sugerida:
 

@@ -1,26 +1,28 @@
 # BEES Data Engineering Case
 
-Repositorio base para o case de Data Engineering da Open Brewery DB, desenhado para rodar no ecossistema Azure com arquitetura medallion.
+Repositorio do case de Data Engineering da Open Brewery DB, com implementacao principal em `Google Colab + PySpark` e arquitetura medallion.
 
 ## Objetivo
 
-Entregar uma solucao propria, inspirada nas melhores ideias dos repositorios analisados, mas com um desenho Azure-first:
+Entregar uma solucao propria, inspirada nas melhores ideias dos repositorios analisados, com um caminho principal simples e validado:
 
-- ingestao da API via Azure Data Factory
-- data lake em Azure Data Lake Storage Gen2
-- transformacoes em Azure Databricks
+- ingestao da API ou uso de dataset de exemplo no `Google Colab`
+- transformacoes em `PySpark`
 - camadas `bronze`, `silver` e `gold`
-- qualidade, observabilidade e alertas nativos da Azure
+- qualidade, observabilidade e dashboard
+- possibilidade de evolucao para `GCP`
 
-## Servicos Azure escolhidos
+## Caminho principal e evolucao
 
-- `Azure Data Factory`: orquestracao, ingestao REST e agendamento
-- `Azure Data Lake Storage Gen2`: armazenamento bronze/silver/gold
-- `Azure Databricks`: processamento PySpark e Delta
-- `Azure Key Vault`: gestao de segredos
-- `Azure Monitor` + `Log Analytics Workspace` + `Action Groups`: monitoramento e alertas
-- `Power BI`: camada de consumo executiva
+- `Google Colab`: ambiente principal de execucao e validacao
+- `PySpark`: processamento e transformacoes
+- `Streamlit`: dashboard executivo e operacional
 - `GitHub Actions`: CI/CD do repositorio
+- `GCP` como trilha de producao opcional:
+  - `Google Cloud Storage`
+  - `Dataproc Serverless`
+  - `BigQuery`
+  - `Looker Studio`
 
 Detalhes e justificativas estao em [docs/services.md](./docs/services.md).
 
@@ -96,15 +98,14 @@ bees-data-engineering-case/
 - [Backlog de implementacao](./docs/backlog.md)
 - [Runbook](./docs/runbook.md)
 - [Quickstart local](./docs/local-quickstart.md)
+- [Guia Colab/GCP](./docs/gcp-colab-guide.md)
 - [Dashboard](./dashboard/README.md)
-- [Guia de teste Azure](./docs/azure-test-guide.md)
-- [Infraestrutura](./infra/README.md)
+- [Notas Azure opcionais](./docs/azure-notes.md)
 
 ## O que esta implementado agora
 
-- infraestrutura Azure modular em Bicep
-- fluxo orquestrado no ADF via notebooks Databricks
 - fluxo local e Google Colab em `PySpark` para validar `bronze/silver/gold/ops` sem Azure
+- dataset de exemplo para reproducao controlada
 - notebook bronze para ingestao paginada da API
 - notebook silver para limpeza, tipagem e deduplicacao
 - notebook gold para agregacoes finais
@@ -113,6 +114,7 @@ bees-data-engineering-case/
 - dashboard local em `Streamlit` lendo `gold` e `ops`
 - testes unitarios e de integracao basicos
 - workflow de CI no GitHub Actions
+- arquitetura de evolucao para `GCP`
 
 ## Evidencia de validacao em PySpark
 
@@ -138,14 +140,20 @@ Isso confirma:
 - deteccao de campos obrigatorios ausentes
 - deteccao de chaves duplicadas no `bronze`
 
+## Escopo atual
+
+- `implementado e validado`: `Google Colab + PySpark + Streamlit`
+- `documentado como evolucao`: `GCP`
+- `mantido apenas como referencia opcional`: arquivos de `Azure` em `infra/` e `orchestration/adf/`
+
 ## Referencias usadas
 
 - [ocamposfaria/bees-data-engineering-case](https://github.com/ocamposfaria/bees-data-engineering-case)
 - [Gabriel0598/BEES-Breweries-Case](https://github.com/Gabriel0598/BEES-Breweries-Case)
 - [brunobws/aws-api-capture-dl-medallion](https://github.com/brunobws/aws-api-capture-dl-medallion)
 - [wuldson-franco/breweries_case](https://github.com/wuldson-franco/breweries_case)
-- [Azure Data Factory REST connector](https://learn.microsoft.com/en-us/azure/data-factory/connector-rest)
-- [Azure Data Lake Storage Gen2](https://learn.microsoft.com/en-us/azure/storage/blobs/upgrade-to-data-lake-storage-gen2)
-- [Azure Databricks schema evolution](https://learn.microsoft.com/en-us/azure/databricks/data-engineering/schema-evolution)
-- [Azure Monitor alerts overview](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-overview)
-- [Azure Monitor action groups](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups)
+
+Referencias opcionais de cloud:
+
+- materiais `Azure` mantidos como referencia no proprio repositorio
+- trilha `GCP` documentada em [gcp-colab-guide.md](./docs/gcp-colab-guide.md)

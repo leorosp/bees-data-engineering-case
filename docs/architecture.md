@@ -2,48 +2,40 @@
 
 ## Visao geral
 
-O desenho abaixo prioriza simplicidade, aderencia ao case e alinhamento com Azure.
+O desenho abaixo prioriza simplicidade, aderencia ao case e execucao pratica em `Google Colab + PySpark`, com uma trilha natural de evolucao para `GCP`.
 
 ```mermaid
 flowchart LR
-    A["Open Brewery DB API"] --> B["Azure Data Factory"]
-    B --> C["ADLS Gen2 Bronze<br/>raw json by ingestion date"]
-    C --> D["Azure Databricks Bronze Job"]
-    D --> E["ADLS Gen2 Silver<br/>delta by country/state"]
-    E --> F["Azure Databricks Gold Job"]
-    F --> G["ADLS Gen2 Gold<br/>aggregated delta tables"]
-    G --> H["Power BI"]
+    A["Open Brewery DB API"] --> B["Google Colab / PySpark"]
+    Z["Sample dataset for controlled tests"] --> B
+    B --> C["Bronze<br/>raw json by ingestion date"]
+    C --> D["Silver<br/>cleaned and deduplicated parquet"]
+    D --> E["Gold<br/>aggregations by type and location"]
+    E --> F["Streamlit Dashboard"]
 
-    B --> I["Azure Monitor"]
-    D --> I
-    F --> I
-    I --> J["Log Analytics Workspace"]
-    I --> K["Action Groups"]
-
-    L["Azure Key Vault"] --> B
-    L --> D
-    L --> F
+    E --> G["Optional GCP serving layer"]
+    G --> H["Google Cloud Storage / BigQuery / Looker Studio"]
 ```
 
 ## Fluxo por camada
 
 ### Bronze
 
-- `Azure Data Factory` consome a Open Brewery DB API via REST connector.
-- Os payloads sao gravados em `json` no `ADLS Gen2`.
+- `PySpark` consome a Open Brewery DB API ou dados de exemplo controlados.
+- Os payloads sao gravados em `json`.
 - Particionamento inicial por `ingestion_date=YYYY-MM-DD`.
 - Objetivo: preservar o dado bruto para replay e auditoria.
 
 ### Silver
 
-- `Azure Databricks` le os arquivos bronze.
+- `PySpark` le os arquivos bronze.
 - Normaliza schema, remove duplicidades, padroniza tipos e trata nulos.
-- Grava em `Delta` no `ADLS Gen2`.
+- Grava em `parquet` no caminho local/Colab.
 - Particionamento recomendado: `country` e `state_province`.
 
 ### Gold
 
-- `Azure Databricks` gera tabelas agregadas.
+- `PySpark` gera tabelas agregadas.
 - Foco principal do case:
   - quantidade de breweries por `brewery_type`
   - quantidade de breweries por localizacao
@@ -51,22 +43,22 @@ flowchart LR
 
 ## Decisoes principais
 
-- `Azure Data Factory` foi escolhido no lugar de Airflow para manter o projeto mais Azure-native.
-- `ADLS Gen2` foi escolhido no lugar de MinIO ou S3.
-- `Azure Databricks` foi escolhido no lugar de Glue, Lambda e Spark standalone.
-- `Power BI` entra no lugar de Metabase ou Streamlit como camada de consumo principal.
-- `Azure Monitor` + `Action Groups` substituem a estrategia de observabilidade baseada em CloudWatch e SES.
+- `Google Colab` foi escolhido como caminho principal porque permite validar o case rapidamente sem overhead de infraestrutura.
+- `PySpark` foi mantido como tecnologia central para aderir ao perfil do desafio.
+- `Streamlit` entra como camada de consumo e demonstracao do valor do pipeline.
+- `GCP` foi definido como trilha natural de cloud por combinar bem com `Colab`.
+- `Azure` continua no repositorio apenas como referencia opcional de uma evolucao enterprise, nao como requisito do case.
 
 ## O que foi herdado de cada referencia
 
 - [ocamposfaria/bees-data-engineering-case](https://github.com/ocamposfaria/bees-data-engineering-case): modularizacao, clareza de organizacao e foco em reproducibilidade.
-- [Gabriel0598/BEES-Breweries-Case](https://github.com/Gabriel0598/BEES-Breweries-Case): espinha dorsal `ADF + ADLS Gen2 + Databricks`.
+- [Gabriel0598/BEES-Breweries-Case](https://github.com/Gabriel0598/BEES-Breweries-Case): referencia de organizacao em cloud, adaptada aqui para uma trilha opcional e nao obrigatoria.
 - [brunobws/aws-api-capture-dl-medallion](https://github.com/brunobws/aws-api-capture-dl-medallion): data quality, observabilidade, historico operacional e backlog mais maduro.
 - [wuldson-franco/breweries_case](https://github.com/wuldson-franco/breweries_case): separacao simples de camadas e foco em consumo final.
 
 ## Regras de implementacao
 
 - O repositorio deve ser original: inspiracao sim, copia literal nao.
-- O MVP precisa funcionar sem depender de servicos fora do ecossistema Azure.
-- Tudo que for segredo deve sair de arquivo local e ir para o `Azure Key Vault`.
+- O MVP precisa funcionar em `Google Colab` sem depender de uma cloud especifica.
+- Qualquer cloud futura deve ser uma evolucao da solucao, nao um bloqueio para o uso do projeto.
 - Cada camada deve ser reprocessavel de forma independente.
