@@ -17,6 +17,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 KNOWN_OUTPUTS = ("local_output", "local_output_bad")
 DEMO_ROOT = REPO_ROOT / "dashboard" / "demo_data"
 
+SOURCE_MODE_LABELS = {
+    "demo": "Demo do projeto",
+    "artifacts": "Artefatos locais",
+}
+
 
 def inject_styles() -> None:
     st.markdown(
@@ -156,8 +161,8 @@ def inject_styles() -> None:
 def build_status_label(quality_df: pd.DataFrame) -> tuple[str, str]:
     has_failure = quality_df["status"].astype(str).str.lower().eq("fail").any()
     if has_failure:
-        return "Attention", "status-attention"
-    return "Healthy", "status-healthy"
+        return "Em atencao", "status-attention"
+    return "Saudavel", "status-healthy"
 
 
 def render_metric_card(label: str, value: str, caption: str) -> None:
@@ -170,6 +175,48 @@ def render_metric_card(label: str, value: str, caption: str) -> None:
         </div>
         """,
         unsafe_allow_html=True,
+    )
+
+
+def rename_gold_for_display(gold_df: pd.DataFrame) -> pd.DataFrame:
+    return gold_df.rename(
+        columns={
+            "brewery_type": "tipo",
+            "country": "pais",
+            "state_province": "estado",
+            "brewery_count": "quantidade",
+            "run_id": "run_id",
+            "generated_at_utc": "gerado_em_utc",
+        }
+    )
+
+
+def rename_quality_for_display(quality_df: pd.DataFrame) -> pd.DataFrame:
+    display_df = quality_df.rename(
+        columns={
+            "check_name": "check",
+            "checked_at_utc": "checado_em_utc",
+            "layer": "camada",
+            "message": "mensagem",
+            "metric_name": "metrica",
+            "metric_value": "valor",
+            "run_id": "run_id",
+            "status": "status",
+        }
+    ).copy()
+    display_df["status"] = display_df["status"].replace({"pass": "passou", "fail": "falhou"})
+    return display_df
+
+
+def source_copy(mode: str) -> tuple[str, str]:
+    if mode == "demo":
+        return (
+            "Demo do projeto",
+            "Visualizacao carregada com o dataset demonstrativo validado no projeto.",
+        )
+    return (
+        "Artefatos locais",
+        "Visualizacao alimentada pelos artefatos gerados pela execucao local do pipeline.",
     )
 
 
@@ -213,6 +260,7 @@ def prepare_quality_chart(quality_df: pd.DataFrame):
         .size()
         .rename(columns={"size": "checks"})
     )
+    summary["status"] = summary["status"].replace({"pass": "passou", "fail": "falhou"})
     return px.bar(
         summary,
         x="layer",
@@ -220,13 +268,14 @@ def prepare_quality_chart(quality_df: pd.DataFrame):
         color="status",
         barmode="group",
         text="checks",
-        color_discrete_map={"pass": "#1f6f6d", "fail": "#c7772e"},
+        color_discrete_map={"passou": "#1f6f6d", "falhou": "#c7772e"},
     )
 
 
 def render_business_view(data: DashboardData) -> None:
     gold_df = data.gold.copy()
     quality_df = data.quality.copy()
+    source_title, source_description = source_copy(data.source_mode)
 
     total_breweries = int(gold_df["brewery_count"].sum())
     total_types = int(gold_df["brewery_type"].nunique())
@@ -242,33 +291,35 @@ def render_business_view(data: DashboardData) -> None:
         f"""
         <div class="hero-card">
             <div class="hero-kicker">BEES Data Engineering Case</div>
-            <div class="hero-title">Brewery footprint and data quality in one place</div>
+            <div class="hero-title">Panorama de cervejarias e qualidade do pipeline</div>
             <div class="hero-copy">
-                This dashboard reads the curated <span class="mono">gold</span> and <span class="mono">ops</span>
-                artifacts produced by the pipeline and turns them into a business-facing view plus a technical
-                health check for the latest run.
+                Este painel transforma os artefatos das camadas <span class="mono">gold</span> e
+                <span class="mono">ops</span> em uma leitura simples do case: distribuicao de cervejarias,
+                cobertura geografica e saude da ultima execucao.
             </div>
-            <div class="status-pill {status_class}">Latest run status: {status_label}</div>
+            <div class="status-pill {status_class}">Status da ultima execucao: {status_label}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    st.caption(f"Fonte atual: {source_title}. {source_description}")
+
     metric_cols = st.columns(4)
     with metric_cols[0]:
-        render_metric_card("Total Breweries", f"{total_breweries}", "Aggregated from the gold layer")
+        render_metric_card("Cervejarias", f"{total_breweries}", "Total agregado na camada gold")
     with metric_cols[1]:
-        render_metric_card("Brewery Types", f"{total_types}", "Distinct brewery_type values")
+        render_metric_card("Tipos", f"{total_types}", "Quantidade distinta de brewery_type")
     with metric_cols[2]:
-        render_metric_card("States Covered", f"{total_states}", "Distinct state_province values")
+        render_metric_card("Estados", f"{total_states}", "Cobertura geografica da camada gold")
     with metric_cols[3]:
-        render_metric_card("Latest Run", latest_run, "Run identifier from ops quality results")
+        render_metric_card("Ultimo run", latest_run, "Identificador vindo dos checks operacionais")
 
     chart_left, chart_right = st.columns((1.05, 0.95))
     with chart_left:
-        st.markdown('<div class="panel-title">Breweries by Type</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Distribuicao por Tipo</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="section-caption">What kinds of breweries dominate the curated dataset.</div>',
+            '<div class="section-caption">Mostra quais tipos de cervejaria concentram mais registros no resultado final.</div>',
             unsafe_allow_html=True,
         )
         type_chart = prepare_type_chart(gold_df)
@@ -278,16 +329,16 @@ def render_business_view(data: DashboardData) -> None:
             coloraxis_showscale=False,
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(255,255,255,0.65)",
-            xaxis_title="Brewery count",
+            xaxis_title="Quantidade de cervejarias",
             yaxis_title="",
         )
         type_chart.update_traces(textposition="outside")
         st.plotly_chart(type_chart, use_container_width=True)
 
     with chart_right:
-        st.markdown('<div class="panel-title">Top States by Brewery Count</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Estados com Maior Concentração</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="section-caption">A quick ranking of the strongest geographic clusters.</div>',
+            '<div class="section-caption">Ranking rapido das localidades com maior volume de cervejarias agregadas.</div>',
             unsafe_allow_html=True,
         )
         state_chart = prepare_state_chart(gold_df)
@@ -298,18 +349,20 @@ def render_business_view(data: DashboardData) -> None:
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(255,255,255,0.65)",
             xaxis_title="",
-            yaxis_title="Brewery count",
+            yaxis_title="Quantidade de cervejarias",
         )
         state_chart.update_traces(textposition="outside")
         st.plotly_chart(state_chart, use_container_width=True)
 
-    st.markdown('<div class="panel-title">Detailed Gold Output</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-title">Detalhamento da Camada Gold</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-caption">Breakdown by brewery_type, country, and state_province.</div>',
+        '<div class="section-caption">Tabela final com os agrupamentos por tipo, pais e estado.</div>',
         unsafe_allow_html=True,
     )
     st.dataframe(
-        gold_df.sort_values(["brewery_count", "brewery_type"], ascending=[False, True]),
+        rename_gold_for_display(
+            gold_df.sort_values(["brewery_count", "brewery_type"], ascending=[False, True])
+        ),
         use_container_width=True,
         hide_index=True,
     )
@@ -321,9 +374,9 @@ def render_operational_view(data: DashboardData) -> None:
 
     ops_left, ops_right = st.columns((0.95, 1.05))
     with ops_left:
-        st.markdown('<div class="panel-title">Quality Checks by Layer</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Checks de Qualidade por Camada</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="section-caption">Pass/fail split for the latest artifact set.</div>',
+            '<div class="section-caption">Resume quantos checks passaram ou falharam em cada camada do pipeline.</div>',
             unsafe_allow_html=True,
         )
         quality_chart = prepare_quality_chart(quality_df)
@@ -333,33 +386,33 @@ def render_operational_view(data: DashboardData) -> None:
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(255,255,255,0.65)",
             xaxis_title="",
-            yaxis_title="Checks",
+            yaxis_title="Quantidade de checks",
             legend_title="Status",
         )
         quality_chart.update_traces(textposition="outside")
         st.plotly_chart(quality_chart, use_container_width=True)
 
     with ops_right:
-        st.markdown('<div class="panel-title">Latest Execution Event</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Ultimo Evento Operacional</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="section-caption">Operational telemetry for the last successful local run.</div>',
+            '<div class="section-caption">Mostra o resumo tecnico da ultima execucao registrada pelo pipeline.</div>',
             unsafe_allow_html=True,
         )
         if execution_df.empty:
-            st.info("No execution events found.")
+            st.info("Nenhum evento operacional foi encontrado.")
         else:
             latest_event = execution_df.sort_values("event_timestamp_utc").iloc[-1].to_dict()
             event_cols = st.columns(3)
             with event_cols[0]:
-                render_metric_card("Stage", str(latest_event.get("stage", "-")), "Pipeline stage")
+                render_metric_card("Etapa", str(latest_event.get("stage", "-")), "Fase registrada")
             with event_cols[1]:
-                render_metric_card("Records In", str(latest_event.get("records_in", "-")), "Incoming records")
+                render_metric_card("Entradas", str(latest_event.get("records_in", "-")), "Quantidade recebida")
             with event_cols[2]:
-                render_metric_card("Records Out", str(latest_event.get("records_out", "-")), "Produced records")
+                render_metric_card("Saidas", str(latest_event.get("records_out", "-")), "Quantidade produzida")
             st.markdown(
                 f"""
                 <div class="metric-card" style="margin-top: 0.8rem;">
-                    <div class="metric-label">Details</div>
+                    <div class="metric-label">Detalhes</div>
                     <div class="metric-caption">{latest_event.get("details", "-")}</div>
                     <div class="metric-caption"><span class="mono">run_id</span>: {latest_event.get("run_id", "-")}</div>
                     <div class="metric-caption"><span class="mono">status</span>: {latest_event.get("status", "-")}</div>
@@ -368,13 +421,15 @@ def render_operational_view(data: DashboardData) -> None:
                 unsafe_allow_html=True,
             )
 
-    st.markdown('<div class="panel-title">Quality Result Table</div>', unsafe_allow_html=True)
+    st.markdown('<div class="panel-title">Tabela de Qualidade</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-caption">Useful both for demos and for explaining why a run is healthy or not.</div>',
+        '<div class="section-caption">Ajuda a explicar com clareza por que uma execucao foi considerada saudavel ou nao.</div>',
         unsafe_allow_html=True,
     )
     st.dataframe(
-        quality_df.sort_values(["status", "layer", "check_name"]),
+        rename_quality_for_display(
+            quality_df.sort_values(["status", "layer", "check_name"])
+        ),
         use_container_width=True,
         hide_index=True,
     )
@@ -384,28 +439,29 @@ def render_missing_state(output_root: str, error: Exception) -> None:
     st.markdown(
         """
         <div class="hero-card">
-            <div class="hero-kicker">Dashboard setup</div>
-            <div class="hero-title">Artifacts not found yet</div>
+            <div class="hero-kicker">Configuracao do dashboard</div>
+            <div class="hero-title">Os artefatos locais ainda nao foram gerados</div>
             <div class="hero-copy">
-                The dashboard is ready, but it needs the pipeline outputs under
-                <span class="mono">local_output/</span> or another folder you choose in the sidebar.
+                O painel esta pronto, mas precisa dos arquivos produzidos pelo pipeline local para abrir no modo
+                de artefatos.
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.error(str(error))
+    st.info("Enquanto isso, voce pode usar o modo demo do projeto pela barra lateral.")
+    st.caption(str(error))
     st.code(
         "\n".join(
             [
-                "pip install -e \".[local,dashboard]\"",
+                'cd "C:\\Users\\leona\\Documents\\GitHub\\bees-data-engineering-case"',
                 "python scripts/run_local_pyspark_demo.py",
-                "streamlit run dashboard/app.py",
+                "python -m streamlit run dashboard/app.py",
             ]
         ),
-        language="bash",
+        language="powershell",
     )
-    st.info(f"Current output root: {output_root}")
+    st.caption(f"Pasta informada: {output_root}")
 
 
 def resolve_output_root(raw_value: str) -> Path:
@@ -436,47 +492,55 @@ def discover_available_outputs() -> list[Path]:
 def main() -> None:
     inject_styles()
 
-    st.sidebar.markdown("## Dashboard Control Room")
+    st.sidebar.markdown("## Painel do Projeto")
     available_outputs = discover_available_outputs()
-    default_root = available_outputs[0] if available_outputs else REPO_ROOT / "local_output"
-    output_root_input = st.sidebar.text_input("Artifacts folder", value=str(default_root))
-    output_root = resolve_output_root(output_root_input)
-    st.sidebar.caption("Use the generated folder from the local PySpark run.")
-
+    source_options = ["demo"]
     if available_outputs:
-        st.sidebar.markdown("**Detected artifact folders**")
-        for candidate in available_outputs:
-            st.sidebar.code(str(candidate))
+        source_options.append("artifacts")
+
+    selected_source = st.sidebar.radio(
+        "Fonte dos dados",
+        options=source_options,
+        format_func=lambda value: SOURCE_MODE_LABELS[value],
+        index=0,
+    )
+
+    output_root = REPO_ROOT / "local_output"
+    if selected_source == "artifacts":
+        default_root = available_outputs[0]
+        output_root_input = st.sidebar.selectbox(
+            "Conjunto de artefatos",
+            options=available_outputs,
+            format_func=lambda value: value.name,
+        )
+        output_root = resolve_output_root(str(output_root_input))
+        st.sidebar.caption("Use o conjunto gerado pelo pipeline local.")
     else:
-        st.sidebar.warning("No generated artifact folder was found in the repository yet.")
+        st.sidebar.caption("Modo recomendado para apresentacao rapida do projeto.")
+        if not available_outputs:
+            st.sidebar.info("Os artefatos locais ainda nao foram gerados nesta maquina.")
 
     st.sidebar.markdown("---")
     st.sidebar.markdown(
         """
-        **Suggested flow**
+        **Como usar**
 
-        1. Run `python scripts/run_local_pyspark_demo.py`
-        2. Open this dashboard
-        3. Switch to `local_output_bad` to show quality failures
+        1. Abra em `Demo do projeto` para ver o dashboard imediatamente
+        2. Gere `local_output` se quiser usar artefatos locais
+        3. Troque para `Artefatos locais` quando esses arquivos existirem
         """
     )
 
-    try:
-        data = load_dashboard_data(output_root)
-    except Exception as error:
+    if selected_source == "demo":
+        data = load_demo_dashboard_data(DEMO_ROOT)
+    else:
         try:
-            data = load_demo_dashboard_data(DEMO_ROOT)
-            st.sidebar.markdown("---")
-            st.sidebar.info("Using bundled demo data because no local artifacts were found.")
-            st.warning(
-                "The dashboard could not find local artifacts, so it loaded the bundled demo dataset."
-            )
-            st.caption(f"Original issue: {error}")
-        except Exception:
+            data = load_dashboard_data(output_root)
+        except Exception as error:
             render_missing_state(str(output_root), error)
             return
 
-    tabs = st.tabs(["Executive View", "Operational View"])
+    tabs = st.tabs(["Resumo Executivo", "Saude Operacional"])
 
     with tabs[0]:
         render_business_view(data)
@@ -485,11 +549,10 @@ def main() -> None:
         render_operational_view(data)
 
     st.sidebar.markdown("---")
-    st.sidebar.metric("Source mode", str(data.source_mode))
-    st.sidebar.metric("Artifacts root", str(output_root))
-    st.sidebar.metric("Rows in gold", str(len(data.gold)))
+    st.sidebar.metric("Fonte atual", SOURCE_MODE_LABELS.get(data.source_mode, data.source_mode))
+    st.sidebar.metric("Linhas na gold", str(len(data.gold)))
     st.sidebar.metric(
-        "Failed checks",
+        "Checks com falha",
         str(data.quality["status"].astype(str).str.lower().eq("fail").sum()),
     )
 
