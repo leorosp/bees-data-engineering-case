@@ -34,8 +34,18 @@ bees-data-engineering-case/
 |  |- services.md
 |  `- backlog.md
 |- infra/
+|  |- README.md
 |  `- bicep/
-|     `- main.bicep
+|     |- main.bicep
+|     |- modules/
+|     |  |- action-group.bicep
+|     |  |- data-factory.bicep
+|     |  |- databricks.bicep
+|     |  |- key-vault.bicep
+|     |  |- log-analytics.bicep
+|     |  `- storage.bicep
+|     `- parameters/
+|        `- dev.bicepparam
 |- orchestration/
 |  `- adf/
 |     `- README.md
@@ -65,6 +75,7 @@ bees-data-engineering-case/
 - [Arquitetura](./docs/architecture.md)
 - [Escolha dos servicos](./docs/services.md)
 - [Backlog de implementacao](./docs/backlog.md)
+- [Infraestrutura](./infra/README.md)
 
 ## Referencias usadas
 

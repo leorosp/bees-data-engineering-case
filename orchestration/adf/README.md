@@ -14,3 +14,14 @@ Fluxo esperado na V1:
 2. gravacao bronze no ADLS Gen2
 3. chamada de notebook/job no Databricks
 4. atualizacao de status e telemetria
+
+Estrutura sugerida:
+
+```text
+orchestration/adf/
+|- README.md
+|- datasets/
+|- linkedServices/
+|- pipelines/
+`- triggers/
+```
