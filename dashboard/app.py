@@ -1,4 +1,6 @@
 from pathlib import Path
+import subprocess
+import sys
 
 import pandas as pd
 import plotly.express as px
@@ -30,29 +32,33 @@ def inject_styles() -> None:
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
         :root {
-            --bg: #f5f1eb;
-            --surface: rgba(255, 255, 255, 0.92);
-            --surface-strong: #ffffff;
-            --text: #1f2428;
-            --muted: #67717d;
-            --line: rgba(31, 36, 40, 0.08);
-            --brand: #0f766e;
-            --brand-soft: #d7f0ec;
-            --warn: #b45309;
-            --warn-soft: #fde7c7;
-            --navy: #173042;
+            --abi-blue: #325a6d;
+            --abi-gold: #e5b611;
+            --abi-light-gold: #f5e003;
+            --abi-red: #921a28;
+            --abi-beige: #d69e77;
+            --abi-green: #959b7b;
+            --abi-brown: #3f1f14;
+            --abi-white: #ffffff;
+            --abi-black: #000000;
+            --abi-light-grey: #efefef;
+            --surface: rgba(255, 255, 255, 0.96);
+            --text: #20252b;
+            --muted: #626d78;
+            --line: rgba(50, 90, 109, 0.10);
         }
 
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 28%),
-                linear-gradient(180deg, #f9f7f2 0%, #f3eee7 100%);
+                radial-gradient(circle at top left, rgba(229, 182, 17, 0.16), transparent 24%),
+                radial-gradient(circle at top right, rgba(50, 90, 109, 0.10), transparent 26%),
+                linear-gradient(180deg, #faf8f4 0%, #f2eee7 100%);
             color: var(--text);
             font-family: "Manrope", "Segoe UI", sans-serif;
         }
 
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #132b3b 0%, #173042 100%);
+            background: linear-gradient(180deg, #325a6d 0%, #223f4e 100%);
         }
 
         [data-testid="stSidebar"] * {
@@ -60,12 +66,12 @@ def inject_styles() -> None:
         }
 
         .hero {
-            background: linear-gradient(135deg, #173042 0%, #0f766e 100%);
+            background: linear-gradient(135deg, #325a6d 0%, #3f1f14 100%);
             color: #fbfffe;
             border-radius: 24px;
             padding: 1.7rem 1.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            box-shadow: 0 18px 40px rgba(23, 48, 66, 0.12);
+            border: 1px solid rgba(229, 182, 17, 0.40);
+            box-shadow: 0 18px 40px rgba(50, 90, 109, 0.14);
             margin-bottom: 1rem;
         }
 
@@ -105,13 +111,13 @@ def inject_styles() -> None:
         }
 
         .badge-good {
-            background: rgba(215, 240, 236, 0.95);
-            color: #0f5d57;
+            background: rgba(149, 155, 123, 0.24);
+            color: #f5fff7;
         }
 
         .badge-warn {
-            background: rgba(253, 231, 199, 0.96);
-            color: #9a4b00;
+            background: rgba(146, 26, 40, 0.28);
+            color: #fff0f1;
         }
 
         .badge-neutral {
@@ -123,7 +129,7 @@ def inject_styles() -> None:
         .section-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #16202a;
+            color: #1f2b32;
             margin-bottom: 0.25rem;
         }
 
@@ -160,6 +166,59 @@ def inject_styles() -> None:
         .insight-copy {
             color: #55616d;
             line-height: 1.5;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(50, 90, 109, 0.10);
+            border-radius: 20px;
+            padding: 1rem 1.05rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 10px 22px rgba(50, 90, 109, 0.06);
+        }
+
+        .action-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #1f2b32;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-copy {
+            color: var(--muted);
+            margin-bottom: 0.7rem;
+        }
+
+        .feedback-ok {
+            background: rgba(149, 155, 123, 0.18);
+            color: #43512e;
+            border-radius: 14px;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid rgba(149, 155, 123, 0.28);
+            margin-bottom: 1rem;
+        }
+
+        .feedback-error {
+            background: rgba(146, 26, 40, 0.10);
+            color: #7e1d2e;
+            border-radius: 14px;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid rgba(146, 26, 40, 0.20);
+            margin-bottom: 1rem;
+        }
+
+        .stButton button {
+            background: #e5b611;
+            color: #000000;
+            border-radius: 12px;
+            border: 0;
+            font-weight: 800;
+            padding: 0.6rem 1rem;
+        }
+
+        .stButton button:hover {
+            background: #f5e003;
+            color: #000000;
         }
 
         .mono {
@@ -297,6 +356,70 @@ def render_insight_card(label: str, value: str, copy: str) -> None:
     )
 
 
+def render_action_feedback() -> None:
+    feedback = st.session_state.get("dashboard_feedback")
+    if not feedback:
+        return
+
+    css_class = "feedback-ok" if feedback["status"] == "success" else "feedback-error"
+    st.markdown(
+        f'<div class="{css_class}"><strong>{feedback["title"]}</strong><br>{feedback["message"]}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def run_local_pipeline(output_dir: str = "local_output") -> None:
+    command = [
+        sys.executable,
+        "scripts/run_local_pyspark_demo.py",
+        "--output-dir",
+        output_dir,
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=240,
+            check=False,
+        )
+    except Exception as error:
+        st.session_state["dashboard_feedback"] = {
+            "status": "error",
+            "title": "Nao foi possivel executar o pipeline local",
+            "message": str(error),
+        }
+        return
+
+    stdout = completed.stdout.strip()
+    stderr = completed.stderr.strip()
+    combined = "\n".join(part for part in [stdout, stderr] if part).strip()
+
+    if completed.returncode == 0:
+        st.session_state["dashboard_feedback"] = {
+            "status": "success",
+            "title": "Artefatos locais atualizados",
+            "message": "O pipeline local terminou com sucesso. Agora o painel pode usar os dados gerados nesta maquina.",
+        }
+        return
+
+    friendly_message = "A execucao local falhou."
+    if "JAVA_HOME" in combined or "Java not found" in combined:
+        friendly_message = (
+            "O PySpark local precisa de Java configurado nesta maquina. "
+            "Instale Java 17 e defina a variavel JAVA_HOME para gerar o local_output."
+        )
+    elif combined:
+        friendly_message = combined.splitlines()[-1]
+
+    st.session_state["dashboard_feedback"] = {
+        "status": "error",
+        "title": "Nao foi possivel gerar os artefatos locais",
+        "message": friendly_message,
+    }
+
+
 def prepare_type_chart(filtered_gold: pd.DataFrame):
     chart_df = (
         filtered_gold.groupby("brewery_type", as_index=False)["brewery_count"]
@@ -310,7 +433,7 @@ def prepare_type_chart(filtered_gold: pd.DataFrame):
         y="Tipo",
         orientation="h",
         text="Quantidade",
-        color_discrete_sequence=["#0f766e"],
+        color_discrete_sequence=["#325a6d"],
     )
     fig.update_layout(
         height=360,
@@ -337,7 +460,7 @@ def prepare_state_chart(filtered_gold: pd.DataFrame):
         y="Quantidade",
         text="Quantidade",
         color="Quantidade",
-        color_continuous_scale=["#d7f0ec", "#173042"],
+        color_continuous_scale=["#d69e77", "#325a6d"],
     )
     fig.update_layout(
         height=360,
@@ -369,7 +492,7 @@ def prepare_quality_chart(quality_df: pd.DataFrame):
         color="status_label",
         barmode="group",
         text="checks",
-        color_discrete_map={"Passou": "#0f766e", "Falhou": "#b45309"},
+        color_discrete_map={"Passou": "#959b7b", "Falhou": "#921a28"},
     )
     fig.update_layout(
         height=320,
@@ -525,6 +648,33 @@ def render_operations_section(quality_df: pd.DataFrame, execution_df: pd.DataFra
     st.dataframe(table_df, use_container_width=True, hide_index=True)
 
 
+def render_action_bar() -> None:
+    st.markdown(
+        """
+        <div class="action-card">
+            <div class="action-title">Acoes rapidas</div>
+            <div class="action-copy">
+                Use estes botoes para atualizar o painel ou tentar gerar os artefatos locais do projeto.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    action_cols = st.columns((1, 1, 2))
+    with action_cols[0]:
+        if st.button("Atualizar painel", use_container_width=True):
+            st.rerun()
+    with action_cols[1]:
+        if st.button("Gerar dados locais", use_container_width=True):
+            with st.spinner("Executando pipeline local..."):
+                run_local_pipeline()
+            st.rerun()
+    with action_cols[2]:
+        st.caption(
+            "Se o pipeline local nao rodar, o painel continua funcionando no modo demo para a apresentacao."
+        )
+
+
 def render_artifact_error(output_root: Path, error: Exception) -> None:
     st.error("Nao foi possivel abrir os artefatos locais.")
     st.caption("Se quiser usar o painel agora, volte a fonte para `Demo do projeto`.")
@@ -608,6 +758,8 @@ def main() -> None:
         data = load_selected_data(selected_source, selected_output)
     except Exception as error:
         render_hero("demo", pd.DataFrame({"status": ["pass"]}))
+        render_action_feedback()
+        render_action_bar()
         render_artifact_error(selected_output, error)
         return
 
@@ -615,6 +767,8 @@ def main() -> None:
     filtered_gold = filter_gold(data.gold, selected_types, selected_states)
 
     render_hero(data.source_mode, data.quality)
+    render_action_feedback()
+    render_action_bar()
 
     with st.expander("O que este painel responde", expanded=False):
         st.markdown(
