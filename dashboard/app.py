@@ -27,126 +27,139 @@ def inject_styles() -> None:
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
         :root {
-            --cream: #f8f3e8;
-            --sand: #e7d7b8;
-            --ink: #1f1a17;
-            --amber: #c7772e;
-            --lager: #e0a33a;
-            --teal: #1f6f6d;
-            --brick: #7b3f21;
-            --mint: #d8efe7;
+            --bg: #f5f1eb;
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface-strong: #ffffff;
+            --text: #1f2428;
+            --muted: #67717d;
+            --line: rgba(31, 36, 40, 0.08);
+            --brand: #0f766e;
+            --brand-soft: #d7f0ec;
+            --warn: #b45309;
+            --warn-soft: #fde7c7;
+            --navy: #173042;
         }
 
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(224, 163, 58, 0.15), transparent 30%),
-                radial-gradient(circle at top right, rgba(31, 111, 109, 0.16), transparent 28%),
-                linear-gradient(180deg, #fcf8ef 0%, #f6efe1 100%);
-            color: var(--ink);
-            font-family: "Space Grotesk", "Segoe UI", sans-serif;
+                radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 28%),
+                linear-gradient(180deg, #f9f7f2 0%, #f3eee7 100%);
+            color: var(--text);
+            font-family: "Manrope", "Segoe UI", sans-serif;
         }
 
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #221a14 0%, #2d2118 100%);
-            color: #f7efe1;
+            background: linear-gradient(180deg, #132b3b 0%, #173042 100%);
         }
 
         [data-testid="stSidebar"] * {
-            color: #f7efe1;
+            color: #f4f7fa;
         }
 
-        .hero-card {
-            background: linear-gradient(135deg, rgba(31, 111, 109, 0.96), rgba(123, 63, 33, 0.96));
-            color: #fff9f0;
+        .hero {
+            background: linear-gradient(135deg, #173042 0%, #0f766e 100%);
+            color: #fbfffe;
             border-radius: 24px;
-            padding: 1.6rem 1.8rem;
-            box-shadow: 0 18px 40px rgba(45, 33, 24, 0.14);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 1.7rem 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 18px 40px rgba(23, 48, 66, 0.12);
             margin-bottom: 1rem;
         }
 
         .hero-kicker {
             text-transform: uppercase;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.16em;
             font-size: 0.78rem;
-            opacity: 0.86;
+            opacity: 0.82;
         }
 
         .hero-title {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
+            font-weight: 800;
             line-height: 1.05;
-            font-weight: 700;
-            margin: 0.35rem 0 0.65rem 0;
+            margin: 0.35rem 0 0.7rem 0;
         }
 
         .hero-copy {
-            font-size: 1rem;
             max-width: 48rem;
-            opacity: 0.92;
+            line-height: 1.6;
+            opacity: 0.94;
         }
 
-        .metric-card {
-            background: rgba(255, 251, 244, 0.95);
-            border: 1px solid rgba(123, 63, 33, 0.12);
+        .badge-row {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 0.38rem 0.8rem;
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .badge-good {
+            background: rgba(215, 240, 236, 0.95);
+            color: #0f5d57;
+        }
+
+        .badge-warn {
+            background: rgba(253, 231, 199, 0.96);
+            color: #9a4b00;
+        }
+
+        .badge-neutral {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fbfffe;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #16202a;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-copy {
+            color: var(--muted);
+            margin-bottom: 0.85rem;
+        }
+
+        .insight-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
             border-radius: 20px;
-            padding: 1rem 1.1rem;
-            box-shadow: 0 10px 25px rgba(45, 33, 24, 0.06);
+            padding: 1rem 1.05rem;
+            box-shadow: 0 10px 25px rgba(24, 33, 41, 0.05);
+            min-height: 140px;
         }
 
-        .metric-label {
+        .insight-label {
             font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 0.12em;
-            color: #7d6b5d;
-            margin-bottom: 0.35rem;
+            color: var(--muted);
+            margin-bottom: 0.45rem;
         }
 
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--ink);
-            line-height: 1;
+        .insight-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.1;
+            margin-bottom: 0.45rem;
         }
 
-        .metric-caption {
-            margin-top: 0.45rem;
-            font-size: 0.9rem;
-            color: #5b4b40;
-        }
-
-        .panel-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--brick);
-            margin-bottom: 0.3rem;
-        }
-
-        .section-caption {
-            color: #6b5a4d;
-            margin-top: -0.2rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .status-pill {
-            display: inline-block;
-            border-radius: 999px;
-            padding: 0.35rem 0.75rem;
-            font-size: 0.82rem;
-            font-weight: 700;
-            margin-top: 0.6rem;
-        }
-
-        .status-healthy {
-            background: rgba(216, 239, 231, 0.9);
-            color: #155d47;
-        }
-
-        .status-attention {
-            background: rgba(255, 226, 183, 0.95);
-            color: #8a4b00;
+        .insight-copy {
+            color: #55616d;
+            line-height: 1.5;
         }
 
         .mono {
@@ -158,403 +171,464 @@ def inject_styles() -> None:
     )
 
 
-def build_status_label(quality_df: pd.DataFrame) -> tuple[str, str]:
-    has_failure = quality_df["status"].astype(str).str.lower().eq("fail").any()
-    if has_failure:
-        return "Em atencao", "status-attention"
-    return "Saudavel", "status-healthy"
-
-
-def render_metric_card(label: str, value: str, caption: str) -> None:
-    st.markdown(
-        f"""
-        <div class="metric-card">
-            <div class="metric-label">{label}</div>
-            <div class="metric-value">{value}</div>
-            <div class="metric-caption">{caption}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def rename_gold_for_display(gold_df: pd.DataFrame) -> pd.DataFrame:
-    return gold_df.rename(
-        columns={
-            "brewery_type": "tipo",
-            "country": "pais",
-            "state_province": "estado",
-            "brewery_count": "quantidade",
-            "run_id": "run_id",
-            "generated_at_utc": "gerado_em_utc",
-        }
-    )
-
-
-def rename_quality_for_display(quality_df: pd.DataFrame) -> pd.DataFrame:
-    display_df = quality_df.rename(
-        columns={
-            "check_name": "check",
-            "checked_at_utc": "checado_em_utc",
-            "layer": "camada",
-            "message": "mensagem",
-            "metric_name": "metrica",
-            "metric_value": "valor",
-            "run_id": "run_id",
-            "status": "status",
-        }
-    ).copy()
-    display_df["status"] = display_df["status"].replace({"pass": "passou", "fail": "falhou"})
-    return display_df
-
-
-def source_copy(mode: str) -> tuple[str, str]:
-    if mode == "demo":
-        return (
-            "Demo do projeto",
-            "Visualizacao carregada com o dataset demonstrativo validado no projeto.",
-        )
-    return (
-        "Artefatos locais",
-        "Visualizacao alimentada pelos artefatos gerados pela execucao local do pipeline.",
-    )
-
-
-def prepare_type_chart(gold_df: pd.DataFrame):
-    by_type = (
-        gold_df.groupby("brewery_type", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=True)
-    )
-    return px.bar(
-        by_type,
-        x="brewery_count",
-        y="brewery_type",
-        orientation="h",
-        text="brewery_count",
-        color="brewery_count",
-        color_continuous_scale=["#d8efe7", "#c7772e"],
-    )
-
-
-def prepare_state_chart(gold_df: pd.DataFrame):
-    by_state = (
-        gold_df.groupby("state_province", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=False)
-        .head(10)
-    )
-    return px.bar(
-        by_state,
-        x="state_province",
-        y="brewery_count",
-        text="brewery_count",
-        color="brewery_count",
-        color_continuous_scale=["#f1d8a3", "#1f6f6d"],
-    )
-
-
-def prepare_quality_chart(quality_df: pd.DataFrame):
-    summary = (
-        quality_df.groupby(["layer", "status"], as_index=False)
-        .size()
-        .rename(columns={"size": "checks"})
-    )
-    summary["status"] = summary["status"].replace({"pass": "passou", "fail": "falhou"})
-    return px.bar(
-        summary,
-        x="layer",
-        y="checks",
-        color="status",
-        barmode="group",
-        text="checks",
-        color_discrete_map={"passou": "#1f6f6d", "falhou": "#c7772e"},
-    )
-
-
-def render_business_view(data: DashboardData) -> None:
-    gold_df = data.gold.copy()
-    quality_df = data.quality.copy()
-    source_title, source_description = source_copy(data.source_mode)
-
-    total_breweries = int(gold_df["brewery_count"].sum())
-    total_types = int(gold_df["brewery_type"].nunique())
-    total_states = int(gold_df["state_province"].nunique())
-    latest_run = (
-        quality_df.sort_values("checked_at_utc")["run_id"].dropna().astype(str).iloc[-1]
-        if not quality_df.empty
-        else "unknown"
-    )
-    status_label, status_class = build_status_label(quality_df)
-
-    st.markdown(
-        f"""
-        <div class="hero-card">
-            <div class="hero-kicker">BEES Data Engineering Case</div>
-            <div class="hero-title">Panorama de cervejarias e qualidade do pipeline</div>
-            <div class="hero-copy">
-                Este painel transforma os artefatos das camadas <span class="mono">gold</span> e
-                <span class="mono">ops</span> em uma leitura simples do case: distribuicao de cervejarias,
-                cobertura geografica e saude da ultima execucao.
-            </div>
-            <div class="status-pill {status_class}">Status da ultima execucao: {status_label}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.caption(f"Fonte atual: {source_title}. {source_description}")
-
-    metric_cols = st.columns(4)
-    with metric_cols[0]:
-        render_metric_card("Cervejarias", f"{total_breweries}", "Total agregado na camada gold")
-    with metric_cols[1]:
-        render_metric_card("Tipos", f"{total_types}", "Quantidade distinta de brewery_type")
-    with metric_cols[2]:
-        render_metric_card("Estados", f"{total_states}", "Cobertura geografica da camada gold")
-    with metric_cols[3]:
-        render_metric_card("Ultimo run", latest_run, "Identificador vindo dos checks operacionais")
-
-    chart_left, chart_right = st.columns((1.05, 0.95))
-    with chart_left:
-        st.markdown('<div class="panel-title">Distribuicao por Tipo</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="section-caption">Mostra quais tipos de cervejaria concentram mais registros no resultado final.</div>',
-            unsafe_allow_html=True,
-        )
-        type_chart = prepare_type_chart(gold_df)
-        type_chart.update_layout(
-            height=360,
-            margin=dict(l=10, r=10, t=10, b=10),
-            coloraxis_showscale=False,
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(255,255,255,0.65)",
-            xaxis_title="Quantidade de cervejarias",
-            yaxis_title="",
-        )
-        type_chart.update_traces(textposition="outside")
-        st.plotly_chart(type_chart, use_container_width=True)
-
-    with chart_right:
-        st.markdown('<div class="panel-title">Estados com Maior Concentração</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="section-caption">Ranking rapido das localidades com maior volume de cervejarias agregadas.</div>',
-            unsafe_allow_html=True,
-        )
-        state_chart = prepare_state_chart(gold_df)
-        state_chart.update_layout(
-            height=360,
-            margin=dict(l=10, r=10, t=10, b=10),
-            coloraxis_showscale=False,
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(255,255,255,0.65)",
-            xaxis_title="",
-            yaxis_title="Quantidade de cervejarias",
-        )
-        state_chart.update_traces(textposition="outside")
-        st.plotly_chart(state_chart, use_container_width=True)
-
-    st.markdown('<div class="panel-title">Detalhamento da Camada Gold</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-caption">Tabela final com os agrupamentos por tipo, pais e estado.</div>',
-        unsafe_allow_html=True,
-    )
-    st.dataframe(
-        rename_gold_for_display(
-            gold_df.sort_values(["brewery_count", "brewery_type"], ascending=[False, True])
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-
-def render_operational_view(data: DashboardData) -> None:
-    quality_df = data.quality.copy()
-    execution_df = data.execution.copy()
-
-    ops_left, ops_right = st.columns((0.95, 1.05))
-    with ops_left:
-        st.markdown('<div class="panel-title">Checks de Qualidade por Camada</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="section-caption">Resume quantos checks passaram ou falharam em cada camada do pipeline.</div>',
-            unsafe_allow_html=True,
-        )
-        quality_chart = prepare_quality_chart(quality_df)
-        quality_chart.update_layout(
-            height=320,
-            margin=dict(l=10, r=10, t=10, b=10),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(255,255,255,0.65)",
-            xaxis_title="",
-            yaxis_title="Quantidade de checks",
-            legend_title="Status",
-        )
-        quality_chart.update_traces(textposition="outside")
-        st.plotly_chart(quality_chart, use_container_width=True)
-
-    with ops_right:
-        st.markdown('<div class="panel-title">Ultimo Evento Operacional</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="section-caption">Mostra o resumo tecnico da ultima execucao registrada pelo pipeline.</div>',
-            unsafe_allow_html=True,
-        )
-        if execution_df.empty:
-            st.info("Nenhum evento operacional foi encontrado.")
-        else:
-            latest_event = execution_df.sort_values("event_timestamp_utc").iloc[-1].to_dict()
-            event_cols = st.columns(3)
-            with event_cols[0]:
-                render_metric_card("Etapa", str(latest_event.get("stage", "-")), "Fase registrada")
-            with event_cols[1]:
-                render_metric_card("Entradas", str(latest_event.get("records_in", "-")), "Quantidade recebida")
-            with event_cols[2]:
-                render_metric_card("Saidas", str(latest_event.get("records_out", "-")), "Quantidade produzida")
-            st.markdown(
-                f"""
-                <div class="metric-card" style="margin-top: 0.8rem;">
-                    <div class="metric-label">Detalhes</div>
-                    <div class="metric-caption">{latest_event.get("details", "-")}</div>
-                    <div class="metric-caption"><span class="mono">run_id</span>: {latest_event.get("run_id", "-")}</div>
-                    <div class="metric-caption"><span class="mono">status</span>: {latest_event.get("status", "-")}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-    st.markdown('<div class="panel-title">Tabela de Qualidade</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-caption">Ajuda a explicar com clareza por que uma execucao foi considerada saudavel ou nao.</div>',
-        unsafe_allow_html=True,
-    )
-    st.dataframe(
-        rename_quality_for_display(
-            quality_df.sort_values(["status", "layer", "check_name"])
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
-
-
-def render_missing_state(output_root: str, error: Exception) -> None:
-    st.markdown(
-        """
-        <div class="hero-card">
-            <div class="hero-kicker">Configuracao do dashboard</div>
-            <div class="hero-title">Os artefatos locais ainda nao foram gerados</div>
-            <div class="hero-copy">
-                O painel esta pronto, mas precisa dos arquivos produzidos pelo pipeline local para abrir no modo
-                de artefatos.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.info("Enquanto isso, voce pode usar o modo demo do projeto pela barra lateral.")
-    st.caption(str(error))
-    st.code(
-        "\n".join(
-            [
-                'cd "C:\\Users\\leona\\Documents\\GitHub\\bees-data-engineering-case"',
-                "python scripts/run_local_pyspark_demo.py",
-                "python -m streamlit run dashboard/app.py",
-            ]
-        ),
-        language="powershell",
-    )
-    st.caption(f"Pasta informada: {output_root}")
+def discover_available_outputs() -> list[Path]:
+    return [REPO_ROOT / name for name in KNOWN_OUTPUTS if (REPO_ROOT / name).exists()]
 
 
 def resolve_output_root(raw_value: str) -> Path:
     raw_path = Path(raw_value).expanduser()
     if raw_path.is_absolute():
         return raw_path
-
-    repo_relative = REPO_ROOT / raw_path
-    if repo_relative.exists():
-        return repo_relative
-
-    cwd_relative = Path.cwd() / raw_path
-    if cwd_relative.exists():
-        return cwd_relative
-
-    return repo_relative
+    return REPO_ROOT / raw_path
 
 
-def discover_available_outputs() -> list[Path]:
-    available: list[Path] = []
-    for name in KNOWN_OUTPUTS:
-        candidate = REPO_ROOT / name
-        if candidate.exists():
-            available.append(candidate)
-    return available
+def load_selected_data(source_mode: str, output_root: Path) -> DashboardData:
+    if source_mode == "demo":
+        return load_demo_dashboard_data(DEMO_ROOT)
+    return load_dashboard_data(output_root)
 
 
-def main() -> None:
-    inject_styles()
+def build_health_summary(quality_df: pd.DataFrame) -> tuple[str, str, str]:
+    failed_checks = int(quality_df["status"].astype(str).str.lower().eq("fail").sum())
+    if failed_checks:
+        return (
+            "Em atencao",
+            "badge-warn",
+            f"{failed_checks} check(s) precisam de revisao antes de publicar esse resultado.",
+        )
+    return (
+        "Saudavel",
+        "badge-good",
+        "Nenhum check critico falhou na ultima execucao exibida pelo painel.",
+    )
 
-    st.sidebar.markdown("## Painel do Projeto")
-    available_outputs = discover_available_outputs()
+
+def render_badges(source_mode: str, quality_df: pd.DataFrame) -> None:
+    health_label, health_css, health_copy = build_health_summary(quality_df)
+    source_label = SOURCE_MODE_LABELS.get(source_mode, source_mode)
+    st.markdown(
+        f"""
+        <div class="badge-row">
+            <span class="badge badge-neutral">Fonte: {source_label}</span>
+            <span class="badge {health_css}">Saude: {health_label}</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.caption(health_copy)
+
+
+def render_hero(source_mode: str, quality_df: pd.DataFrame) -> None:
+    st.markdown(
+        """
+        <div class="hero">
+            <div class="hero-kicker">BEES Data Engineering Case</div>
+            <div class="hero-title">Painel executivo e operacional do pipeline</div>
+            <div class="hero-copy">
+                Um resumo direto do que o projeto entrega: volume de cervejarias agregadas,
+                distribuicao geografica, concentracao por tipo e qualidade da ultima execucao.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    render_badges(source_mode, quality_df)
+
+
+def filter_gold(gold_df: pd.DataFrame, selected_types: list[str], selected_states: list[str]) -> pd.DataFrame:
+    filtered = gold_df.copy()
+    if selected_types:
+        filtered = filtered[filtered["brewery_type"].isin(selected_types)]
+    if selected_states:
+        filtered = filtered[filtered["state_province"].isin(selected_states)]
+    return filtered
+
+
+def summarize_business(filtered_gold: pd.DataFrame, quality_df: pd.DataFrame) -> dict[str, str]:
+    latest_run = (
+        quality_df.sort_values("checked_at_utc")["run_id"].dropna().astype(str).iloc[-1]
+        if not quality_df.empty
+        else "-"
+    )
+    top_type = (
+        filtered_gold.groupby("brewery_type", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=False)
+        .head(1)
+    )
+    top_state = (
+        filtered_gold.groupby("state_province", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=False)
+        .head(1)
+    )
+    passed_checks = int(quality_df["status"].astype(str).str.lower().eq("pass").sum())
+    total_checks = int(len(quality_df))
+
+    return {
+        "total_breweries": str(int(filtered_gold["brewery_count"].sum())),
+        "total_types": str(int(filtered_gold["brewery_type"].nunique())),
+        "total_states": str(int(filtered_gold["state_province"].nunique())),
+        "latest_run": latest_run,
+        "top_type": (
+            f"{top_type.iloc[0]['brewery_type']} ({int(top_type.iloc[0]['brewery_count'])})"
+            if not top_type.empty
+            else "-"
+        ),
+        "top_state": (
+            f"{top_state.iloc[0]['state_province']} ({int(top_state.iloc[0]['brewery_count'])})"
+            if not top_state.empty
+            else "-"
+        ),
+        "quality_summary": f"{passed_checks} de {total_checks} checks passaram",
+    }
+
+
+def render_insight_card(label: str, value: str, copy: str) -> None:
+    st.markdown(
+        f"""
+        <div class="insight-card">
+            <div class="insight-label">{label}</div>
+            <div class="insight-value">{value}</div>
+            <div class="insight-copy">{copy}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def prepare_type_chart(filtered_gold: pd.DataFrame):
+    chart_df = (
+        filtered_gold.groupby("brewery_type", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=True)
+        .rename(columns={"brewery_type": "Tipo", "brewery_count": "Quantidade"})
+    )
+    fig = px.bar(
+        chart_df,
+        x="Quantidade",
+        y="Tipo",
+        orientation="h",
+        text="Quantidade",
+        color_discrete_sequence=["#0f766e"],
+    )
+    fig.update_layout(
+        height=360,
+        margin=dict(l=10, r=10, t=10, b=10),
+        showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(255,255,255,0.72)",
+    )
+    fig.update_traces(marker_line_width=0, textposition="outside")
+    return fig
+
+
+def prepare_state_chart(filtered_gold: pd.DataFrame):
+    chart_df = (
+        filtered_gold.groupby("state_province", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=False)
+        .head(10)
+        .rename(columns={"state_province": "Estado", "brewery_count": "Quantidade"})
+    )
+    fig = px.bar(
+        chart_df,
+        x="Estado",
+        y="Quantidade",
+        text="Quantidade",
+        color="Quantidade",
+        color_continuous_scale=["#d7f0ec", "#173042"],
+    )
+    fig.update_layout(
+        height=360,
+        margin=dict(l=10, r=10, t=10, b=10),
+        coloraxis_showscale=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(255,255,255,0.72)",
+    )
+    fig.update_traces(marker_line_width=0, textposition="outside")
+    return fig
+
+
+def prepare_quality_chart(quality_df: pd.DataFrame):
+    chart_df = (
+        quality_df.assign(
+            camada=lambda df: df["layer"].replace(
+                {"bronze": "Bronze", "silver": "Silver", "gold": "Gold", "ops": "Ops"}
+            ),
+            status_label=lambda df: df["status"].replace({"pass": "Passou", "fail": "Falhou"}),
+        )
+        .groupby(["camada", "status_label"], as_index=False)
+        .size()
+        .rename(columns={"size": "checks"})
+    )
+    fig = px.bar(
+        chart_df,
+        x="camada",
+        y="checks",
+        color="status_label",
+        barmode="group",
+        text="checks",
+        color_discrete_map={"Passou": "#0f766e", "Falhou": "#b45309"},
+    )
+    fig.update_layout(
+        height=320,
+        margin=dict(l=10, r=10, t=10, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(255,255,255,0.72)",
+        xaxis_title="",
+        yaxis_title="Checks",
+        legend_title="Resultado",
+    )
+    fig.update_traces(textposition="outside")
+    return fig
+
+
+def build_gold_table(filtered_gold: pd.DataFrame) -> pd.DataFrame:
+    display_df = filtered_gold.rename(
+        columns={
+            "brewery_type": "Tipo",
+            "country": "Pais",
+            "state_province": "Estado",
+            "brewery_count": "Quantidade",
+            "run_id": "Run ID",
+            "generated_at_utc": "Gerado em UTC",
+        }
+    )
+    return display_df.sort_values(["Quantidade", "Tipo"], ascending=[False, True])
+
+
+def build_quality_table(quality_df: pd.DataFrame) -> pd.DataFrame:
+    display_df = quality_df.rename(
+        columns={
+            "check_name": "Check",
+            "checked_at_utc": "Checado em UTC",
+            "layer": "Camada",
+            "message": "Mensagem",
+            "metric_name": "Metrica",
+            "metric_value": "Valor",
+            "run_id": "Run ID",
+            "status": "Status",
+        }
+    ).copy()
+    display_df["Status"] = display_df["Status"].replace({"pass": "Passou", "fail": "Falhou"})
+    display_df["Camada"] = display_df["Camada"].replace(
+        {"bronze": "Bronze", "silver": "Silver", "gold": "Gold", "ops": "Ops"}
+    )
+    return display_df.sort_values(["Status", "Camada", "Check"])
+
+
+def render_business_section(filtered_gold: pd.DataFrame, quality_df: pd.DataFrame) -> None:
+    st.markdown('<div class="section-title">Resumo executivo</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-copy">Aqui fica a leitura mais rapida do valor entregue pela camada gold.</div>',
+        unsafe_allow_html=True,
+    )
+
+    if filtered_gold.empty:
+        st.info("Nenhum registro atende aos filtros selecionados.")
+        return
+
+    summary = summarize_business(filtered_gold, quality_df)
+
+    metric_cols = st.columns(4)
+    metric_cols[0].metric("Cervejarias", summary["total_breweries"])
+    metric_cols[1].metric("Tipos", summary["total_types"])
+    metric_cols[2].metric("Estados", summary["total_states"])
+    metric_cols[3].metric("Ultimo run", summary["latest_run"])
+
+    insight_cols = st.columns(3)
+    with insight_cols[0]:
+        render_insight_card(
+            "Tipo lider",
+            summary["top_type"],
+            "Mostra qual categoria concentrou mais cervejarias no conjunto exibido.",
+        )
+    with insight_cols[1]:
+        render_insight_card(
+            "Estado lider",
+            summary["top_state"],
+            "Ajuda a identificar rapidamente a principal concentracao geografica.",
+        )
+    with insight_cols[2]:
+        render_insight_card(
+            "Qualidade",
+            summary["quality_summary"],
+            "Resume se a ultima execucao chegou ao painel com validacoes em ordem.",
+        )
+
+    chart_left, chart_right = st.columns(2)
+    with chart_left:
+        st.markdown('<div class="section-title">Distribuicao por tipo</div>', unsafe_allow_html=True)
+        st.caption("Quanto cada tipo de cervejaria representa no resultado final.")
+        st.plotly_chart(prepare_type_chart(filtered_gold), use_container_width=True)
+
+    with chart_right:
+        st.markdown('<div class="section-title">Top estados</div>', unsafe_allow_html=True)
+        st.caption("Os estados com maior quantidade agregada de cervejarias.")
+        st.plotly_chart(prepare_state_chart(filtered_gold), use_container_width=True)
+
+    st.markdown('<div class="section-title">Tabela final da camada gold</div>', unsafe_allow_html=True)
+    st.caption("Detalhamento pronto para consumo por negocio ou apresentacao.")
+    st.dataframe(build_gold_table(filtered_gold), use_container_width=True, hide_index=True)
+
+
+def render_operations_section(quality_df: pd.DataFrame, execution_df: pd.DataFrame) -> None:
+    st.markdown('<div class="section-title">Saude do pipeline</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-copy">Uma leitura simples dos checks e do ultimo evento operacional registrado.</div>',
+        unsafe_allow_html=True,
+    )
+
+    passed_checks = int(quality_df["status"].astype(str).str.lower().eq("pass").sum())
+    failed_checks = int(quality_df["status"].astype(str).str.lower().eq("fail").sum())
+    latest_run = (
+        quality_df.sort_values("checked_at_utc")["run_id"].dropna().astype(str).iloc[-1]
+        if not quality_df.empty
+        else "-"
+    )
+
+    ops_metrics = st.columns(3)
+    ops_metrics[0].metric("Checks que passaram", passed_checks)
+    ops_metrics[1].metric("Checks com falha", failed_checks)
+    ops_metrics[2].metric("Run analisado", latest_run)
+
+    chart_left, chart_right = st.columns((1.05, 0.95))
+    with chart_left:
+        st.plotly_chart(prepare_quality_chart(quality_df), use_container_width=True)
+
+    with chart_right:
+        st.markdown('<div class="section-title">Ultimo evento</div>', unsafe_allow_html=True)
+        st.caption("Resumo operacional da ultima execucao registrada em ops.")
+        if execution_df.empty:
+            st.info("Nenhum evento operacional foi encontrado.")
+        else:
+            latest_event = execution_df.sort_values("event_timestamp_utc").iloc[-1].to_dict()
+            render_insight_card(
+                "Etapa",
+                str(latest_event.get("stage", "-")),
+                str(latest_event.get("details", "-")),
+            )
+            event_cols = st.columns(2)
+            event_cols[0].metric("Entradas", str(latest_event.get("records_in", "-")))
+            event_cols[1].metric("Saidas", str(latest_event.get("records_out", "-")))
+            st.caption(
+                "Run ID: "
+                f"{latest_event.get('run_id', '-')} | Status: {latest_event.get('status', '-')}"
+            )
+
+    show_failures_only = st.toggle("Mostrar apenas checks com falha", value=False)
+    table_df = build_quality_table(quality_df)
+    if show_failures_only:
+        table_df = table_df[table_df["Status"] == "Falhou"]
+
+    st.dataframe(table_df, use_container_width=True, hide_index=True)
+
+
+def render_artifact_error(output_root: Path, error: Exception) -> None:
+    st.error("Nao foi possivel abrir os artefatos locais.")
+    st.caption("Se quiser usar o painel agora, volte a fonte para `Demo do projeto`.")
+    with st.expander("Como gerar os artefatos locais"):
+        st.code(
+            "\n".join(
+                [
+                    'cd "C:\\Users\\leona\\Documents\\GitHub\\bees-data-engineering-case"',
+                    "python scripts/run_local_pyspark_demo.py",
+                    "python -m streamlit run dashboard/app.py",
+                ]
+            ),
+            language="powershell",
+        )
+        st.caption(f"Pasta informada: {output_root}")
+        st.caption(str(error))
+
+
+def build_sidebar(available_outputs: list[Path]) -> tuple[str, Path]:
+    st.sidebar.markdown("## Configuracao")
+
     source_options = ["demo"]
     if available_outputs:
         source_options.append("artifacts")
 
     selected_source = st.sidebar.radio(
-        "Fonte dos dados",
+        "Fonte de dados",
         options=source_options,
         format_func=lambda value: SOURCE_MODE_LABELS[value],
         index=0,
     )
 
-    output_root = REPO_ROOT / "local_output"
+    selected_output = REPO_ROOT / "local_output"
     if selected_source == "artifacts":
-        default_root = available_outputs[0]
-        output_root_input = st.sidebar.selectbox(
-            "Conjunto de artefatos",
-            options=available_outputs,
-            format_func=lambda value: value.name,
+        selected_name = st.sidebar.selectbox(
+            "Conjunto local",
+            options=[path.name for path in available_outputs],
+            index=0,
         )
-        output_root = resolve_output_root(str(output_root_input))
-        st.sidebar.caption("Use o conjunto gerado pelo pipeline local.")
+        selected_output = resolve_output_root(selected_name)
+        st.sidebar.caption("Use esse modo quando o pipeline local ja tiver gerado os arquivos.")
     else:
-        st.sidebar.caption("Modo recomendado para apresentacao rapida do projeto.")
-        if not available_outputs:
-            st.sidebar.info("Os artefatos locais ainda nao foram gerados nesta maquina.")
+        st.sidebar.caption("Modo recomendado para demonstracao imediata do projeto.")
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown(
-        """
-        **Como usar**
-
-        1. Abra em `Demo do projeto` para ver o dashboard imediatamente
-        2. Gere `local_output` se quiser usar artefatos locais
-        3. Troque para `Artefatos locais` quando esses arquivos existirem
-        """
+    st.sidebar.markdown("**Como ler o painel**")
+    st.sidebar.caption(
+        "Resumo executivo mostra o valor de negocio. Saude do pipeline mostra checks, eventos e possiveis falhas."
     )
 
-    if selected_source == "demo":
-        data = load_demo_dashboard_data(DEMO_ROOT)
-    else:
-        try:
-            data = load_dashboard_data(output_root)
-        except Exception as error:
-            render_missing_state(str(output_root), error)
-            return
+    return selected_source, selected_output
 
-    tabs = st.tabs(["Resumo Executivo", "Saude Operacional"])
 
-    with tabs[0]:
-        render_business_view(data)
-
-    with tabs[1]:
-        render_operational_view(data)
-
+def build_filter_sidebar(gold_df: pd.DataFrame) -> tuple[list[str], list[str]]:
     st.sidebar.markdown("---")
-    st.sidebar.metric("Fonte atual", SOURCE_MODE_LABELS.get(data.source_mode, data.source_mode))
-    st.sidebar.metric("Linhas na gold", str(len(data.gold)))
-    st.sidebar.metric(
-        "Checks com falha",
-        str(data.quality["status"].astype(str).str.lower().eq("fail").sum()),
+    st.sidebar.markdown("**Filtros da visao executiva**")
+
+    available_types = sorted(gold_df["brewery_type"].dropna().astype(str).unique().tolist())
+    available_states = sorted(gold_df["state_province"].dropna().astype(str).unique().tolist())
+
+    selected_types = st.sidebar.multiselect(
+        "Tipos",
+        options=available_types,
+        default=available_types,
     )
+    selected_states = st.sidebar.multiselect(
+        "Estados",
+        options=available_states,
+        default=available_states,
+    )
+    return selected_types, selected_states
+
+
+def main() -> None:
+    inject_styles()
+
+    available_outputs = discover_available_outputs()
+    selected_source, selected_output = build_sidebar(available_outputs)
+
+    try:
+        data = load_selected_data(selected_source, selected_output)
+    except Exception as error:
+        render_hero("demo", pd.DataFrame({"status": ["pass"]}))
+        render_artifact_error(selected_output, error)
+        return
+
+    selected_types, selected_states = build_filter_sidebar(data.gold)
+    filtered_gold = filter_gold(data.gold, selected_types, selected_states)
+
+    render_hero(data.source_mode, data.quality)
+
+    with st.expander("O que este painel responde", expanded=False):
+        st.markdown(
+            """
+            - Quantas cervejarias aparecem no resultado final.
+            - Quais tipos concentram mais volume.
+            - Quais estados lideram a distribuicao.
+            - Se a ultima execucao passou pelos checks principais de qualidade.
+            """
+        )
+
+    render_business_section(filtered_gold, data.quality)
+    st.divider()
+    render_operations_section(data.quality, data.execution)
 
 
 if __name__ == "__main__":
