@@ -120,6 +120,7 @@
           "notebookPath": "/Shared/bees/gold/04_quality_and_ops",
           "baseParameters": {
             "base_path": "@pipeline().parameters.basePath",
+            "landing_date": "@pipeline().parameters.landingDate",
             "run_id": "@pipeline().parameters.runId"
           }
         },

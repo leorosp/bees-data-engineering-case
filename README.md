@@ -103,6 +103,7 @@ bees-data-engineering-case/
 - notebook silver para limpeza, tipagem e deduplicacao
 - notebook gold para agregacoes finais
 - notebook de quality e observabilidade
+- checagem de duplicidade no `bronze` antes da deduplicacao do `silver`
 - testes unitarios e de integracao basicos
 - workflow de CI no GitHub Actions
 

@@ -93,6 +93,7 @@ def build_gold_df(silver_df: DataFrame, run_id: str) -> DataFrame:
 
 def build_quality_dfs(
     spark: SparkSession,
+    bronze_df: DataFrame,
     silver_df: DataFrame,
     gold_df: DataFrame,
     run_id: str,
@@ -109,9 +110,12 @@ def build_quality_dfs(
     ]
 
     field_gaps = summarize_required_field_gaps(silver_records, REQUIRED_BREWERY_FIELDS)
-    has_duplicates = has_duplicate_primary_keys(
-        [row["brewery_id"] for row in silver_records if row["brewery_id"]]
-    )
+    bronze_record_ids = [
+        row["record_id"]
+        for row in bronze_df.select("record_id").collect()
+        if row["record_id"]
+    ]
+    has_duplicates = has_duplicate_primary_keys(bronze_record_ids)
     negative_gold_counts = gold_df.filter(F.col("brewery_count") < 0).count()
 
     quality_results = [
@@ -125,13 +129,13 @@ def build_quality_dfs(
             message=json.dumps(field_gaps, sort_keys=True),
         ),
         build_quality_result(
-            layer="silver",
+            layer="bronze",
             check_name="duplicate_primary_keys",
             status="fail" if has_duplicates else "pass",
             metric_name="duplicate_primary_keys",
             metric_value=1 if has_duplicates else 0,
             run_id=run_id,
-            message="Duplicate brewery_id values found." if has_duplicates else "No duplicates found.",
+            message="Duplicate record_id values found in bronze." if has_duplicates else "No duplicates found in bronze.",
         ),
         build_quality_result(
             layer="gold",
@@ -150,7 +154,7 @@ def build_quality_dfs(
             stage="local_pyspark_pipeline",
             status="success",
             run_id=run_id,
-            records_in=silver_df.count(),
+            records_in=bronze_df.count(),
             records_out=len(quality_results),
             details="Local or Colab PySpark validation run completed successfully.",
         )
@@ -176,7 +180,13 @@ def run_local_pyspark_pipeline(
     bronze_df = build_bronze_df(spark, source_records, landing_date, run_id)
     silver_df = build_silver_df(bronze_df)
     gold_df = build_gold_df(silver_df, run_id)
-    quality_df, execution_df = build_quality_dfs(spark, silver_df, gold_df, run_id)
+    quality_df, execution_df = build_quality_dfs(
+        spark,
+        bronze_df,
+        silver_df,
+        gold_df,
+        run_id,
+    )
 
     bronze_path = root / "bronze" / f"landing_date={landing_date}"
     silver_path = root / "silver" / "breweries"

@@ -60,3 +60,9 @@ Para esse caminho local, `silver`, `gold` e `ops` sao gravados em `parquet` para
 ## Proximo passo recomendado
 
 Depois que esse fluxo passar, ai sim vale voltar para a versao Azure, porque voce ja vai estar com a logica do pipeline validada.
+
+## Cenarios esperados
+
+- no dataset de exemplo padrao, todas as regras de qualidade devem ficar em `pass`
+- em um dataset com `id` duplicado, a regra `duplicate_primary_keys` deve falhar olhando o `bronze`
+- em um dataset com `name` ou `country` vazios, a regra `required_fields` deve falhar no `silver`
