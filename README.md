@@ -64,6 +64,9 @@ bees-data-engineering-case/
 |     |- silver/02_build_silver.py
 |     |- gold/03_build_gold.py
 |     `- gold/04_quality_and_ops.py
+|- dashboard/
+|  |- README.md
+|  `- app.py
 |- .github/
 |  `- workflows/
 |     `- ci.yml
@@ -74,7 +77,9 @@ bees-data-engineering-case/
 |     |- bronze.py
 |     |- config.py
 |     |- contracts.py
+|     |- dashboard_data.py
 |     |- observability.py
+|     |- pyspark_local.py
 |     `- quality.py
 `- tests/
    |- README.md
@@ -91,6 +96,7 @@ bees-data-engineering-case/
 - [Backlog de implementacao](./docs/backlog.md)
 - [Runbook](./docs/runbook.md)
 - [Quickstart local](./docs/local-quickstart.md)
+- [Dashboard](./dashboard/README.md)
 - [Guia de teste Azure](./docs/azure-test-guide.md)
 - [Infraestrutura](./infra/README.md)
 
@@ -104,6 +110,7 @@ bees-data-engineering-case/
 - notebook gold para agregacoes finais
 - notebook de quality e observabilidade
 - checagem de duplicidade no `bronze` antes da deduplicacao do `silver`
+- dashboard local em `Streamlit` lendo `gold` e `ops`
 - testes unitarios e de integracao basicos
 - workflow de CI no GitHub Actions
 

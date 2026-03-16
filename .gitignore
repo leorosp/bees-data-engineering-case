@@ -20,5 +20,7 @@ build/
 .vscode/
 
 local/
+local_output/
+local_output_bad/
 tmp/
 logs/

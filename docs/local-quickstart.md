@@ -38,6 +38,13 @@ python scripts/run_local_pyspark_demo.py
 - `local_output/ops/quality_results/`
 - `local_output/ops/execution_events/`
 
+5. Se quiser explorar visualmente, rode o dashboard:
+
+```bash
+pip install -e ".[local,dashboard]"
+streamlit run dashboard/app.py
+```
+
 ## Como rodar no Google Colab
 
 Em uma celula do Colab:
