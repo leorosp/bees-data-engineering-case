@@ -12,6 +12,7 @@ Implementacao do case da Open Brewery DB com ingestao real da API em `PySpark`, 
 ## Sumario
 
 - [Destaques](#destaques)
+- [Estrategia da Fonte de Dados](#estrategia-da-fonte-de-dados)
 - [Visao Rapida do Fluxo](#visao-rapida-do-fluxo)
 - [Como Avaliar em 3 Minutos](#como-avaliar-em-3-minutos)
 - [Orquestracao do Pipeline](#orquestracao-do-pipeline)
@@ -30,6 +31,22 @@ Implementacao do case da Open Brewery DB com ingestao real da API em `PySpark`, 
 | Qualidade | `quality gate` critico com cenario de falha controlada |
 | Demonstracao | Quickstart curto, dashboard e evidencias de execucao |
 | Confianca | `CI` com smoke tests de `PySpark`, dashboard e orquestracao |
+
+## Estrategia da Fonte de Dados
+
+- caminho principal do case: `Open Brewery DB API`
+- caminho alternativo: dataset local deterministico para demo, CI e reproducibilidade
+- o pipeline registra a proveniencia da origem em `ops/execution_events`
+
+Campos operacionais registrados:
+
+- `requested_source_mode`
+- `source_type`
+- `fallback_used`
+- `fallback_reason`
+- `source_api_base_url`
+- `pages_requested`
+- `records_fetched`
 
 ## Visao Rapida do Fluxo
 
@@ -88,6 +105,12 @@ Se quiser um caminho deterministico, sem depender da API durante a demonstracao:
 python scripts/run_local_pyspark_demo.py
 ```
 
+Esse caminho alternativo existe para:
+
+- reproducibilidade local
+- demonstracao deterministica
+- validacao estavel na `CI`
+
 ### Alternativa com Docker
 
 O repositorio tambem inclui um caminho conteinerizado para capturar o bonus de `containerization` do enunciado:
@@ -141,7 +164,7 @@ Para uma execucao deterministica sem depender da API:
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --local-scheduler \
-  --source-mode file \
+  --source-mode sample \
   --source-file examples/sample_breweries.json \
   --output-dir luigi_output \
   --landing-date 2026-03-16 \

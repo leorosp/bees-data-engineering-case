@@ -184,9 +184,11 @@ def build_quality_dfs(
     silver_df: DataFrame,
     gold_df: DataFrame,
     run_id: str,
+    source_metadata: dict | None = None,
 ) -> tuple[DataFrame, DataFrame, list[dict]]:
     quality_results = build_quality_results(bronze_df, silver_df, gold_df, run_id)
     failed_critical_checks = find_failed_quality_checks(quality_results)
+    metadata = source_metadata or {}
 
     execution_events = [
         build_execution_event(
@@ -201,6 +203,7 @@ def build_quality_dfs(
                 if failed_critical_checks
                 else "Local or Colab PySpark validation run completed successfully."
             ),
+            **metadata,
         )
     ]
 
@@ -252,6 +255,17 @@ def run_local_pyspark_pipeline(
         landing_date=landing_date,
         run_id=run_id,
         fail_on_critical_quality=fail_on_critical_quality,
+        source_metadata={
+            "requested_source_mode": "sample",
+            "source_type": "sample",
+            "fallback_used": False,
+            "fallback_reason": "",
+            "source_api_base_url": "",
+            "sample_file": str(source_path),
+            "pages_requested": 0,
+            "pages_with_data": 0,
+            "records_fetched": len(source_records),
+        },
     )
 
 
@@ -263,6 +277,7 @@ def run_local_pyspark_pipeline_from_records(
     landing_date: str,
     run_id: str,
     fail_on_critical_quality: bool = False,
+    source_metadata: dict | None = None,
 ) -> dict:
     paths = build_output_paths(output_root, landing_date)
 
@@ -275,6 +290,7 @@ def run_local_pyspark_pipeline_from_records(
         silver_df,
         gold_df,
         run_id,
+        source_metadata=source_metadata,
     )
 
     write_bronze_df(bronze_df, paths["bronze"])
@@ -298,4 +314,5 @@ def run_local_pyspark_pipeline_from_records(
         "quality_gate_status": "fail" if failed_critical_checks else "pass",
         "critical_quality_failure_count": len(failed_critical_checks),
         "run_id": run_id,
+        **(source_metadata or {}),
     }

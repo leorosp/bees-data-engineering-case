@@ -6,7 +6,7 @@ from pathlib import Path
 
 import luigi
 
-from bees_case.api_runner import build_api_run_config, fetch_api_records
+from bees_case.api_runner import SourceResolution, build_api_run_config, resolve_source_records
 from bees_case.pyspark_local import (
     build_bronze_df,
     build_gold_df,
@@ -14,13 +14,12 @@ from bees_case.pyspark_local import (
     build_quality_dfs,
     build_silver_df,
     create_spark_session,
-    load_records,
     write_bronze_df,
     write_gold_df,
     write_ops_dfs,
     write_silver_df,
 )
-from bees_case.quality import QualityGateError, enforce_quality_gate
+from bees_case.quality import enforce_quality_gate
 
 
 def run_with_retries(operation, attempts: int, delay_seconds: int = 1):
@@ -41,6 +40,7 @@ class BasePipelineTask(luigi.Task):
     source_mode = luigi.Parameter(default="api")
     source_file = luigi.Parameter(default="examples/sample_breweries.json")
     source_api_base_url = luigi.Parameter(default="https://api.openbrewerydb.org/v1/breweries")
+    fallback_to_sample = luigi.BoolParameter(default=True)
     per_page = luigi.IntParameter(default=200)
     max_pages = luigi.IntParameter(default=25)
     output_dir = luigi.Parameter(default="luigi_output")
@@ -67,20 +67,21 @@ class BasePipelineTask(luigi.Task):
             delay_seconds=self.retry_delay_seconds,
         )
 
-    def load_source_records(self) -> list[dict]:
-        if self.source_mode == "api":
-            config = build_api_run_config(
-                output_root=self.output_dir,
-                landing_date=self.landing_date,
-                run_id=self.run_id,
-                source_api_base_url=self.source_api_base_url,
-                per_page=self.per_page,
-                max_pages=self.max_pages,
-            )
-            return fetch_api_records(config)
-        if self.source_mode == "file":
-            return load_records(self.source_file)
-        raise ValueError("source_mode must be 'api' or 'file'.")
+    def load_source_records(self) -> SourceResolution:
+        config = build_api_run_config(
+            output_root=self.output_dir,
+            landing_date=self.landing_date,
+            run_id=self.run_id,
+            source_mode=self.source_mode,
+            source_api_base_url=self.source_api_base_url,
+            sample_file=self.source_file,
+            fallback_to_sample=self.fallback_to_sample,
+            per_page=self.per_page,
+            max_pages=self.max_pages,
+            api_timeout_seconds=30,
+            api_request_retries=1,
+        )
+        return resolve_source_records(config)
 
 
 class BronzeTask(BasePipelineTask):
@@ -91,18 +92,26 @@ class BronzeTask(BasePipelineTask):
         def operation():
             spark = create_spark_session("bees-case-bronze")
             try:
-                records = self.load_source_records()
+                source = self.load_source_records()
                 bronze_df = build_bronze_df(
                     spark=spark,
-                    source_records=records,
+                    source_records=source.records,
                     landing_date=self.landing_date,
                     run_id=self.run_id,
                 )
                 write_bronze_df(bronze_df, self.output_paths()["bronze"])
                 payload = {
                     "bronze_output_path": str(self.output_paths()["bronze"]),
-                    "source_record_count": len(records),
-                    "source_mode": self.source_mode,
+                    "source_record_count": len(source.records),
+                    "requested_source_mode": source.requested_source_mode,
+                    "source_type": source.source_type,
+                    "fallback_used": source.fallback_used,
+                    "fallback_reason": source.fallback_reason,
+                    "source_api_base_url": source.source_api_base_url,
+                    "sample_file": source.sample_file,
+                    "pages_requested": source.pages_requested,
+                    "pages_with_data": source.pages_with_data,
+                    "records_fetched": source.records_fetched,
                     "run_id": self.run_id,
                 }
                 self.write_marker("bronze", payload)
@@ -118,6 +127,7 @@ class SilverTask(BasePipelineTask):
             source_mode=self.source_mode,
             source_file=self.source_file,
             source_api_base_url=self.source_api_base_url,
+            fallback_to_sample=self.fallback_to_sample,
             per_page=self.per_page,
             max_pages=self.max_pages,
             output_dir=self.output_dir,
@@ -156,6 +166,7 @@ class GoldTask(BasePipelineTask):
             source_mode=self.source_mode,
             source_file=self.source_file,
             source_api_base_url=self.source_api_base_url,
+            fallback_to_sample=self.fallback_to_sample,
             per_page=self.per_page,
             max_pages=self.max_pages,
             output_dir=self.output_dir,
@@ -196,6 +207,7 @@ class OpsTask(BasePipelineTask):
                 source_mode=self.source_mode,
                 source_file=self.source_file,
                 source_api_base_url=self.source_api_base_url,
+                fallback_to_sample=self.fallback_to_sample,
                 per_page=self.per_page,
                 max_pages=self.max_pages,
                 output_dir=self.output_dir,
@@ -208,6 +220,7 @@ class OpsTask(BasePipelineTask):
                 source_mode=self.source_mode,
                 source_file=self.source_file,
                 source_api_base_url=self.source_api_base_url,
+                fallback_to_sample=self.fallback_to_sample,
                 per_page=self.per_page,
                 max_pages=self.max_pages,
                 output_dir=self.output_dir,
@@ -220,6 +233,7 @@ class OpsTask(BasePipelineTask):
                 source_mode=self.source_mode,
                 source_file=self.source_file,
                 source_api_base_url=self.source_api_base_url,
+                fallback_to_sample=self.fallback_to_sample,
                 per_page=self.per_page,
                 max_pages=self.max_pages,
                 output_dir=self.output_dir,
@@ -237,6 +251,7 @@ class OpsTask(BasePipelineTask):
         def operation():
             spark = create_spark_session("bees-case-ops")
             try:
+                source = self.load_source_records()
                 bronze_df = spark.read.json(str(self.output_paths()["bronze"]))
                 silver_df = spark.read.parquet(str(self.output_paths()["silver"]))
                 gold_df = spark.read.parquet(str(self.output_paths()["gold"]))
@@ -246,6 +261,7 @@ class OpsTask(BasePipelineTask):
                     silver_df=silver_df,
                     gold_df=gold_df,
                     run_id=self.run_id,
+                    source_metadata=source.as_metadata(),
                 )
                 write_ops_dfs(
                     quality_df,
@@ -278,6 +294,7 @@ class PipelineOrchestration(BasePipelineTask):
             source_mode=self.source_mode,
             source_file=self.source_file,
             source_api_base_url=self.source_api_base_url,
+            fallback_to_sample=self.fallback_to_sample,
             per_page=self.per_page,
             max_pages=self.max_pages,
             output_dir=self.output_dir,
@@ -297,6 +314,7 @@ class PipelineOrchestration(BasePipelineTask):
             "source_mode": self.source_mode,
             "source_file": self.source_file,
             "source_api_base_url": self.source_api_base_url,
+            "fallback_to_sample": self.fallback_to_sample,
             "output_dir": self.output_dir,
             "landing_date": self.landing_date,
             "run_id": self.run_id,

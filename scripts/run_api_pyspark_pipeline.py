@@ -12,6 +12,12 @@ def parse_args() -> argparse.Namespace:
         description="Run the BEES case against the Open Brewery DB API with PySpark."
     )
     parser.add_argument(
+        "--source-mode",
+        default="api",
+        choices=["api", "sample", "auto"],
+        help="Source strategy for the run: API-first, sample-only or automatic fallback.",
+    )
+    parser.add_argument(
         "--output-dir",
         default="local_output",
         help="Directory where the bronze/silver/gold/ops outputs will be written.",
@@ -32,6 +38,18 @@ def parse_args() -> argparse.Namespace:
         help="Open Brewery DB base URL.",
     )
     parser.add_argument(
+        "--sample-file",
+        default="examples/sample_breweries.json",
+        help="Deterministic sample file used for demo mode or fallback.",
+    )
+    parser.add_argument(
+        "--no-fallback-to-sample",
+        action="store_false",
+        dest="fallback_to_sample",
+        help="Disable the sample fallback if the API path is unavailable.",
+    )
+    parser.set_defaults(fallback_to_sample=True)
+    parser.add_argument(
         "--per-page",
         default=200,
         type=int,
@@ -42,6 +60,18 @@ def parse_args() -> argparse.Namespace:
         default=25,
         type=int,
         help="Maximum number of pages fetched from the API.",
+    )
+    parser.add_argument(
+        "--api-timeout-seconds",
+        default=30,
+        type=int,
+        help="Timeout for each API request in seconds.",
+    )
+    parser.add_argument(
+        "--api-request-retries",
+        default=1,
+        type=int,
+        help="Number of retries for each API page request.",
     )
     parser.add_argument(
         "--fail-on-critical-quality",
@@ -60,9 +90,14 @@ def main() -> None:
             output_root=Path(args.output_dir),
             landing_date=args.landing_date,
             run_id=args.run_id,
+            source_mode=args.source_mode,
             source_api_base_url=args.source_api_base_url,
+            sample_file=args.sample_file,
+            fallback_to_sample=args.fallback_to_sample,
             per_page=args.per_page,
             max_pages=args.max_pages,
+            api_timeout_seconds=args.api_timeout_seconds,
+            api_request_retries=args.api_request_retries,
             fail_on_critical_quality=args.fail_on_critical_quality,
         )
         print(json.dumps(summary, indent=2))

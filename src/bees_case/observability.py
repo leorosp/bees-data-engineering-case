@@ -10,6 +10,7 @@ def build_execution_event(
     records_in: int = 0,
     records_out: int = 0,
     details: str = "",
+    **metadata,
 ) -> dict:
     return {
         "layer": layer,
@@ -20,4 +21,5 @@ def build_execution_event(
         "records_out": records_out,
         "details": details,
         "event_timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        **metadata,
     }

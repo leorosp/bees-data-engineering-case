@@ -178,6 +178,11 @@ def latest_execution_summary(execution: pd.DataFrame) -> dict[str, str]:
             "records_out": "n/a",
             "details": "Nenhum evento de execucao foi encontrado.",
             "timestamp": "n/a",
+            "source_type": "n/a",
+            "fallback_used": "n/a",
+            "fallback_reason": "",
+            "pages_requested": "n/a",
+            "records_fetched": "n/a",
         }
 
     latest = execution.sort_values("event_timestamp_utc").iloc[-1]
@@ -190,6 +195,11 @@ def latest_execution_summary(execution: pd.DataFrame) -> dict[str, str]:
         "records_out": str(latest.get("records_out", "n/a")),
         "details": str(latest.get("details", "Nenhum detalhe de execucao disponivel.")),
         "timestamp": timestamp_text,
+        "source_type": str(latest.get("source_type", "n/a")),
+        "fallback_used": "sim" if bool(latest.get("fallback_used", False)) else "nao",
+        "fallback_reason": str(latest.get("fallback_reason", "")),
+        "pages_requested": str(latest.get("pages_requested", "n/a")),
+        "records_fetched": str(latest.get("records_fetched", "n/a")),
     }
 
 
@@ -301,6 +311,16 @@ def quality_status_by_layer(quality: pd.DataFrame) -> pd.DataFrame:
 def describe_source(data: DashboardData) -> str:
     if data.source_mode == "demo":
         return "Dataset demo"
+    if not data.execution.empty and "source_type" in data.execution.columns:
+        latest = data.execution.sort_values("event_timestamp_utc").iloc[-1]
+        source_type = str(latest.get("source_type", "")).lower()
+        fallback_used = bool(latest.get("fallback_used", False))
+        if source_type == "api":
+            return "Open Brewery DB API"
+        if source_type == "sample" and fallback_used:
+            return "Dataset local (fallback da API)"
+        if source_type == "sample":
+            return "Dataset local de amostra"
     return data.source_root.name.replace("_", " ").title()
 
 
@@ -426,6 +446,13 @@ def render_overview_tab(data: DashboardData, filtered_gold: pd.DataFrame) -> Non
         metric_a.metric("Registros de origem", summary["records_in"])
         metric_b.metric("Registros tratados", summary["records_out"])
         st.caption(summary["details"])
+        st.caption(
+            "Origem efetiva: "
+            f"{summary['source_type']} | "
+            f"Fallback usado: {summary['fallback_used']} | "
+            f"Paginas solicitadas: {summary['pages_requested']} | "
+            f"Registros obtidos: {summary['records_fetched']}"
+        )
 
 
 def render_analytics_tab(filtered_gold: pd.DataFrame) -> None:
@@ -485,11 +512,24 @@ def render_operational_tab(data: DashboardData, available_outputs: dict[str, Pat
                 "records_out": "Registros tratados",
                 "details": "Detalhes",
                 "event_timestamp_utc": "Data e hora UTC",
+                "requested_source_mode": "Modo de origem solicitado",
+                "source_type": "Origem efetiva",
+                "fallback_used": "Fallback usado",
+                "fallback_reason": "Motivo do fallback",
+                "source_api_base_url": "URL da API",
+                "sample_file": "Arquivo de amostra",
+                "pages_requested": "Paginas solicitadas",
+                "pages_with_data": "Paginas com dados",
+                "records_fetched": "Registros obtidos",
             }
         )
         execution_df["Status"] = execution_df["Status"].replace(
             {"success": "Sucesso", "failed": "Falhou"}
         )
+        if "Fallback usado" in execution_df.columns:
+            execution_df["Fallback usado"] = execution_df["Fallback usado"].replace(
+                {True: "sim", False: "nao"}
+            )
         st.dataframe(execution_df, use_container_width=True, hide_index=True)
 
     st.markdown("#### Verificacoes detalhadas de qualidade")

@@ -33,7 +33,7 @@ Opcao deterministica:
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --local-scheduler \
-  --source-mode file \
+  --source-mode sample \
   --source-file examples/sample_breweries.json \
   --output-dir luigi_output \
   --landing-date 2026-03-16 \

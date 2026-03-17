@@ -3,6 +3,7 @@ import json
 import pytest
 
 from bees_case.contracts import GOLD_COLUMNS, SILVER_COLUMNS
+from bees_case.api_runner import run_api_pyspark_pipeline
 from bees_case.pyspark_local import (
     build_bronze_df,
     build_gold_df,
@@ -213,6 +214,8 @@ def test_run_local_pyspark_pipeline_writes_expected_outputs(spark, tmp_path) -> 
     )
 
     assert summary["quality_gate_status"] == "pass"
+    assert summary["source_type"] == "sample"
+    assert summary["fallback_used"] is False
     assert (tmp_path / "artifacts" / "gold" / "breweries_by_type_location").exists()
     assert (tmp_path / "artifacts" / "ops" / "quality_results").exists()
     assert (tmp_path / "artifacts" / "ops" / "execution_events").exists()
@@ -235,3 +238,38 @@ def test_run_local_pyspark_pipeline_enforces_quality_gate(spark, tmp_path) -> No
             run_id="bad-gate-run",
             fail_on_critical_quality=True,
         )
+
+
+def test_run_api_pyspark_pipeline_records_source_provenance(spark, tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "bees_case.api_runner.fetch_all_pages",
+        lambda config: type(
+            "ApiResult",
+            (),
+            {
+                "records": _clean_records(),
+                "pages_requested": 2,
+                "pages_with_data": 2,
+                "records_fetched": len(_clean_records()),
+            },
+        )(),
+    )
+
+    summary = run_api_pyspark_pipeline(
+        spark=spark,
+        output_root=tmp_path / "api_artifacts",
+        landing_date="2026-03-16",
+        run_id="api-run-001",
+        fallback_to_sample=False,
+        max_pages=2,
+    )
+
+    execution_df = spark.read.parquet(str(tmp_path / "api_artifacts" / "ops" / "execution_events"))
+    execution_row = execution_df.collect()[0]
+
+    assert summary["source_type"] == "api"
+    assert summary["fallback_used"] is False
+    assert summary["pages_requested"] == 2
+    assert execution_row["source_type"] == "api"
+    assert execution_row["fallback_used"] is False
+    assert execution_row["records_fetched"] == len(_clean_records())
