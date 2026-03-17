@@ -9,6 +9,17 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-F5C400?style=for-the-badge&logo=streamlit&logoColor=141414&labelColor=141414)
 ![CI](https://img.shields.io/github/actions/workflow/status/leorosp/bees-data-engineering-case/ci.yml?branch=main&style=for-the-badge&label=CI)
 
+## Sumario
+
+- [Destaques](#destaques)
+- [Visao Rapida do Fluxo](#visao-rapida-do-fluxo)
+- [Como Avaliar em 3 Minutos](#como-avaliar-em-3-minutos)
+- [Orquestracao do Pipeline](#orquestracao-do-pipeline)
+- [Evidencias de Validacao](#evidencias-de-validacao)
+- [Previa Visual](#previa-visual)
+- [Monitoramento e Alertas](#monitoramento-e-alertas)
+- [Testes e CI](#testes-e-ci)
+
 ## Destaques
 
 | Ponto | Evidencia |
@@ -16,19 +27,8 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 | Orquestracao | Pipeline com `Luigi` para coordenar etapas e lidar com falhas |
 | Arquitetura | Camadas `bronze`, `silver`, `gold` e `ops` |
 | Qualidade | `quality gate` critico com cenario de falha controlada |
-| Demonstracao | Dashboard em `Streamlit` e quickstart de avaliacao |
+| Demonstracao | Quickstart curto, dashboard e evidencias de execucao |
 | Confianca | `CI` com smoke tests de `PySpark`, dashboard e orquestracao |
-
-## O que este repositorio entrega
-
-- ingestao para `bronze`
-- transformacao tipada e deduplicacao em `silver`
-- agregacao analitica em `gold`
-- checks de qualidade e logs operacionais em `ops`
-- orquestracao com `Luigi` para coordenar a execucao do pipeline
-- dashboard executivo e operacional
-- evidencia de execucao valida e exercicio do gate de qualidade
-- CI com testes e validacao rapida do fluxo principal
 
 ## Visao Rapida do Fluxo
 
@@ -50,7 +50,7 @@ flowchart LR
     class C,D,E,F neutral;
 ```
 
-Leitura rapida:
+## Resumo operacional
 
 - a API alimenta a ingestao do pipeline
 - o `Luigi` coordena as etapas do pipeline, com suporte a retries e falhas
@@ -198,10 +198,10 @@ Visao executiva e operacional do projeto, destacando distribuicao de cervejarias
 ## O Que o Avaliador Deve Verificar
 
 - `bronze` preserva o payload bruto com metadados de ingestao
-- `silver` deduplica `brewery_id` e entrega schema estavel
+- `silver` entrega dados tipados, deduplicados e particionados por localizacao
 - `gold` responde a pergunta do case com agregacao por tipo e localizacao
-- `ops` mostra checks de qualidade e status da execucao
-- o dashboard resume negocio e saude tecnica no mesmo lugar
+- `ops` registra qualidade e status da execucao
+- o dashboard consolida a leitura executiva e operacional do pipeline
 
 ## Monitoramento e Alertas
 
