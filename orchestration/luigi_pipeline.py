@@ -6,6 +6,7 @@ from pathlib import Path
 
 import luigi
 
+from bees_case.api_runner import build_api_run_config, fetch_api_records
 from bees_case.pyspark_local import (
     build_bronze_df,
     build_gold_df,
@@ -37,7 +38,11 @@ def run_with_retries(operation, attempts: int, delay_seconds: int = 1):
 
 
 class BasePipelineTask(luigi.Task):
+    source_mode = luigi.Parameter(default="api")
     source_file = luigi.Parameter(default="examples/sample_breweries.json")
+    source_api_base_url = luigi.Parameter(default="https://api.openbrewerydb.org/v1/breweries")
+    per_page = luigi.IntParameter(default=200)
+    max_pages = luigi.IntParameter(default=25)
     output_dir = luigi.Parameter(default="luigi_output")
     landing_date = luigi.Parameter(default="2026-03-16")
     run_id = luigi.Parameter(default="luigi-run-001")
@@ -62,6 +67,21 @@ class BasePipelineTask(luigi.Task):
             delay_seconds=self.retry_delay_seconds,
         )
 
+    def load_source_records(self) -> list[dict]:
+        if self.source_mode == "api":
+            config = build_api_run_config(
+                output_root=self.output_dir,
+                landing_date=self.landing_date,
+                run_id=self.run_id,
+                source_api_base_url=self.source_api_base_url,
+                per_page=self.per_page,
+                max_pages=self.max_pages,
+            )
+            return fetch_api_records(config)
+        if self.source_mode == "file":
+            return load_records(self.source_file)
+        raise ValueError("source_mode must be 'api' or 'file'.")
+
 
 class BronzeTask(BasePipelineTask):
     def output(self):
@@ -71,7 +91,7 @@ class BronzeTask(BasePipelineTask):
         def operation():
             spark = create_spark_session("bees-case-bronze")
             try:
-                records = load_records(self.source_file)
+                records = self.load_source_records()
                 bronze_df = build_bronze_df(
                     spark=spark,
                     source_records=records,
@@ -82,6 +102,7 @@ class BronzeTask(BasePipelineTask):
                 payload = {
                     "bronze_output_path": str(self.output_paths()["bronze"]),
                     "source_record_count": len(records),
+                    "source_mode": self.source_mode,
                     "run_id": self.run_id,
                 }
                 self.write_marker("bronze", payload)
@@ -94,7 +115,11 @@ class BronzeTask(BasePipelineTask):
 class SilverTask(BasePipelineTask):
     def requires(self):
         return BronzeTask(
+            source_mode=self.source_mode,
             source_file=self.source_file,
+            source_api_base_url=self.source_api_base_url,
+            per_page=self.per_page,
+            max_pages=self.max_pages,
             output_dir=self.output_dir,
             landing_date=self.landing_date,
             run_id=self.run_id,
@@ -128,7 +153,11 @@ class SilverTask(BasePipelineTask):
 class GoldTask(BasePipelineTask):
     def requires(self):
         return SilverTask(
+            source_mode=self.source_mode,
             source_file=self.source_file,
+            source_api_base_url=self.source_api_base_url,
+            per_page=self.per_page,
+            max_pages=self.max_pages,
             output_dir=self.output_dir,
             landing_date=self.landing_date,
             run_id=self.run_id,
@@ -164,7 +193,11 @@ class OpsTask(BasePipelineTask):
     def requires(self):
         return {
             "bronze": BronzeTask(
+                source_mode=self.source_mode,
                 source_file=self.source_file,
+                source_api_base_url=self.source_api_base_url,
+                per_page=self.per_page,
+                max_pages=self.max_pages,
                 output_dir=self.output_dir,
                 landing_date=self.landing_date,
                 run_id=self.run_id,
@@ -172,7 +205,11 @@ class OpsTask(BasePipelineTask):
                 retry_delay_seconds=self.retry_delay_seconds,
             ),
             "silver": SilverTask(
+                source_mode=self.source_mode,
                 source_file=self.source_file,
+                source_api_base_url=self.source_api_base_url,
+                per_page=self.per_page,
+                max_pages=self.max_pages,
                 output_dir=self.output_dir,
                 landing_date=self.landing_date,
                 run_id=self.run_id,
@@ -180,7 +217,11 @@ class OpsTask(BasePipelineTask):
                 retry_delay_seconds=self.retry_delay_seconds,
             ),
             "gold": GoldTask(
+                source_mode=self.source_mode,
                 source_file=self.source_file,
+                source_api_base_url=self.source_api_base_url,
+                per_page=self.per_page,
+                max_pages=self.max_pages,
                 output_dir=self.output_dir,
                 landing_date=self.landing_date,
                 run_id=self.run_id,
@@ -234,7 +275,11 @@ class PipelineOrchestration(BasePipelineTask):
 
     def requires(self):
         return OpsTask(
+            source_mode=self.source_mode,
             source_file=self.source_file,
+            source_api_base_url=self.source_api_base_url,
+            per_page=self.per_page,
+            max_pages=self.max_pages,
             output_dir=self.output_dir,
             landing_date=self.landing_date,
             run_id=self.run_id,
@@ -249,7 +294,9 @@ class PipelineOrchestration(BasePipelineTask):
     def run(self):
         ops_payload = json.loads(Path(self.input().path).read_text(encoding="utf-8"))
         summary = {
+            "source_mode": self.source_mode,
             "source_file": self.source_file,
+            "source_api_base_url": self.source_api_base_url,
             "output_dir": self.output_dir,
             "landing_date": self.landing_date,
             "run_id": self.run_id,

@@ -245,6 +245,25 @@ def run_local_pyspark_pipeline(
     fail_on_critical_quality: bool = False,
 ) -> dict:
     source_records = load_records(source_path)
+    return run_local_pyspark_pipeline_from_records(
+        spark=spark,
+        source_records=source_records,
+        output_root=output_root,
+        landing_date=landing_date,
+        run_id=run_id,
+        fail_on_critical_quality=fail_on_critical_quality,
+    )
+
+
+def run_local_pyspark_pipeline_from_records(
+    *,
+    spark: SparkSession,
+    source_records: list[dict],
+    output_root: str | Path,
+    landing_date: str,
+    run_id: str,
+    fail_on_critical_quality: bool = False,
+) -> dict:
     paths = build_output_paths(output_root, landing_date)
 
     bronze_df = build_bronze_df(spark, source_records, landing_date, run_id)

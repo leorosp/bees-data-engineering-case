@@ -3,17 +3,13 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from bees_case.pyspark_local import create_spark_session, run_local_pyspark_pipeline
+from bees_case.api_runner import run_api_pyspark_pipeline
+from bees_case.pyspark_local import create_spark_session
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run the deterministic BEES demo locally or in Google Colab with PySpark."
-    )
-    parser.add_argument(
-        "--source-file",
-        default="examples/sample_breweries.json",
-        help="Path to the source JSON file with brewery records.",
+        description="Run the BEES case against the Open Brewery DB API with PySpark."
     )
     parser.add_argument(
         "--output-dir",
@@ -27,8 +23,25 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--run-id",
-        default=datetime.now(timezone.utc).strftime("local-pyspark-%Y%m%d%H%M%S"),
-        help="Execution identifier for the local run.",
+        default=datetime.now(timezone.utc).strftime("api-pyspark-%Y%m%d%H%M%S"),
+        help="Execution identifier for the API-backed run.",
+    )
+    parser.add_argument(
+        "--source-api-base-url",
+        default="https://api.openbrewerydb.org/v1/breweries",
+        help="Open Brewery DB base URL.",
+    )
+    parser.add_argument(
+        "--per-page",
+        default=200,
+        type=int,
+        help="Page size used when reading from the API.",
+    )
+    parser.add_argument(
+        "--max-pages",
+        default=25,
+        type=int,
+        help="Maximum number of pages fetched from the API.",
     )
     parser.add_argument(
         "--fail-on-critical-quality",
@@ -40,14 +53,16 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    spark = create_spark_session()
+    spark = create_spark_session("bees-case-api")
     try:
-        summary = run_local_pyspark_pipeline(
+        summary = run_api_pyspark_pipeline(
             spark=spark,
-            source_path=Path(args.source_file),
             output_root=Path(args.output_dir),
             landing_date=args.landing_date,
             run_id=args.run_id,
+            source_api_base_url=args.source_api_base_url,
+            per_page=args.per_page,
+            max_pages=args.max_pages,
             fail_on_critical_quality=args.fail_on_critical_quality,
         )
         print(json.dumps(summary, indent=2))

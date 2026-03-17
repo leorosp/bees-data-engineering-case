@@ -6,17 +6,34 @@ Este guia existe para reduzir o atrito de avaliacao. Todos os comandos abaixo de
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
-python scripts/run_local_pyspark_demo.py
+python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 python -m streamlit run dashboard/app.py
 ```
 
 Abra `http://localhost:8501`.
+
+Se quiser uma execucao deterministica sem depender da API:
+
+```bash
+python scripts/run_local_pyspark_demo.py
+```
 
 ## Orquestracao rapida com Luigi
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --local-scheduler \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
+```
+
+Opcao deterministica:
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-mode file \
   --source-file examples/sample_breweries.json \
   --output-dir luigi_output \
   --landing-date 2026-03-16 \
@@ -25,11 +42,12 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
 
 ## O que verificar
 
-1. O pipeline gera `bronze`, `silver`, `gold` e `ops` em `local_output/`
-2. A `silver` e gravada em `parquet` particionado por `country` e `state_province`
-3. O dashboard mostra o resumo executivo e a saude do pipeline
-4. A execucao padrao termina com `quality_gate_status = pass`
-5. A camada `ops` registra qualidade e execucao para observabilidade
+1. O caminho principal consome a Open Brewery DB API
+2. O pipeline gera `bronze`, `silver`, `gold` e `ops` em `local_output/`
+3. A `silver` e gravada em `parquet` particionado por `country` e `state_province`
+4. O dashboard mostra o resumo executivo e a saude do pipeline
+5. A execucao padrao termina com `quality_gate_status = pass`
+6. A camada `ops` registra qualidade e execucao para observabilidade
 
 ## Exercitando o Quality Gate
 

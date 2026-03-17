@@ -1,6 +1,6 @@
 # Case de Engenharia de Dados BEES
 
-Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, validado localmente e em `Google Colab`, usando arquitetura medallion e um dashboard em `Streamlit` para a camada de demonstracao.
+Implementacao do case da Open Brewery DB com ingestao real da API em `PySpark`, validada localmente e em `Google Colab`, usando arquitetura medallion e um dashboard em `Streamlit` para a camada de demonstracao.
 
 ![PySpark](https://img.shields.io/badge/PySpark-Transformacoes-F5C400?style=for-the-badge&logo=apachespark&logoColor=141414&labelColor=141414)
 ![Luigi](https://img.shields.io/badge/Luigi-Orquestracao-F5C400?style=for-the-badge&logo=python&logoColor=141414&labelColor=141414)
@@ -24,6 +24,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 
 | Ponto | Evidencia |
 | --- | --- |
+| Fonte | Open Brewery DB API no fluxo principal do case |
 | Orquestracao | Pipeline com `Luigi` para coordenar etapas e lidar com falhas |
 | Arquitetura | Camadas `bronze`, `silver`, `gold` e `ops` |
 | Qualidade | `quality gate` critico com cenario de falha controlada |
@@ -71,7 +72,7 @@ Rode os comandos abaixo a partir da raiz do repositorio:
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
-python scripts/run_local_pyspark_demo.py
+python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 python -m streamlit run dashboard/app.py
 ```
 
@@ -80,6 +81,12 @@ Depois:
 - abra `http://localhost:8501`
 - use `Dataset demo` para a apresentacao mais rapida
 - use `Saida local` quando `local_output/` tiver sido gerado
+
+Se quiser um caminho deterministico, sem depender da API durante a demonstracao:
+
+```bash
+python scripts/run_local_pyspark_demo.py
+```
 
 ### Alternativa com Docker
 
@@ -124,6 +131,17 @@ Execucao de exemplo:
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --local-scheduler \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
+```
+
+Para uma execucao deterministica sem depender da API:
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-mode file \
   --source-file examples/sample_breweries.json \
   --output-dir luigi_output \
   --landing-date 2026-03-16 \
@@ -134,7 +152,7 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
 
 ### Execucao de Referencia
 
-Execucao de referencia do fluxo principal:
+Execucao de referencia do fluxo principal a partir da Open Brewery DB API:
 
 As chaves e caminhos abaixo refletem a saida real do script e, por isso, permanecem tecnicos:
 
@@ -197,6 +215,7 @@ Visao executiva e operacional do projeto, destacando distribuicao de cervejarias
 
 ## O Que o Avaliador Deve Verificar
 
+- o caminho principal consome a Open Brewery DB API
 - `bronze` preserva o payload bruto com metadados de ingestao
 - `silver` entrega dados tipados, deduplicados e particionados por localizacao
 - `gold` responde a pergunta do case com agregacao por tipo e localizacao

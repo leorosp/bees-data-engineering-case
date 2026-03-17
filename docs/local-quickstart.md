@@ -26,13 +26,19 @@ cd bees-data-engineering-case
 pip install -e ".[dev,local,dashboard]"
 ```
 
-3. Rode o demo local:
+3. Rode o fluxo principal contra a Open Brewery DB API:
+
+```bash
+python scripts/run_api_pyspark_pipeline.py --output-dir local_output
+```
+
+4. Se quiser uma execucao deterministica de demonstracao:
 
 ```bash
 python scripts/run_local_pyspark_demo.py
 ```
 
-4. Confira os artefatos gerados em `local_output/`:
+5. Confira os artefatos gerados em `local_output/`:
 
 - `bronze/landing_date=.../`
 - `silver/breweries/`
@@ -40,17 +46,28 @@ python scripts/run_local_pyspark_demo.py
 - `ops/quality_results/`
 - `ops/execution_events/`
 
-5. Se quiser explorar visualmente:
+6. Se quiser explorar visualmente:
 
 ```bash
 python -m streamlit run dashboard/app.py
 ```
 
-6. Se quiser executar com orquestracao:
+7. Se quiser executar com orquestracao:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --local-scheduler \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
+```
+
+Opcao deterministica:
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-mode file \
   --source-file examples/sample_breweries.json \
   --output-dir luigi_output \
   --landing-date 2026-03-16 \

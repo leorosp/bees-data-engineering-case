@@ -520,6 +520,8 @@ def render_operational_tab(data: DashboardData, available_outputs: dict[str, Pat
             "\n".join(
                 [
                     'pip install -e ".[dev,local,dashboard]"',
+                    "python scripts/run_api_pyspark_pipeline.py --output-dir local_output",
+                    "# ou, para uma demo deterministica:",
                     "python scripts/run_local_pyspark_demo.py",
                     "python -m streamlit run dashboard/app.py",
                 ]
@@ -550,7 +552,7 @@ def main() -> None:
     if st.sidebar.button("Atualizar painel", use_container_width=True):
         st.rerun()
 
-    if st.sidebar.button("Gerar saida local", use_container_width=True):
+    if st.sidebar.button("Gerar saida local de demo", use_container_width=True):
         success, message = run_local_pipeline("local_output")
         st.session_state["pipeline_feedback_level"] = "success" if success else "info"
         st.session_state["pipeline_feedback_message"] = message
