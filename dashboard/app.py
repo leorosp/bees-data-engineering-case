@@ -122,14 +122,10 @@ def discover_available_outputs() -> list[Path]:
 
 def detect_environment_status() -> dict[str, str]:
     has_local_output = (REPO_ROOT / "local_output").exists()
-    has_local_output_bad = (REPO_ROOT / "local_output_bad").exists()
-    java_home = bool(st.session_state.get("java_home_override")) or bool(__import__("os").environ.get("JAVA_HOME"))
 
     return {
-        "python": sys.executable,
-        "java": "configurado" if java_home else "nao detectado",
+        "source_mode": "Artefatos locais" if has_local_output else "Demo do projeto",
         "local_output": "disponivel" if has_local_output else "nao encontrado",
-        "local_output_bad": "disponivel" if has_local_output_bad else "nao encontrado",
     }
 
 
@@ -172,8 +168,8 @@ def run_local_pipeline(output_dir: str = "local_output") -> None:
     friendly_message = "A execucao local falhou."
     if "JAVA_HOME" in combined or "Java not found" in combined:
         friendly_message = (
-            "O PySpark local depende de Java. Instale Java 17 e configure a variavel JAVA_HOME "
-            "para liberar a geracao do local_output."
+            "O ambiente local nao conseguiu executar o pipeline agora. "
+            "Voce pode seguir no modo demo ou ajustar o runtime local depois."
         )
     elif combined:
         friendly_message = combined.splitlines()[-1]
@@ -298,14 +294,13 @@ def render_hero(source_mode: str, quality_df: pd.DataFrame) -> None:
     st.markdown(
         f"""
         <div class="hero-box">
-            <div class="hero-eyebrow">BEES Data Engineering Case</div>
-            <div class="hero-title">Gold layer e saude do pipeline em uma leitura direta</div>
+            <div class="hero-eyebrow">BEES Case Dashboard</div>
+            <div class="hero-title">Visao executiva da camada gold</div>
             <div class="hero-copy">
-                Um resumo objetivo do resultado final: distribuicao de cervejarias, concentracao por tipo,
-                cobertura geografica e qualidade da execucao.
+                Distribuicao de breweries, concentracao geografica e status da ultima execucao.
             </div>
-            <span class="info-chip info-neutral">Fonte: {source_label}</span>
-            <span class="info-chip {health_class}">Saude: {health_label}</span>
+            <span class="info-chip info-neutral">{source_label}</span>
+            <span class="info-chip {health_class}">{health_label}</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -492,41 +487,24 @@ def render_operations_section(quality_df: pd.DataFrame, execution_df: pd.DataFra
 
 def render_operational_guide(source_mode: str) -> None:
     env = detect_environment_status()
-    st.subheader("Guia operacional do projeto")
-    st.caption("Um bloco rapido para saber como rodar o projeto e o que ja esta disponivel nesta maquina.")
+    st.subheader("Como usar")
+    st.caption("Somente o essencial para operar e interpretar o painel.")
 
-    status_cols = st.columns(4)
-    status_cols[0].metric("Modo atual", SOURCE_MODE_LABELS.get(source_mode, source_mode))
-    status_cols[1].metric("Java", env["java"])
-    status_cols[2].metric("local_output", env["local_output"])
-    status_cols[3].metric("local_output_bad", env["local_output_bad"])
+    status_cols = st.columns(2)
+    status_cols[0].metric("Fonte atual", SOURCE_MODE_LABELS.get(source_mode, source_mode))
+    status_cols[1].metric("Artefatos locais", env["local_output"])
 
-    with st.expander("Como executar o projeto", expanded=False):
-        st.markdown("**1. Entrar na pasta do repositorio**")
+    with st.expander("Executar pipeline local", expanded=False):
         st.code("cd <repo-root>", language="bash")
-        st.markdown("**2. Instalar dependencias**")
         st.code('pip install -e ".[dev,local,dashboard]"', language="bash")
-        st.markdown("**3. Gerar artefatos locais**")
         st.code("python scripts/run_local_pyspark_demo.py", language="bash")
-        st.markdown("**4. Abrir o dashboard**")
         st.code("python -m streamlit run dashboard/app.py", language="bash")
 
-    with st.expander("Leitura rapida dos modos", expanded=False):
+    with st.expander("Leitura rapida", expanded=False):
         st.markdown(
             """
             - `Demo do projeto`: usa o dataset demonstrativo embutido no repositorio.
             - `Artefatos locais`: usa os arquivos gerados pelo pipeline local em `local_output/`.
-            - `local_output_bad`: serve para mostrar um cenario com falhas de qualidade.
-            """
-        )
-
-    with st.expander("Proximos passos recomendados", expanded=False):
-        st.markdown(
-            """
-            - gerar `local_output` para testar o painel com os artefatos locais
-            - alternar entre `Demo do projeto` e `Artefatos locais`
-            - abrir a tabela de qualidade para validar os checks
-            - usar `local_output_bad` para demonstrar o comportamento em falhas
             """
         )
 

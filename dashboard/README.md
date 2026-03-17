@@ -29,14 +29,13 @@ Se `local_output/` ainda nao existir, o app abre automaticamente em `Demo do pro
 
 Os filtros e controles ficam concentrados na sidebar recolhida.
 
-## Guia operacional no proprio painel
+## Como usar no proprio painel
 
-O app possui uma secao `Guia operacional do projeto` com:
+O app possui uma secao `Como usar` com:
 
-- status do ambiente
-- modo atual
-- resumo de como executar o projeto
-- proximos passos recomendados
+- fonte atual
+- disponibilidade de `local_output`
+- comandos minimos para executar o pipeline local
 
 ## Fontes de dados esperadas
 
@@ -46,12 +45,10 @@ Por padrao, o app le:
 - `local_output/ops/quality_results`
 - `local_output/ops/execution_events`
 
-Para demonstrar a falha controlada, gere primeiro `local_output_bad/` e depois selecione esse conjunto na sidebar.
-
 ## Erro mais comum
 
 Se o app nao achar `dashboard/app.py`, `pyproject.toml` ou `scripts/run_local_pyspark_demo.py`, o comando foi executado fora da raiz do repositorio.
 
 ## Observacao sobre PySpark local
 
-Se `Gerar local_output` falhar com mensagem sobre `Java` ou `JAVA_HOME`, o dashboard continua funcionando normalmente no modo demo.
+Se `Gerar local_output` falhar, o dashboard continua funcionando normalmente no modo demo.
