@@ -1,20 +1,20 @@
 # Tests
 
-Camadas atuais de teste:
+Current testing layers:
 
-- `unit/`: configuracao, helpers de qualidade e funcoes puras
-- `data_quality/`: quality gate critico
-- `integration/`: `silver`, `gold`, particionamento da `silver` e pipeline local ponta a ponta
+- `unit/`: configuration, quality helpers, and pure functions
+- `data_quality/`: critical quality gate behavior
+- `integration/`: `silver`, `gold`, `silver` partitioning, and the end-to-end local pipeline
 
-Cobertura atual:
+Current coverage:
 
-- construcao de paths
-- validacao de campos obrigatorios
-- deteccao de chaves duplicadas
-- enforcement do quality gate critico
-- deduplicacao no `silver`
-- particionamento da `silver` por `country` e `state_province`
-- agregacao no `gold`
-- escrita de artefatos `bronze/silver/gold/ops`
-- estrutura basica da orquestracao com `Luigi`
-- falha controlada no fluxo completo quando uma regra critica e violada
+- path construction
+- required field validation
+- duplicate key detection
+- critical quality gate enforcement
+- `silver` deduplication
+- `silver` partitioning by `country` and `state_province`
+- `gold` aggregation
+- writing `bronze/silver/gold/ops` artifacts
+- basic `Luigi` orchestration structure
+- controlled end-to-end failure when a critical rule is violated

@@ -1,44 +1,44 @@
-# Case de Engenharia de Dados BEES
+# BEES Data Engineering Case
 
-Implementacao do case da Open Brewery DB com ingestao real da API em `PySpark`, validada localmente e em `Google Colab`, usando arquitetura medallion e um dashboard em `Streamlit` para a camada de demonstracao.
+Implementation of the Open Brewery DB case with real API ingestion in `PySpark`, validated locally and in `Google Colab`, using a medallion architecture and a `Streamlit` dashboard for the presentation layer.
 
-![PySpark](https://img.shields.io/badge/PySpark-Transformacoes-F5C400?style=for-the-badge&logo=apachespark&logoColor=141414&labelColor=141414)
-![Luigi](https://img.shields.io/badge/Luigi-Orquestracao-F5C400?style=for-the-badge&logo=python&logoColor=141414&labelColor=141414)
-![Medallion](https://img.shields.io/badge/Arquitetura-Medallion-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
-![Quality Gate](https://img.shields.io/badge/Qualidade-Gate_Critico-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
+![PySpark](https://img.shields.io/badge/PySpark-Transformations-F5C400?style=for-the-badge&logo=apachespark&logoColor=141414&labelColor=141414)
+![Luigi](https://img.shields.io/badge/Luigi-Orchestration-F5C400?style=for-the-badge&logo=python&logoColor=141414&labelColor=141414)
+![Medallion](https://img.shields.io/badge/Architecture-Medallion-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
+![Quality Gate](https://img.shields.io/badge/Quality-Critical_Gate-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-F5C400?style=for-the-badge&logo=streamlit&logoColor=141414&labelColor=141414)
 ![CI](https://img.shields.io/github/actions/workflow/status/leorosp/bees-data-engineering-case/ci.yml?branch=main&style=for-the-badge&label=CI)
 
-## Sumario
+## Summary
 
-- [Destaques](#destaques)
-- [Estrategia da Fonte de Dados](#estrategia-da-fonte-de-dados)
-- [Visao Rapida do Fluxo](#visao-rapida-do-fluxo)
-- [Como Avaliar em 3 Minutos](#como-avaliar-em-3-minutos)
-- [Orquestracao do Pipeline](#orquestracao-do-pipeline)
-- [Evidencias de Validacao](#evidencias-de-validacao)
-- [Previa Visual](#previa-visual)
-- [Monitoramento e Alertas](#monitoramento-e-alertas)
-- [Testes e CI](#testes-e-ci)
+- [Highlights](#highlights)
+- [Data Source Strategy](#data-source-strategy)
+- [Pipeline Overview](#pipeline-overview)
+- [How To Evaluate In 3 Minutes](#how-to-evaluate-in-3-minutes)
+- [Pipeline Orchestration](#pipeline-orchestration)
+- [Validation Evidence](#validation-evidence)
+- [Visual Preview](#visual-preview)
+- [Monitoring and Alerting](#monitoring-and-alerting)
+- [Tests and CI](#tests-and-ci)
 
-## Destaques
+## Highlights
 
-| Ponto | Evidencia |
+| Area | Evidence |
 | --- | --- |
-| Fonte | Open Brewery DB API no fluxo principal do case |
-| Orquestracao | Pipeline com `Luigi` para coordenar etapas e lidar com falhas |
-| Arquitetura | Camadas `bronze`, `silver`, `gold` e `ops` |
-| Qualidade | `quality gate` critico com cenario de falha controlada |
-| Demonstracao | Quickstart curto, dashboard e evidencias de execucao |
-| Confianca | `CI` com smoke tests de `PySpark`, dashboard e orquestracao |
+| Source | Open Brewery DB API is the primary runtime path for the case |
+| Orchestration | `Luigi` coordinates the pipeline and handles retries and failures |
+| Architecture | `bronze`, `silver`, `gold`, and `ops` layers are implemented |
+| Quality | Critical quality gate with a controlled failure exercise |
+| Demonstration | Short quickstart, dashboard, and validation evidence |
+| Confidence | Deterministic CI smoke tests plus API-path unit and integration coverage |
 
-## Estrategia da Fonte de Dados
+## Data Source Strategy
 
-- caminho principal do case: `Open Brewery DB API`
-- caminho alternativo: dataset local deterministico para demo, CI e reproducibilidade
-- o pipeline registra a proveniencia da origem em `ops/execution_events`
+- primary case path: `Open Brewery DB API`
+- deterministic support path: local sample dataset for demo, CI, and reproducibility
+- the pipeline stores source provenance in `ops/execution_events`
 
-Campos operacionais registrados:
+Recorded operational fields include:
 
 - `requested_source_mode`
 - `source_type`
@@ -48,15 +48,15 @@ Campos operacionais registrados:
 - `pages_requested`
 - `records_fetched`
 
-## Visao Rapida do Fluxo
+## Pipeline Overview
 
 ```mermaid
 flowchart LR
-    A["Open Brewery DB API"] --> B["Luigi<br/>orquestracao"]
-    B --> C["Bronze<br/>json bruto"]
-    C --> D["Silver<br/>parquet particionado<br/>por country e state_province"]
-    D --> E["Gold<br/>agregacoes por tipo<br/>e localizacao"]
-    C --> F["Ops<br/>qualidade e execucao"]
+    A["Open Brewery DB API"] --> B["Luigi<br/>orchestration"]
+    B --> C["Bronze<br/>raw json"]
+    C --> D["Silver<br/>partitioned parquet<br/>by country and state_province"]
+    D --> E["Gold<br/>aggregations by type<br/>and location"]
+    C --> F["Ops<br/>quality and execution events"]
     D --> F
     E --> F
     E --> G["Dashboard<br/>Streamlit"]
@@ -68,24 +68,24 @@ flowchart LR
     class C,D,E,F neutral;
 ```
 
-## Resumo operacional
+## Operational Summary
 
-- a API alimenta a ingestao do pipeline
-- o `Luigi` coordena as etapas do pipeline, com suporte a retries e falhas
-- o `PySpark` transforma os dados nas camadas `bronze`, `silver`, `gold` e `ops`
-- o dashboard consome os resultados analiticos e operacionais
+- the API feeds the main ingestion path
+- `Luigi` coordinates the pipeline stages with retry and failure handling
+- `PySpark` transforms data across the `bronze`, `silver`, `gold`, and `ops` layers
+- the dashboard combines analytical and operational outputs
 
-## Arquitetura em Alto Nivel
+## High-Level Architecture
 
-- `bronze`: preserva o payload bruto da API
-- `silver`: normaliza colunas, aplica tipos e deduplica `brewery_id`
-- `silver`: persiste em `parquet` particionado por `country` e `state_province`
-- `gold`: agrega quantidade de breweries por `brewery_type`, `country` e `state_province`
-- `ops`: persiste resultados de qualidade e eventos de execucao
+- `bronze`: preserves the raw API payload
+- `silver`: normalizes columns, applies types, and deduplicates `brewery_id`
+- `silver`: persists `parquet` partitioned by `country` and `state_province`
+- `gold`: aggregates brewery counts by `brewery_type`, `country`, and `state_province`
+- `ops`: persists quality results and execution events
 
-## Como Avaliar em 3 Minutos
+## How To Evaluate In 3 Minutes
 
-Rode os comandos abaixo a partir da raiz do repositorio:
+Run the commands below from the repository root:
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
@@ -93,63 +93,63 @@ python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 python -m streamlit run dashboard/app.py
 ```
 
-Depois:
+Then:
 
-- abra `http://localhost:8501`
-- use `Dataset demo` para a apresentacao mais rapida
-- use `Saida local` quando `local_output/` tiver sido gerado
+- open `http://localhost:8501`
+- use `Demo Dataset` for the fastest presentation path
+- use `Local Output` once `local_output/` has been generated
 
-Se quiser um caminho deterministico, sem depender da API durante a demonstracao:
+If you want a deterministic path that does not depend on live API availability during the demo:
 
 ```bash
 python scripts/run_local_pyspark_demo.py
 ```
 
-Esse caminho alternativo existe para:
+This alternate path exists for:
 
-- reproducibilidade local
-- demonstracao deterministica
-- validacao estavel na `CI`
+- local reproducibility
+- deterministic demonstrations
+- stable CI validation
 
-### Alternativa com Docker
+### Optional Docker Path
 
-O repositorio tambem inclui um caminho conteinerizado para capturar o bonus de `containerization` do enunciado:
+The repository also includes a containerized path to capture the optional `containerization` bonus from the prompt.
 
-Observacao importante:
+Important note:
 
-- a trilha principal validada para o case continua sendo `local` ou `Google Colab`
-- a trilha com `Docker` foi adicionada como caminho opcional de empacotamento e demonstracao do projeto
+- the primary validated runtime for the case remains `local` or `Google Colab`
+- the `Docker` path mirrors the deterministic demo and orchestration flow and should be treated as an optional packaging and presentation path
 
 ```bash
 docker compose run --rm pipeline
 docker compose up dashboard
 ```
 
-Servicos disponiveis:
+Available services:
 
-- `pipeline`: gera `local_output/` com o fluxo principal em `PySpark`
-- `orchestrator`: executa a trilha com `Luigi` e grava artefatos em `luigi_output/`
-- `dashboard`: sobe o `Streamlit` em `http://localhost:8501`
+- `pipeline`: generates deterministic `local_output/` with `PySpark`
+- `orchestrator`: runs the deterministic `Luigi` path and writes artifacts to `luigi_output/`
+- `dashboard`: serves `Streamlit` at `http://localhost:8501`
 
-Documentacao complementar:
+Supporting documentation:
 
-- [Guia rapido do avaliador](./docs/evaluator-quickstart.md)
-- [Guia rapido local](./docs/local-quickstart.md)
-- [Monitoramento e alertas](./docs/monitoring-alerting.md)
+- [Evaluator quickstart](./docs/evaluator-quickstart.md)
+- [Local quickstart](./docs/local-quickstart.md)
+- [Monitoring and alerting](./docs/monitoring-alerting.md)
 - [Dashboard](./dashboard/README.md)
 
-## Orquestracao do Pipeline
+## Pipeline Orchestration
 
-O projeto inclui uma trilha explicita com `Luigi` para orquestrar a execucao do fluxo principal.
+The project includes an explicit `Luigi` path to orchestrate the end-to-end flow.
 
-Na pratica, isso cobre:
+In practice, this covers:
 
-- encadeamento entre `bronze`, `silver`, `gold` e `ops`
-- execucao local com `--local-scheduler` e trilha natural para `luigid`
-- tentativas de reexecucao por etapa
-- interrupcao opcional quando um check critico de qualidade falha
+- task dependencies between `bronze`, `silver`, `gold`, and `ops`
+- local scheduling with `--local-scheduler` and a natural handoff to `luigid`
+- per-stage retries
+- optional fail-fast behavior when a critical quality check fails
 
-Execucao de exemplo:
+Example run:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -159,7 +159,7 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-Para uma execucao deterministica sem depender da API:
+For a deterministic execution that does not depend on the live API:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -171,13 +171,13 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-## Evidencias de Validacao
+## Validation Evidence
 
-### Execucao de Referencia
+### Reference Execution
 
-Execucao de referencia do fluxo principal a partir da Open Brewery DB API:
+Reference execution for the API-first path:
 
-As chaves e caminhos abaixo refletem a saida real do script e, por isso, permanecem tecnicos:
+The keys and paths below reflect the real script output and therefore remain technical:
 
 ```json
 {
@@ -193,7 +193,7 @@ As chaves e caminhos abaixo refletem a saida real do script e, por isso, permane
 }
 ```
 
-Artefatos esperados:
+Expected artifacts:
 
 - `local_output/bronze/landing_date=.../`
 - `local_output/silver/breweries/`
@@ -201,11 +201,20 @@ Artefatos esperados:
 - `local_output/ops/quality_results/`
 - `local_output/ops/execution_events/`
 
-### Exercicio do Gate de Qualidade
+The operational artifacts also record source provenance for each execution, including:
 
-O repositorio inclui um dataset ruim em [examples/sample_breweries_bad.json](./examples/sample_breweries_bad.json).
+- requested source mode
+- effective source type
+- whether fallback was used
+- fallback reason
+- requested pages
+- fetched record count
 
-Esse dataset existe para demonstrar o comportamento do pipeline quando regras criticas de qualidade sao violadas:
+### Quality Gate Exercise
+
+The repository includes a bad dataset in [examples/sample_breweries_bad.json](./examples/sample_breweries_bad.json).
+
+This dataset exists to demonstrate pipeline behavior when critical quality rules are violated:
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -216,63 +225,64 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-Resultado esperado:
+Expected result:
 
-- o comando termina com erro por design
+- the command fails by design
 - `required_fields = fail`
 - `duplicate_primary_keys = fail`
-- os artefatos em `local_output_bad/` continuam disponiveis para inspecao
+- artifacts in `local_output_bad/` remain available for inspection
 
-## Previa Visual
+## Visual Preview
 
-O dashboard em `Streamlit` consolida:
+The `Streamlit` dashboard consolidates:
 
-- distribuicao de breweries por tipo
-- concentracao geografica por estado
-- status da ultima execucao
-- resultado dos checks de qualidade
+- brewery distribution by type
+- geographic concentration by state
+- latest execution status
+- quality check results
 
-![Preview do dashboard](./docs/images/dashboard-preview.png)
+![Dashboard preview](./docs/images/dashboard-preview.png)
 
-Visao executiva e operacional do projeto, destacando distribuicao de cervejarias, KPIs da camada `gold` e status de qualidade do pipeline.
+Executive and operational project view highlighting brewery distribution, `gold`-layer KPIs, and pipeline quality status.
 
-## O Que o Avaliador Deve Verificar
+## What The Evaluator Should Verify
 
-- o caminho principal consome a Open Brewery DB API
-- `bronze` preserva o payload bruto com metadados de ingestao
-- `silver` entrega dados tipados, deduplicados e particionados por localizacao
-- `gold` responde a pergunta do case com agregacao por tipo e localizacao
-- `ops` registra qualidade e status da execucao
-- o dashboard consolida a leitura executiva e operacional do pipeline
+- the primary path consumes the Open Brewery DB API
+- `bronze` preserves the raw payload with ingestion metadata
+- `silver` delivers typed, deduplicated data partitioned by location
+- `gold` answers the case question with aggregation by type and location
+- `ops` records quality and execution status
+- the dashboard consolidates the executive and operational view of the pipeline
 
-## Monitoramento e Alertas
+## Monitoring and Alerting
 
-O requisito de observabilidade do case esta coberto em dois niveis:
+The observability requirement from the case is covered at two levels:
 
-- no MVP, o pipeline persiste sinais operacionais em `ops/quality_results` e `ops/execution_events`
-- na documentacao, o projeto descreve como transformar esses sinais em alertas para falha de pipeline, falha critica de qualidade, atraso de execucao e queda anormal de volume
+- in the MVP, the pipeline persists operational signals in `ops/quality_results` and `ops/execution_events`
+- in the documentation, the project describes how those signals become alerts for pipeline failure, critical quality failure, stale execution, and unexpected volume drops
 
-Resumo do desenho:
+Summary of the design:
 
-- falha de pipeline apos retries: alerta de alta prioridade
-- check critico com `status = fail`: falha do job e alerta imediato
-- ausencia de execucao no SLA: alerta de frescor
-- queda anormal entre `records_in` e `records_out`: alerta de anomalia operacional
+- pipeline failure after retries: high-priority alert
+- critical check with `status = fail`: immediate failure and alert
+- missing execution within the SLA window: freshness alert
+- abnormal drop between `records_in` and `records_out`: operational anomaly alert
 
-Detalhamento completo:
+Full details:
 
-- [Monitoramento e alertas](./docs/monitoring-alerting.md)
+- [Monitoring and alerting](./docs/monitoring-alerting.md)
 
-## Testes e CI
+## Tests and CI
 
-O repositorio hoje possui:
+The repository currently includes:
 
-- testes unitarios de configuracao e qualidade
-- testes de qualidade critica
-- testes de integracao para `silver`, `gold` e pipeline local ponta a ponta
-- validacao rapida em `GitHub Actions` executando o fluxo principal em `PySpark`
+- unit tests for configuration, API behavior, and quality helpers
+- critical quality tests
+- integration tests for `silver`, `gold`, and the local `PySpark` pipeline
+- `GitHub Actions` smoke tests for the deterministic `PySpark` and `Luigi` runtime paths
+- API-path behavior covered by unit and integration tests with mocked API responses, which keeps CI stable and reproducible
 
-## Estrutura Principal
+## Main Structure
 
 ```text
 .
@@ -284,22 +294,22 @@ O repositorio hoje possui:
 `- tests/
 ```
 
-## Leitura Recomendada
+## Recommended Reading
 
-- [Arquitetura](./docs/architecture.md)
-- [Escolha dos servicos](./docs/services.md)
+- [Architecture](./docs/architecture.md)
+- [Service choices](./docs/services.md)
 - [Backlog](./docs/backlog.md)
 - [Runbook](./docs/runbook.md)
-- [Guia Colab/GCP](./docs/gcp-colab-guide.md)
+- [Colab/GCP guide](./docs/gcp-colab-guide.md)
 
-## Escopo Atual
+## Current Scope
 
-- `implementado e validado`: `PySpark + Streamlit`
-- `ambiente principal`: local ou `Google Colab`
-- `documentado como evolucao`: `GCP`
-- `bonus implementado`: containerizacao com `Docker`
+- `implemented and validated`: `PySpark + Streamlit`
+- `primary runtime`: local or `Google Colab`
+- `documented evolution`: `GCP`
+- `optional bonus implemented`: `Docker` containerization
 
-## Referencias
+## References
 
 - [Open Brewery DB](https://www.openbrewerydb.org/)
 - [Google Colab](https://colab.research.google.com/)

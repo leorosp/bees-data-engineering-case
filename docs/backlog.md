@@ -1,52 +1,52 @@
-# Backlog de implementacao
+# Implementation Backlog
 
-## Fase 0 - Foundation
+## Phase 0 - Foundation
 
-- [x] Definir nome final do projeto
-- [x] Organizar repositorio no GitHub
-- [x] Definir arquitetura medallion
-- [x] Criar documentacao inicial
+- [x] Define the final project name
+- [x] Organize the GitHub repository
+- [x] Define the medallion architecture
+- [x] Create the initial documentation
 
-## Fase 1 - Pipeline Colab/PySpark
+## Phase 1 - Colab/PySpark Pipeline
 
-- [x] Criar ingestao `bronze`
-- [x] Criar transformacao `silver`
-- [x] Criar agregacoes `gold`
-- [x] Criar camada `ops`
+- [x] Create `bronze` ingestion
+- [x] Create `silver` transformation
+- [x] Create `gold` aggregations
+- [x] Create the `ops` layer
 
-## Fase 2 - Data quality
+## Phase 2 - Data Quality
 
-- [x] Definir contratos minimos
-- [x] Implementar checks de campos obrigatorios
-- [x] Implementar checks de duplicidade
-- [x] Persistir resultados em `ops`
-- [x] Falhar execucao automaticamente quando regra critica for violada
-- [x] Documentar monitoramento e alertas do MVP
+- [x] Define minimum contracts
+- [x] Implement required field checks
+- [x] Implement duplicate checks
+- [x] Persist results in `ops`
+- [x] Fail execution automatically when a critical rule is violated
+- [x] Document MVP monitoring and alerting
 
-## Fase 3 - Evidencia do case
+## Phase 3 - Case Evidence
 
-- [x] Validar execucao de referencia
-- [x] Validar o quality gate com dataset problematico
-- [x] Documentar evidencias no repositorio
-- [x] Criar quickstart para avaliacao
+- [x] Validate a reference execution
+- [x] Validate the quality gate with a problematic dataset
+- [x] Document the evidence in the repository
+- [x] Create an evaluator quickstart
 
-## Fase 4 - Consumo
+## Phase 4 - Consumption
 
-- [x] Criar dashboard executivo e operacional em Streamlit
-- [ ] Capturar screenshots e publicar no README
-- [ ] Criar versao resumida para apresentacao
+- [x] Create an executive and operational dashboard in Streamlit
+- [x] Publish screenshots in the README
+- [ ] Create a shorter presentation version
 
-## Fase 5 - Evolucao para GCP
+## Phase 5 - GCP Evolution
 
-- [ ] Adaptar persistencia para `Google Cloud Storage`
-- [ ] Executar o pipeline em `Dataproc Serverless`
-- [ ] Publicar camada analitica em `BigQuery`
-- [ ] Criar dashboard em `Looker Studio`
-- [ ] Configurar monitoramento em `Cloud Monitoring`
+- [ ] Move persistence to `Google Cloud Storage`
+- [ ] Execute the pipeline in `Dataproc Serverless`
+- [ ] Publish the analytical layer in `BigQuery`
+- [ ] Create a dashboard in `Looker Studio`
+- [ ] Configure monitoring in `Cloud Monitoring`
 
-## Fase 6 - Hardening
+## Phase 6 - Hardening
 
-- [x] Criar pipeline GitHub Actions para testes automatizados
-- [x] Expandir testes para o fluxo PySpark completo
-- [ ] Automatizar validacao visual do dashboard
-- [ ] Revisar custo e simplificar operacao
+- [x] Create a GitHub Actions pipeline for automated tests
+- [x] Expand tests to the full PySpark flow
+- [ ] Automate visual dashboard validation
+- [ ] Review cost and simplify operations

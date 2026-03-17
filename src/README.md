@@ -1,11 +1,11 @@
-# Source layout
+# Source Layout
 
-O codigo Python compartilhado do projeto deve ficar aqui.
+Shared Python project code lives here.
 
-- `bees_case/config.py`: parametros do pipeline e paths medallion
-- `bees_case/bronze.py`: ingestao HTTP e preparacao de rows raw
-- `bees_case/dashboard_data.py`: leitura dos artefatos `gold` e `ops` para o dashboard
-- `bees_case/pyspark_local.py`: validacao local/Colab em PySpark
-- `bees_case/contracts.py`: contratos de colunas e campos obrigatorios
-- `bees_case/observability.py`: eventos estruturados de execucao
-- `bees_case/quality.py`: checks reutilizaveis de qualidade
+- `bees_case/config.py`: pipeline parameters and medallion paths
+- `bees_case/bronze.py`: HTTP ingestion helpers and raw row preparation
+- `bees_case/dashboard_data.py`: `gold` and `ops` artifact loading for the dashboard
+- `bees_case/pyspark_local.py`: local and Colab validation in PySpark
+- `bees_case/contracts.py`: column contracts and required fields
+- `bees_case/observability.py`: structured execution events
+- `bees_case/quality.py`: reusable quality checks

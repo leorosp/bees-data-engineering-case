@@ -1,8 +1,8 @@
 # Evaluator Quickstart
 
-Este guia existe para reduzir o atrito de avaliacao. Todos os comandos abaixo devem ser executados a partir da raiz do repositorio.
+This guide exists to reduce evaluation friction. Run every command below from the repository root.
 
-## Demo rapida
+## Fast Demo
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
@@ -10,15 +10,15 @@ python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 python -m streamlit run dashboard/app.py
 ```
 
-Abra `http://localhost:8501`.
+Open `http://localhost:8501`.
 
-Se quiser uma execucao deterministica sem depender da API:
+If you want a deterministic path that does not depend on the live API:
 
 ```bash
 python scripts/run_local_pyspark_demo.py
 ```
 
-## Orquestracao rapida com Luigi
+## Quick Luigi Run
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -28,7 +28,7 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-Opcao deterministica:
+Deterministic option:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -40,16 +40,16 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-## O que verificar
+## What To Verify
 
-1. O caminho principal consome a Open Brewery DB API
-2. O pipeline gera `bronze`, `silver`, `gold` e `ops` em `local_output/`
-3. A `silver` e gravada em `parquet` particionado por `country` e `state_province`
-4. O dashboard mostra o resumo executivo e a saude do pipeline
-5. A execucao padrao termina com `quality_gate_status = pass`
-6. A camada `ops` registra qualidade e execucao para observabilidade
+1. The primary path consumes the Open Brewery DB API
+2. The pipeline generates `bronze`, `silver`, `gold`, and `ops` under `local_output/`
+3. `silver` is written in `parquet` partitioned by `country` and `state_province`
+4. The dashboard shows the executive summary and pipeline health
+5. The standard execution ends with `quality_gate_status = pass`
+6. The `ops` layer records quality and execution data for observability
 
-## Exercitando o Quality Gate
+## Exercising The Quality Gate
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -60,25 +60,25 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-## Resultado esperado
+## Expected Result
 
-- o processo termina com erro por design
-- `required_fields` falha
-- `duplicate_primary_keys` falha
-- `local_output_bad/ops/quality_results/` continua disponivel para inspecao
+- the process fails by design
+- `required_fields` fails
+- `duplicate_primary_keys` fails
+- `local_output_bad/ops/quality_results/` remains available for inspection
 
-## Monitoramento e alertas
+## Monitoring and Alerting
 
-O projeto tambem inclui um desenho explicito de monitoramento e alertas para:
+The project also includes an explicit monitoring and alerting design for:
 
-- falha de pipeline
-- falha critica de qualidade
-- atraso de execucao
-- queda anormal de volume
+- pipeline failure
+- critical quality failure
+- execution delay
+- abnormal volume drops
 
-Detalhes em [monitoring-alerting.md](./monitoring-alerting.md).
+Details in [monitoring-alerting.md](./monitoring-alerting.md).
 
-## Se quiser avaliar so os dados
+## If You Only Want To Inspect The Data
 
 ```python
 from pyspark.sql import SparkSession

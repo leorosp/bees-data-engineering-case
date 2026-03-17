@@ -1,24 +1,30 @@
-# Guia Colab e GCP
+# Colab and GCP Guide
 
-Este e o caminho oficial do projeto a partir desta versao.
+This is the official project path from the current version onward.
 
-## Caminho atual validado
+## Current Validated Path
 
-- execucao em `Google Colab`
-- processamento em `PySpark`
-- artefatos em `local_output/`
-- dashboard em `Streamlit`
+- execution in `Google Colab`
+- processing in `PySpark`
+- artifacts in `local_output/`
+- dashboard in `Streamlit`
 
-## Como rodar no Colab
+## How To Run In Colab
 
 ```python
 !git clone https://github.com/leorosp/bees-data-engineering-case.git
 %cd bees-data-engineering-case
 !pip install -q -e ".[dev,local,dashboard]"
+!python scripts/run_api_pyspark_pipeline.py --output-dir local_output
+```
+
+For a deterministic demo in Colab:
+
+```python
 !python scripts/run_local_pyspark_demo.py
 ```
 
-Depois disso:
+After that:
 
 ```python
 from pyspark.sql import SparkSession
@@ -28,17 +34,17 @@ spark.read.parquet("local_output/gold/breweries_by_type_location").show(truncate
 spark.read.parquet("local_output/ops/quality_results").show(truncate=False)
 ```
 
-## Como evoluir para GCP
+## How To Evolve To GCP
 
-1. Trocar `local_output/` por um bucket no `Google Cloud Storage`
-2. Executar o mesmo pipeline em `Dataproc Serverless`
-3. Publicar os agregados no `BigQuery`
-4. Construir o dashboard executivo no `Looker Studio`
+1. Replace `local_output/` with a `Google Cloud Storage` bucket
+2. Execute the same pipeline in `Dataproc Serverless`
+3. Publish the aggregates in `BigQuery`
+4. Build the executive dashboard in `Looker Studio`
 
-## O que ja esta pronto para essa evolucao
+## What Is Already Ready For That Evolution
 
-- logica do pipeline em `PySpark`
-- artefatos `bronze/silver/gold/ops`
-- regras de qualidade
-- quality gate critico com falha automatica opcional
-- dashboard local como referencia funcional
+- pipeline logic in `PySpark`
+- `bronze/silver/gold/ops` artifacts
+- quality rules
+- critical quality gate with optional automatic failure
+- local dashboard as a functional reference

@@ -1,54 +1,54 @@
-# Escolha dos servicos e ambientes
+# Service and Runtime Choices
 
-## Caminho principal da V1
+## Primary V1 Path
 
-| Componente | Papel no projeto | Motivo |
+| Component | Role in the project | Why it was chosen |
 | --- | --- | --- |
-| Google Colab | Ambiente principal de execucao e validacao | Baixo atrito para demonstrar o case |
-| PySpark | Transformacoes, validacoes e agregacoes | Aderencia tecnica ao desafio |
-| Luigi | Orquestracao das etapas bronze-silver-gold-ops | Atende scheduling, retries e error handling de forma leve |
-| Arquivos locais / artefatos parquet-json | Persistencia de `bronze`, `silver`, `gold` e `ops` | Simples, reprodutivel e suficiente para o MVP |
-| Streamlit | Dashboard executivo e operacional | Enriquecimento visual do projeto |
-| `ops/quality_results` e `ops/execution_events` | Base do monitoramento do pipeline | Permitem acompanhar qualidade, falha e volume por execucao |
-| GitHub Actions | CI/CD | Integra bem com o repositorio |
+| Google Colab | Primary execution and validation runtime | Low friction for demonstrating the case |
+| PySpark | Transformations, validations, and aggregations | Technical alignment with the challenge |
+| Luigi | Orchestration across bronze-silver-gold-ops | Covers scheduling concepts, retries, and error handling with low overhead |
+| Local files / parquet-json artifacts | Persistence for `bronze`, `silver`, `gold`, and `ops` | Simple, reproducible, and sufficient for the MVP |
+| Streamlit | Executive and operational dashboard | Visual layer that enriches the project |
+| `ops/quality_results` and `ops/execution_events` | Operational monitoring baseline | Tracks quality, failures, and volume per execution |
+| GitHub Actions | CI/CD | Integrates naturally with the repository |
 
-## Evolucao recomendada para GCP
+## Recommended GCP Evolution
 
-| Servico | Papel no projeto | Quando usar |
+| Service | Role in the project | When to use it |
 | --- | --- | --- |
-| Google Cloud Storage | Data lake bronze/silver/gold | Quando quiser persistencia em cloud |
-| Dataproc Serverless | Execucao de PySpark em escala | Quando o pipeline sair do modo Colab |
-| BigQuery | Serving e consulta analitica | Quando quiser consumo SQL/BI |
-| Looker Studio | Dashboard executivo em cloud | Quando quiser uma camada BI nativa do Google |
-| Cloud Monitoring | Observabilidade e alertas | Quando a execucao estiver em GCP |
-| Secret Manager | Gestao de segredos | Quando existir credencial de API ou servico |
+| Google Cloud Storage | Bronze/silver/gold data lake | When cloud persistence becomes necessary |
+| Dataproc Serverless | Scaled PySpark execution | When the pipeline moves beyond Colab |
+| BigQuery | Serving and analytical querying | When SQL and BI consumption are needed |
+| Looker Studio | Cloud-native executive dashboard | When a Google-native BI layer is desired |
+| Cloud Monitoring | Observability and alerting | When execution moves to GCP |
+| Secret Manager | Secrets management | When API or service credentials are introduced |
 
-## Monitoramento e alertas no desenho atual
+## Monitoring and Alerting in the Current Design
 
-Mesmo no MVP local/Colab, o pipeline ja produz sinais suficientes para observabilidade:
+Even in the local or Colab MVP, the pipeline already produces enough signals for observability:
 
-- falha/sucesso da execucao em `ops/execution_events`
-- checks de qualidade em `ops/quality_results`
-- retries no `Luigi`
-- quality gate critico com falha automatica opcional
+- execution success or failure in `ops/execution_events`
+- quality checks in `ops/quality_results`
+- retries in `Luigi`
+- optional critical quality gate failure
 
-O desenho completo de alertas e a trilha para `Cloud Monitoring` estao detalhados em [monitoring-alerting.md](./monitoring-alerting.md).
+The full alerting design and the path to `Cloud Monitoring` are described in [monitoring-alerting.md](./monitoring-alerting.md).
 
-## O que nao e obrigatorio para o case
+## What Is Not Required For The Case
 
-| Item | Motivo |
+| Item | Reason |
 | --- | --- |
-| Airflow | Mais pesado que o necessario para a V1, dado que `Luigi` ja atende a orquestracao |
-| Docker | Opcional no enunciado |
-| BigQuery na V1 | O MVP ja fica forte com Colab + PySpark + dashboard |
+| Airflow | Heavier than necessary for V1, given that `Luigi` already covers orchestration |
+| Docker | Optional in the prompt |
+| BigQuery in V1 | The MVP is already strong with Colab + PySpark + dashboard |
 
-## Trilha atual do repositorio
+## Current Repository Path
 
 | Status | Item |
 | --- | --- |
-| Implementado | Colab + PySpark |
-| Implementado | Orquestracao com Luigi |
-| Implementado | Dashboard em Streamlit |
-| Implementado | Evidencia de qualidade em cenarios feliz e falho |
-| Implementado | Desenho de monitoramento e alertas |
-| Documentado | Evolucao para GCP |
+| Implemented | Colab + PySpark |
+| Implemented | Luigi orchestration |
+| Implemented | Streamlit dashboard |
+| Implemented | Quality evidence for success and failure scenarios |
+| Implemented | Monitoring and alerting design |
+| Documented | GCP evolution path |

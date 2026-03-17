@@ -1,42 +1,48 @@
-# Dashboard em Streamlit
+# Streamlit Dashboard
 
-O dashboard e a camada de apresentacao do projeto. Ele organiza a experiencia em tres blocos:
+The dashboard is the presentation layer of the project. It organizes the experience into three blocks:
 
-- `Visao geral`: KPIs do `gold`, status do pipeline e ultima execucao
-- `Analises`: distribuicao por tipo, concentracao geografica e tabela filtravel
-- `Detalhes operacionais`: checks de qualidade, resumo da execucao e instrucoes locais
+- `Overview`: `gold` KPIs, pipeline status, and latest execution
+- `Analytics`: type distribution, geographic concentration, and a filterable table
+- `Operational Details`: quality checks, execution summary, and local run instructions
 
-## Como rodar
+## How To Run
 
-Execute os comandos abaixo a partir da raiz do repositorio:
+Run the commands below from the repository root:
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
-python scripts/run_local_pyspark_demo.py
+python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 python -m streamlit run dashboard/app.py
 ```
 
-Abra `http://localhost:8501`.
+Open `http://localhost:8501`.
 
-Se `local_output/` ainda nao existir, o app abre automaticamente com o `Dataset demo`.
+If `local_output/` does not exist yet, the app opens automatically with the `Demo Dataset`.
 
-## Controles do painel
+For a deterministic local run that does not depend on the live API:
 
-Os filtros e controles ficam na sidebar recolhida:
+```bash
+python scripts/run_local_pyspark_demo.py
+```
 
-- `Fonte de dados`: escolhe entre `Dataset demo` e os artefatos locais disponiveis
-- `Atualizar painel`: recarrega os dados
-- `Gerar saida local`: tenta gerar `local_output` a partir do proprio app
-- `Tipos de cervejaria` e `Estados`: aplicam filtros na visualizacao
+## Dashboard Controls
 
-## Fontes de dados
+Filters and controls live in the collapsed sidebar:
 
-Quando os artefatos locais existem, o app le:
+- `Data Source`: chooses between `Demo Dataset` and any available local artifacts
+- `Refresh Dashboard`: reloads the data
+- `Generate Demo Output`: attempts to generate `local_output` from the app itself
+- `Brewery Types` and `States`: apply filters to the visualization
+
+## Data Sources
+
+When local artifacts exist, the app reads:
 
 - `local_output/gold/breweries_by_type_location`
 - `local_output/ops/quality_results`
 - `local_output/ops/execution_events`
 
-## Observacao sobre PySpark local
+## Note About Local PySpark
 
-Se `Gerar saida local` falhar, o dashboard continua funcionando normalmente com o dataset demo.
+If `Generate Demo Output` fails, the dashboard still works normally with the bundled demo dataset.

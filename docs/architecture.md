@@ -1,77 +1,77 @@
-# Arquitetura
+# Architecture
 
-## Visao geral
+## Overview
 
-O desenho abaixo prioriza simplicidade, aderencia ao case e execucao pratica em `Google Colab + PySpark`, com uma trilha natural de evolucao para `GCP`.
+The design below prioritizes simplicity, adherence to the case requirements, and practical execution in `Google Colab + PySpark`, with a natural evolution path to `GCP`.
 
 ```mermaid
 flowchart LR
-    A["Open Brewery DB API"] --> B["Orquestracao com Luigi"]
-    Z["Dataset de exemplo para testes controlados"] --> B
-    B --> C["PySpark bronze<br/>json bruto por data de ingestao"]
-    C --> D["PySpark silver<br/>parquet particionado por localizacao"]
-    D --> E["PySpark gold<br/>agregacoes por tipo e localizacao"]
-    C --> O["Camada ops<br/>qualidade e eventos de execucao"]
+    A["Open Brewery DB API"] --> B["Luigi orchestration"]
+    Z["Sample dataset for controlled tests"] --> B
+    B --> C["PySpark bronze<br/>raw json by ingestion date"]
+    C --> D["PySpark silver<br/>partitioned parquet by location"]
+    D --> E["PySpark gold<br/>aggregations by type and location"]
+    C --> O["Ops layer<br/>quality and execution events"]
     D --> O
     E --> O
-    E --> F["Streamlit Dashboard"]
+    E --> F["Streamlit dashboard"]
     O --> F
-    O --> M["Desenho de monitoramento e alertas"]
+    O --> M["Monitoring and alerting design"]
 
-    E --> G["Camada opcional de serving em GCP"]
+    E --> G["Optional GCP serving layer"]
     G --> H["Google Cloud Storage / BigQuery / Looker Studio"]
     M --> I["Cloud Logging / Cloud Monitoring"]
 ```
 
-## Fluxo por camada
+## Layer-by-Layer Flow
 
 ### Bronze
 
-- `PySpark` consome a Open Brewery DB API ou dados de exemplo controlados.
-- Os payloads sao gravados em `json`.
-- Particionamento inicial por `ingestion_date=YYYY-MM-DD`.
-- Objetivo: preservar o dado bruto para replay e auditoria.
+- `PySpark` consumes the Open Brewery DB API or controlled sample data.
+- Payloads are written in `json`.
+- Initial partitioning uses `ingestion_date=YYYY-MM-DD`.
+- Goal: preserve raw data for replay and auditability.
 
 ### Silver
 
-- `PySpark` le os arquivos bronze.
-- Normaliza schema, remove duplicidades, padroniza tipos e trata nulos.
-- Grava em `parquet` no caminho local/Colab.
-- Particionamento implementado por `country` e `state_province`.
+- `PySpark` reads the bronze files.
+- It normalizes the schema, removes duplicates, standardizes types, and handles nulls.
+- It writes `parquet` in the local or Colab path.
+- Partitioning is implemented by `country` and `state_province`.
 
 ### Gold
 
-- `PySpark` gera tabelas agregadas.
-- Foco principal do case:
-  - quantidade de breweries por `brewery_type`
-  - quantidade de breweries por localizacao
-  - quantidade de breweries por `brewery_type + country + state_province`
+- `PySpark` produces aggregated outputs.
+- Main focus of the case:
+  - brewery count by `brewery_type`
+  - brewery count by location
+  - brewery count by `brewery_type + country + state_province`
 
 ### Ops
 
-- Centraliza sinais operacionais do pipeline.
-- Persiste checks de qualidade em `ops/quality_results`.
-- Persiste eventos de execucao em `ops/execution_events`.
-- Alimenta o dashboard e a estrategia de monitoramento e alertas.
+- Centralizes operational signals from the pipeline.
+- Persists quality checks in `ops/quality_results`.
+- Persists execution events in `ops/execution_events`.
+- Feeds the dashboard and the monitoring and alerting strategy.
 
-## Decisoes principais
+## Key Design Decisions
 
-- `Google Colab` foi escolhido como caminho principal porque permite validar o case rapidamente sem overhead de infraestrutura.
-- `PySpark` foi mantido como tecnologia central para aderir ao perfil do desafio.
-- `Luigi` foi adotado como orquestrador leve para explicitar dependencias, retries e error handling.
-- `Streamlit` entra como camada de consumo e demonstracao do valor do pipeline.
-- `GCP` foi definido como trilha natural de cloud por combinar bem com `Colab`.
+- `Google Colab` is the primary runtime because it validates the case quickly without infrastructure overhead.
+- `PySpark` remains the core technology to align with the preferred technical profile of the challenge.
+- `Luigi` is the lightweight orchestrator used to make dependencies, retries, and error handling explicit.
+- `Streamlit` provides the consumption layer and helps demonstrate business value.
+- `GCP` is the natural cloud evolution path because it fits well with `Colab`.
 
-## Principios adotados no desenho
+## Design Principles
 
-- modularizacao para separar ingestao, transformacao, qualidade, observabilidade e consumo
-- reproducibilidade com dataset de exemplo, quickstart curto e smoke test
-- foco em demonstrabilidade, com dashboard e cenarios feliz e falho
-- caminho de evolucao claro para cloud sem bloquear o MVP local
+- modularization to separate ingestion, transformation, quality, observability, and consumption
+- reproducibility through a sample dataset, short quickstart, and smoke tests
+- demonstration-first mindset, with dashboard and success/failure validation paths
+- clear evolution path to cloud without blocking the local MVP
 
-## Regras de implementacao
+## Implementation Rules
 
-- O repositorio deve ser original: inspiracao sim, copia literal nao.
-- O MVP precisa funcionar em `Google Colab` sem depender de uma cloud especifica.
-- Qualquer cloud futura deve ser uma evolucao da solucao, nao um bloqueio para o uso do projeto.
-- Cada camada deve ser reprocessavel de forma independente.
+- The repository must be original: inspiration is fine, literal copying is not.
+- The MVP must run in `Google Colab` without depending on a specific cloud provider.
+- Any future cloud setup should be an evolution of the solution, not a prerequisite for using the project.
+- Each layer must be independently reprocessable.

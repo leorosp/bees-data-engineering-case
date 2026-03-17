@@ -1,44 +1,44 @@
 # Local Quickstart
 
-Este e o caminho principal do projeto para validar o case com `PySpark`, sem depender de cloud ou runtime externo.
+This is the primary runtime path for validating the case with `PySpark`, without depending on cloud infrastructure or an external managed runtime.
 
-## O que esse fluxo valida
+## What This Flow Validates
 
-- geracao da camada `bronze`
-- transformacao da camada `silver` com particionamento por localizacao
-- agregacao da camada `gold`
-- resultados de qualidade e eventos em `ops`
-- quality gate critico para `required_fields` e `duplicate_primary_keys`
-- orquestracao opcional com `Luigi`
+- `bronze` generation
+- `silver` transformation with location-based partitioning
+- `gold` aggregation
+- quality results and execution events in `ops`
+- critical quality gate for `required_fields` and `duplicate_primary_keys`
+- optional orchestration with `Luigi`
 
-## Como rodar localmente
+## How To Run Locally
 
-1. Clone o repositorio e entre na pasta:
+1. Clone the repository and enter the project folder:
 
 ```bash
 git clone https://github.com/leorosp/bees-data-engineering-case.git
 cd bees-data-engineering-case
 ```
 
-2. Instale o projeto:
+2. Install the project:
 
 ```bash
 pip install -e ".[dev,local,dashboard]"
 ```
 
-3. Rode o fluxo principal contra a Open Brewery DB API:
+3. Run the primary flow against the Open Brewery DB API:
 
 ```bash
 python scripts/run_api_pyspark_pipeline.py --output-dir local_output
 ```
 
-4. Se quiser uma execucao deterministica de demonstracao:
+4. If you want a deterministic demo execution:
 
 ```bash
 python scripts/run_local_pyspark_demo.py
 ```
 
-5. Confira os artefatos gerados em `local_output/`:
+5. Check the generated artifacts under `local_output/`:
 
 - `bronze/landing_date=.../`
 - `silver/breweries/`
@@ -46,13 +46,13 @@ python scripts/run_local_pyspark_demo.py
 - `ops/quality_results/`
 - `ops/execution_events/`
 
-6. Se quiser explorar visualmente:
+6. If you want to explore the output visually:
 
 ```bash
 python -m streamlit run dashboard/app.py
 ```
 
-7. Se quiser executar com orquestracao:
+7. If you want to execute the orchestrated path:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -62,7 +62,7 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-Opcao deterministica:
+Deterministic option:
 
 ```bash
 python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
@@ -74,35 +74,41 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
-## Como rodar com Docker
+## How To Run With Docker
 
-Se quiser validar a trilha conteinerizada:
+If you want to validate the containerized path:
 
 ```bash
 docker compose run --rm pipeline
 docker compose up dashboard
 ```
 
-Se quiser exercitar a orquestracao conteinerizada:
+If you want to exercise containerized orchestration:
 
 ```bash
 docker compose run --rm orchestrator
 ```
 
-## Como rodar no Google Colab
+## How To Run In Google Colab
 
-Em uma celula do Colab:
+In a Colab cell:
 
 ```python
 !git clone https://github.com/leorosp/bees-data-engineering-case.git
 %cd bees-data-engineering-case
 !pip install -q -e ".[dev,local,dashboard]"
+!python scripts/run_api_pyspark_pipeline.py --output-dir local_output
+```
+
+For a deterministic demo in Colab:
+
+```python
 !python scripts/run_local_pyspark_demo.py
 ```
 
-## Como exercitar o quality gate
+## How To Exercise The Quality Gate
 
-O repositorio ja inclui `examples/sample_breweries_bad.json`.
+The repository already includes `examples/sample_breweries_bad.json`.
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -113,21 +119,21 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-Resultado esperado:
+Expected result:
 
-- o comando termina com erro
+- the command ends with an error
 - `required_fields = fail`
 - `duplicate_primary_keys = fail`
 - `negative_brewery_count = pass`
 
-## Observacao importante
+## Important Note
 
-Nesse fluxo, `silver`, `gold` e `ops` sao gravados em `parquet` para manter compatibilidade com `PySpark` puro.
+In this flow, `silver`, `gold`, and `ops` are written in `parquet` to preserve compatibility with pure `PySpark`.
 
-## Proximo passo recomendado
+## Recommended Next Step
 
-Depois que esse fluxo passar:
+Once this flow succeeds:
 
-- abra o dashboard
-- documente a evidencia visual
-- ou evolua a persistencia para `GCP`
+- open the dashboard
+- document the visual evidence
+- or evolve persistence to `GCP`

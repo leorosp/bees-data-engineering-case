@@ -1,55 +1,55 @@
 # Runbook
 
-## Ordem de execucao recomendada
+## Recommended Execution Order
 
-1. Rodar o pipeline local ou no `Google Colab` com `PySpark`
-2. Validar a execucao orquestrada com `Luigi`
-3. Validar as camadas `bronze`, `silver`, `gold` e `ops`
-4. Abrir o dashboard em `Streamlit`
-5. Demonstrar a execucao de referencia
-6. Demonstrar o quality gate com dataset problematico
-7. So depois considerar evolucao para `GCP`
+1. Run the pipeline locally or in `Google Colab` with `PySpark`
+2. Validate the orchestrated execution with `Luigi`
+3. Validate the `bronze`, `silver`, `gold`, and `ops` layers
+4. Open the dashboard in `Streamlit`
+5. Demonstrate the reference execution
+6. Demonstrate the quality gate with the problematic dataset
+7. Only then consider the `GCP` evolution path
 
-## Parametros minimos do demo
+## Minimum Demo Parameters
 
-- `source-file`: arquivo JSON com breweries
-- `output-dir`: pasta onde os artefatos serao escritos
-- `landing-date`: data logica da ingestao
-- `run-id`: identificador unico da execucao
-- `fail-on-critical-quality`: interrompe a execucao se uma regra critica falhar
+- `source-file`: JSON file containing breweries
+- `output-dir`: folder where artifacts will be written
+- `landing-date`: logical ingestion date
+- `run-id`: unique execution identifier
+- `fail-on-critical-quality`: interrupts the execution if a critical rule fails
 
-## Evidencias de sucesso
+## Success Evidence
 
-- arquivos raw em `bronze/landing_date=...`
-- artefato `silver/breweries`
-- particoes `country=.../state_province=...` dentro de `silver/breweries`
-- artefato `gold/breweries_by_type_location`
-- quality logs em `ops/quality_results`
-- execution logs em `ops/execution_events`
+- raw files under `bronze/landing_date=...`
+- `silver/breweries` artifact
+- `country=.../state_province=...` partitions under `silver/breweries`
+- `gold/breweries_by_type_location` artifact
+- quality logs in `ops/quality_results`
+- execution logs in `ops/execution_events`
 - `quality_gate_status = pass`
-- dashboard carregando `gold` e `ops`
+- dashboard loading `gold` and `ops`
 
-## Monitoramento e alertas
+## Monitoring and Alerting
 
-O pipeline ja produz a base operacional que sustenta a observabilidade:
+The pipeline already produces the operational baseline that supports observability:
 
-- `ops/quality_results` para checks de qualidade
-- `ops/execution_events` para status, volumes e detalhes da execucao
-- falha automatica opcional com `--fail-on-critical-quality`
-- retries no `Luigi`
+- `ops/quality_results` for quality checks
+- `ops/execution_events` for status, volume, and execution details
+- optional automatic failure with `--fail-on-critical-quality`
+- retries in `Luigi`
 
-As regras de alerta recomendadas para producao estao em [monitoring-alerting.md](./monitoring-alerting.md).
+Recommended production alert rules are documented in [monitoring-alerting.md](./monitoring-alerting.md).
 
-## Sequencia de teste recomendada
+## Recommended Test Sequence
 
-1. Rodar `python scripts/run_local_pyspark_demo.py`
-2. Rodar `python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration --local-scheduler`
-3. Inspecionar os artefatos gerados
-4. Rodar `python -m streamlit run dashboard/app.py`
-5. Reexecutar com `examples/sample_breweries_bad.json`
-6. Confirmar `fail` nas regras esperadas
+1. Run `python scripts/run_api_pyspark_pipeline.py --output-dir local_output`
+2. Run `python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration --local-scheduler`
+3. Inspect the generated artifacts
+4. Run `python -m streamlit run dashboard/app.py`
+5. Re-run with `examples/sample_breweries_bad.json`
+6. Confirm `fail` for the expected rules
 
-## Quality gate em execucao
+## Quality Gate In Action
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -60,8 +60,8 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-## Pendencias para producao
+## Production Follow-Ups
 
-- persistencia em cloud
-- roteamento gerenciado de alertas em cloud
-- camada de BI em `GCP`
+- cloud persistence
+- managed alert routing in cloud
+- BI layer in `GCP`
