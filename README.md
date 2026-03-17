@@ -13,6 +13,28 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 - evidencia de execucao valida e exercicio do gate de qualidade
 - CI com testes e validacao rapida do fluxo principal
 
+## Visao Rapida do Fluxo
+
+```mermaid
+flowchart LR
+    A["Open Brewery DB API"] --> B["Luigi<br/>orquestracao"]
+    B --> C["Bronze<br/>json bruto"]
+    C --> D["Silver<br/>parquet particionado<br/>por country e state_province"]
+    D --> E["Gold<br/>agregacoes por tipo<br/>e localizacao"]
+    C --> F["Ops<br/>qualidade e execucao"]
+    D --> F
+    E --> F
+    E --> G["Dashboard<br/>Streamlit"]
+    F --> G
+```
+
+Leitura rapida:
+
+- a API alimenta a ingestao do pipeline
+- o `Luigi` organiza dependencias, retries e tratamento de erro
+- o `PySpark` transforma os dados nas camadas `bronze`, `silver`, `gold` e `ops`
+- o dashboard consome os resultados analiticos e operacionais
+
 ## Arquitetura em Alto Nivel
 
 - `bronze`: preserva o payload bruto da API
