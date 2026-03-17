@@ -1,10 +1,10 @@
-# Streamlit Dashboard
+# Dashboard em Streamlit
 
 O dashboard e a camada de apresentacao do projeto. Ele organiza a experiencia em tres blocos:
 
-- `Overview`: KPIs do `gold`, status do pipeline e ultimo run
-- `Analytics`: distribuicao por tipo, concentracao geografica e tabela filtravel
-- `Operational Details`: checks de qualidade, resumo da execucao e instrucoes locais
+- `Visao geral`: KPIs do `gold`, status do pipeline e ultima execucao
+- `Analises`: distribuicao por tipo, concentracao geografica e tabela filtravel
+- `Detalhes operacionais`: checks de qualidade, resumo da execucao e instrucoes locais
 
 ## Como rodar
 
@@ -18,16 +18,16 @@ python -m streamlit run dashboard/app.py
 
 Abra `http://localhost:8501`.
 
-Se `local_output/` ainda nao existir, o app abre automaticamente com o `Demo Dataset`.
+Se `local_output/` ainda nao existir, o app abre automaticamente com o `Dataset demo`.
 
 ## Controles do painel
 
 Os filtros e controles ficam na sidebar recolhida:
 
-- `Data Source`: escolhe entre `Demo Dataset` e os artefatos locais disponiveis
-- `Refresh Dashboard`: recarrega os dados
-- `Generate Local Output`: tenta gerar `local_output` a partir do proprio app
-- `Brewery Types` e `States`: aplicam filtros na visualizacao
+- `Fonte de dados`: escolhe entre `Dataset demo` e os artefatos locais disponiveis
+- `Atualizar painel`: recarrega os dados
+- `Gerar saida local`: tenta gerar `local_output` a partir do proprio app
+- `Tipos de cervejaria` e `Estados`: aplicam filtros na visualizacao
 
 ## Fontes de dados
 
@@ -39,4 +39,4 @@ Quando os artefatos locais existem, o app le:
 
 ## Observacao sobre PySpark local
 
-Se `Generate Local Output` falhar, o dashboard continua funcionando normalmente com o dataset demo.
+Se `Gerar saida local` falhar, o dashboard continua funcionando normalmente com o dataset demo.

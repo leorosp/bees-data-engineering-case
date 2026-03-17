@@ -1,4 +1,4 @@
-# BEES Data Engineering Case
+# Case de Engenharia de Dados BEES
 
 Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, validado localmente e em `Google Colab`, usando arquitetura medallion e um dashboard em `Streamlit` para a camada de demonstracao.
 
@@ -9,17 +9,17 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 - agregacao analitica em `gold`
 - checks de qualidade e logs operacionais em `ops`
 - dashboard executivo e operacional
-- evidencia de execucao valida e exercicio de quality gate
-- CI com testes e smoke test do fluxo principal
+- evidencia de execucao valida e exercicio do gate de qualidade
+- CI com testes e validacao rapida do fluxo principal
 
-## Architecture At A Glance
+## Arquitetura em Alto Nivel
 
 - `bronze`: preserva o payload bruto da API
 - `silver`: normaliza colunas, aplica tipos e deduplica `brewery_id`
 - `gold`: agrega quantidade de breweries por `brewery_type`, `country` e `state_province`
 - `ops`: persiste resultados de qualidade e eventos de execucao
 
-## How To Evaluate In 3 Minutes
+## Como Avaliar em 3 Minutos
 
 Rode os comandos abaixo a partir da raiz do repositorio:
 
@@ -32,20 +32,22 @@ python -m streamlit run dashboard/app.py
 Depois:
 
 - abra `http://localhost:8501`
-- use `Demo Dataset` para a apresentacao mais rapida
-- use `Local Output` quando `local_output/` tiver sido gerado
+- use `Dataset demo` para a apresentacao mais rapida
+- use `Saida local` quando `local_output/` tiver sido gerado
 
 Documentacao complementar:
 
-- [Quickstart do avaliador](./docs/evaluator-quickstart.md)
-- [Quickstart local](./docs/local-quickstart.md)
+- [Guia rapido do avaliador](./docs/evaluator-quickstart.md)
+- [Guia rapido local](./docs/local-quickstart.md)
 - [Dashboard](./dashboard/README.md)
 
-## Validation Evidence
+## Evidencias de Validacao
 
-### Reference execution
+### Execucao de Referencia
 
 Execucao de referencia do fluxo principal:
+
+As chaves e caminhos abaixo refletem a saida real do script e, por isso, permanecem tecnicos:
 
 ```json
 {
@@ -69,7 +71,7 @@ Artefatos esperados:
 - `local_output/ops/quality_results/`
 - `local_output/ops/execution_events/`
 
-### Quality Gate Exercise
+### Exercicio do Gate de Qualidade
 
 O repositorio inclui um dataset ruim em [examples/sample_breweries_bad.json](./examples/sample_breweries_bad.json).
 
@@ -91,7 +93,7 @@ Resultado esperado:
 - `duplicate_primary_keys = fail`
 - os artefatos em `local_output_bad/` continuam disponiveis para inspecao
 
-## Visual Preview
+## Previa Visual
 
 O dashboard em `Streamlit` consolida:
 
@@ -100,7 +102,7 @@ O dashboard em `Streamlit` consolida:
 - status da ultima execucao
 - resultado dos checks de qualidade
 
-## What The Evaluator Should Verify
+## O Que o Avaliador Deve Verificar
 
 - `bronze` preserva o payload bruto com metadados de ingestao
 - `silver` deduplica `brewery_id` e entrega schema estavel
@@ -108,14 +110,14 @@ O dashboard em `Streamlit` consolida:
 - `ops` mostra checks de qualidade e status da execucao
 - o dashboard resume negocio e saude tecnica no mesmo lugar
 
-## Testing And CI
+## Testes e CI
 
 O repositorio hoje possui:
 
 - testes unitarios de configuracao e qualidade
 - testes de qualidade critica
 - testes de integracao para `silver`, `gold` e pipeline local ponta a ponta
-- smoke test em `GitHub Actions` executando o fluxo principal em `PySpark`
+- validacao rapida em `GitHub Actions` executando o fluxo principal em `PySpark`
 
 ## Estrutura Principal
 
