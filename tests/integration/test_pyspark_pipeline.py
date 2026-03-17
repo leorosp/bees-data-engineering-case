@@ -60,6 +60,53 @@ def _sample_records() -> list[dict]:
     ]
 
 
+def _clean_records() -> list[dict]:
+    return [
+        {
+            "id": "brew-1",
+            "name": "Sample Brewery A",
+            "brewery_type": "micro",
+            "street": "1 Main St",
+            "city": "Denver",
+            "state_province": "Colorado",
+            "postal_code": "80202",
+            "country": "United States",
+            "longitude": "-104.9903",
+            "latitude": "39.7392",
+            "phone": "3030000001",
+            "website_url": "https://example-a.com",
+        },
+        {
+            "id": "brew-2",
+            "name": "Sample Brewery B",
+            "brewery_type": "brewpub",
+            "street": "2 Oak Ave",
+            "city": "Denver",
+            "state_province": "Colorado",
+            "postal_code": "80203",
+            "country": "United States",
+            "longitude": "-104.9800",
+            "latitude": "39.7400",
+            "phone": "3030000002",
+            "website_url": "https://example-b.com",
+        },
+        {
+            "id": "brew-3",
+            "name": "Sample Brewery C",
+            "brewery_type": "micro",
+            "street": "3 Pine Rd",
+            "city": "Austin",
+            "state_province": "Texas",
+            "postal_code": "73301",
+            "country": "United States",
+            "longitude": "-97.7431",
+            "latitude": "30.2672",
+            "phone": "5120000003",
+            "website_url": "https://example-c.com",
+        },
+    ]
+
+
 def _bad_records() -> list[dict]:
     return [
         {
@@ -155,7 +202,7 @@ def test_build_quality_dfs_flags_required_fields_and_duplicates(spark) -> None:
 
 def test_run_local_pyspark_pipeline_writes_expected_outputs(spark, tmp_path) -> None:
     source_path = tmp_path / "sample_records.json"
-    source_path.write_text(json.dumps(_sample_records()), encoding="utf-8")
+    source_path.write_text(json.dumps(_clean_records()), encoding="utf-8")
 
     summary = run_local_pyspark_pipeline(
         spark=spark,
