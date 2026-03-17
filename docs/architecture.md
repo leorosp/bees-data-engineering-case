@@ -48,12 +48,12 @@ flowchart LR
 - `Streamlit` entra como camada de consumo e demonstracao do valor do pipeline.
 - `GCP` foi definido como trilha natural de cloud por combinar bem com `Colab`.
 
-## O que foi herdado de cada referencia
+## Principios adotados no desenho
 
-- [ocamposfaria/bees-data-engineering-case](https://github.com/ocamposfaria/bees-data-engineering-case): modularizacao, clareza de organizacao e foco em reproducibilidade.
-- [Gabriel0598/BEES-Breweries-Case](https://github.com/Gabriel0598/BEES-Breweries-Case): referencia de organizacao em cloud, adaptada aqui para uma trilha opcional e nao obrigatoria.
-- [brunobws/aws-api-capture-dl-medallion](https://github.com/brunobws/aws-api-capture-dl-medallion): data quality, observabilidade, historico operacional e backlog mais maduro.
-- [wuldson-franco/breweries_case](https://github.com/wuldson-franco/breweries_case): separacao simples de camadas e foco em consumo final.
+- modularizacao para separar ingestao, transformacao, qualidade, observabilidade e consumo
+- reproducibilidade com dataset de exemplo, quickstart curto e smoke test
+- foco em demonstrabilidade, com dashboard e cenarios feliz e falho
+- caminho de evolucao claro para cloud sem bloquear o MVP local
 
 ## Regras de implementacao
 

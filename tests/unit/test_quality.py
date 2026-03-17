@@ -13,6 +13,17 @@ def test_summarize_required_field_gaps_counts_missing_values() -> None:
     assert result["country"] == 1
 
 
+def test_summarize_required_field_gaps_counts_none_values() -> None:
+    records = [
+        {"brewery_id": "1", "name": "Alpha", "country": None},
+        {"brewery_id": "2", "name": "Beta"},
+    ]
+
+    result = summarize_required_field_gaps(records, ("country",))
+
+    assert result["country"] == 2
+
+
 def test_has_duplicate_primary_keys_detects_duplicates() -> None:
     assert has_duplicate_primary_keys(["1", "2", "1"]) is True
     assert has_duplicate_primary_keys(["1", "2", "3"]) is False

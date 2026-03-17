@@ -99,18 +99,23 @@ def build_quality_results(
     gold_df: DataFrame,
     run_id: str,
 ) -> list[dict]:
-    silver_records = [
+    raw_records = [
         row.asDict()
-        for row in silver_df.select(
-            "brewery_id",
-            "name",
-            "brewery_type",
-            "city",
-            "country",
-        ).collect()
+        for row in bronze_df.withColumn(
+            "payload",
+            F.from_json(F.col("raw_payload"), BREWERY_SCHEMA),
+        )
+        .select(
+            F.col("payload.id").alias("brewery_id"),
+            F.col("payload.name").alias("name"),
+            F.col("payload.brewery_type").alias("brewery_type"),
+            F.col("payload.city").alias("city"),
+            F.col("payload.country").alias("country"),
+        )
+        .collect()
     ]
 
-    field_gaps = summarize_required_field_gaps(silver_records, REQUIRED_BREWERY_FIELDS)
+    field_gaps = summarize_required_field_gaps(raw_records, REQUIRED_BREWERY_FIELDS)
     bronze_record_ids = [
         row["record_id"]
         for row in bronze_df.select("record_id").collect()

@@ -38,6 +38,13 @@ jobs:
         run: |
           pytest tests/unit tests/data_quality tests/integration
 
+      - name: Run dashboard smoke test
+        env:
+          PYTHONPATH: src
+        run: |
+          python -c "import pandas, pyarrow, plotly.express, streamlit"
+          python -c "from pathlib import Path; from bees_case.dashboard_data import load_demo_dashboard_data; data = load_demo_dashboard_data(Path('dashboard/demo_data')); assert len(data.gold) > 0"
+
       - name: Run PySpark smoke test
         run: |
           python scripts/run_local_pyspark_demo.py --output-dir ci_output --run-id ci-smoke-run --landing-date 2026-03-16

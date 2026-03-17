@@ -70,7 +70,6 @@ def _bad_records() -> list[dict]:
             "city": "Denver",
             "state_province": "Colorado",
             "postal_code": "80202",
-            "country": "",
             "longitude": "-104.9903",
             "latitude": "39.7392",
             "phone": "3030000001",
