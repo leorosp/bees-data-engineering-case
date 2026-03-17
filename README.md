@@ -81,6 +81,21 @@ Depois:
 - use `Dataset demo` para a apresentacao mais rapida
 - use `Saida local` quando `local_output/` tiver sido gerado
 
+### Alternativa com Docker
+
+O repositorio tambem inclui um caminho conteinerizado para capturar o bonus de `containerization` do enunciado:
+
+```bash
+docker compose run --rm pipeline
+docker compose up dashboard
+```
+
+Servicos disponiveis:
+
+- `pipeline`: gera `local_output/` com o fluxo principal em `PySpark`
+- `orchestrator`: executa a trilha com `Luigi` e grava artefatos em `luigi_output/`
+- `dashboard`: sobe o `Streamlit` em `http://localhost:8501`
+
 Documentacao complementar:
 
 - [Guia rapido do avaliador](./docs/evaluator-quickstart.md)
@@ -231,6 +246,7 @@ O repositorio hoje possui:
 - `implementado e validado`: `PySpark + Streamlit`
 - `ambiente principal`: local ou `Google Colab`
 - `documentado como evolucao`: `GCP`
+- `bonus implementado`: containerizacao com `Docker`
 
 ## Referencias
 

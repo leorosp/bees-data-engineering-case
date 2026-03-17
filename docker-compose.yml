@@ -1,0 +1,59 @@
+services:
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    command:
+      - python
+      - scripts/run_local_pyspark_demo.py
+      - --output-dir
+      - local_output
+    volumes:
+      - ./local_output:/app/local_output
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    command:
+      - python
+      - -m
+      - luigi
+      - --module
+      - orchestration.luigi_pipeline
+      - PipelineOrchestration
+      - --local-scheduler
+      - --source-file
+      - examples/sample_breweries.json
+      - --output-dir
+      - luigi_output
+      - --landing-date
+      - "2026-03-16"
+      - --run-id
+      - docker-luigi-run
+    volumes:
+      - ./luigi_output:/app/luigi_output
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    command:
+      - python
+      - -m
+      - streamlit
+      - run
+      - dashboard/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./local_output:/app/local_output
+      - ./local_output_bad:/app/local_output_bad
+      - ./luigi_output:/app/luigi_output
+    depends_on:
+      - pipeline

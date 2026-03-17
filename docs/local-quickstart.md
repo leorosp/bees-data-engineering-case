@@ -57,6 +57,21 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
   --run-id luigi-run-001
 ```
 
+## Como rodar com Docker
+
+Se quiser validar a trilha conteinerizada:
+
+```bash
+docker compose run --rm pipeline
+docker compose up dashboard
+```
+
+Se quiser exercitar a orquestracao conteinerizada:
+
+```bash
+docker compose run --rm orchestrator
+```
+
 ## Como rodar no Google Colab
 
 Em uma celula do Colab:

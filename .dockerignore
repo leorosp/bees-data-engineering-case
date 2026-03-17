@@ -1,0 +1,13 @@
+.git
+.github
+.pytest_cache
+__pycache__
+.venv
+.mypy_cache
+local_output
+local_output_bad
+ci_output
+luigi_output
+dashboard_output
+*.pyc
+*.pyo
