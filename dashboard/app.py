@@ -336,9 +336,9 @@ def render_hero(source_label: str, health_label: str) -> None:
         f"""
         <section class="hero-card">
             <div class="hero-kicker">BEES Breweries Pipeline Overview</div>
-            <div class="hero-title">Gold-layer analytics and pipeline health overview</div>
+            <div class="hero-title">Brewery distribution and pipeline health</div>
             <p class="hero-copy">
-                Executive summary of final gold-layer results, geographic coverage, and pipeline quality status.
+                Executive summary of curated brewery counts, geographic coverage, and quality status.
             </p>
             <div class="badge-row">
                 <span class="badge">Data source: {source_label}</span>
@@ -372,11 +372,15 @@ def render_overview_tab(data: DashboardData, filtered_gold: pd.DataFrame) -> Non
 
     left, right = st.columns([1.35, 1])
     with left:
-        st.markdown("#### Brewery mix")
+        st.markdown("#### Breweries by Type")
         if filtered_gold.empty:
             st.info("No rows match the current filters.")
         else:
-            st.plotly_chart(make_type_chart(filtered_gold), use_container_width=True)
+            st.plotly_chart(
+                make_type_chart(filtered_gold),
+                use_container_width=True,
+                key="overview_breweries_by_type",
+            )
 
     with right:
         st.markdown("#### Pipeline quality checks")
@@ -413,10 +417,18 @@ def render_analytics_tab(filtered_gold: pd.DataFrame) -> None:
     chart_a, chart_b = st.columns(2)
     with chart_a:
         st.markdown("#### Breweries by Type")
-        st.plotly_chart(make_type_chart(filtered_gold), use_container_width=True)
+        st.plotly_chart(
+            make_type_chart(filtered_gold),
+            use_container_width=True,
+            key="analytics_breweries_by_type",
+        )
     with chart_b:
         st.markdown("#### Top States by Brewery Count")
-        st.plotly_chart(make_state_chart(filtered_gold), use_container_width=True)
+        st.plotly_chart(
+            make_state_chart(filtered_gold),
+            use_container_width=True,
+            key="analytics_top_states",
+        )
 
     st.markdown("#### Filtered Gold Dataset")
     display_df = filtered_gold.rename(
@@ -436,7 +448,11 @@ def render_operational_tab(data: DashboardData, available_outputs: dict[str, Pat
     chart_col, table_col = st.columns([1.05, 1])
     with chart_col:
         st.markdown("#### Quality Checks by Layer")
-        st.plotly_chart(make_quality_chart(data.quality), use_container_width=True)
+        st.plotly_chart(
+            make_quality_chart(data.quality),
+            use_container_width=True,
+            key="operations_quality_by_layer",
+        )
 
     with table_col:
         st.markdown("#### Latest Execution Summary")
