@@ -18,7 +18,7 @@ Abra `http://localhost:8501`.
 2. O dashboard mostra o resumo executivo e a saude do pipeline
 3. A execucao padrao termina com `quality_gate_status = pass`
 
-## Demo de falha controlada
+## Exercising The Quality Gate
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -29,7 +29,7 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-## Resultado esperado na falha controlada
+## Resultado esperado
 
 - o processo termina com erro por design
 - `required_fields` falha

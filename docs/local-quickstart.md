@@ -56,7 +56,7 @@ Em uma celula do Colab:
 !python scripts/run_local_pyspark_demo.py
 ```
 
-## Como demonstrar a falha controlada
+## Como exercitar o quality gate
 
 O repositorio ja inclui `examples/sample_breweries_bad.json`.
 
@@ -69,7 +69,7 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-Saida esperada:
+Resultado esperado:
 
 - o comando termina com erro
 - `required_fields = fail`

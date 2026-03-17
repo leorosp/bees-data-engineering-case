@@ -24,8 +24,8 @@
 
 ## Fase 3 - Evidencia do case
 
-- [x] Validar cenario feliz
-- [x] Validar cenario com falha controlada
+- [x] Validar execucao de referencia
+- [x] Validar o quality gate com dataset problemático
 - [x] Documentar evidencias no repositorio
 - [x] Criar quickstart para avaliacao
 
@@ -45,7 +45,7 @@
 
 ## Fase 6 - Hardening
 
-- [x] Criar pipeline GitHub Actions para testes basicos
+- [x] Criar pipeline GitHub Actions para testes automatizados
 - [x] Expandir testes para o fluxo PySpark completo
 - [ ] Automatizar validacao visual do dashboard
 - [ ] Revisar custo e simplificar operacao

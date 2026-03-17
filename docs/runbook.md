@@ -5,8 +5,8 @@
 1. Rodar o pipeline local ou no `Google Colab` com `PySpark`
 2. Validar as camadas `bronze`, `silver`, `gold` e `ops`
 3. Abrir o dashboard em `Streamlit`
-4. Demonstrar o cenario feliz
-5. Demonstrar o cenario com falha controlada
+4. Demonstrar a execucao de referencia
+5. Demonstrar o quality gate com dataset problemático
 6. So depois considerar evolucao para `GCP`
 
 ## Parametros minimos do demo
@@ -35,7 +35,7 @@
 4. Reexecutar com `examples/sample_breweries_bad.json`
 5. Confirmar `fail` nas regras esperadas
 
-## Falha controlada
+## Quality gate em execucao
 
 ```bash
 python scripts/run_local_pyspark_demo.py \

@@ -9,7 +9,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 - agregacao analitica em `gold`
 - checks de qualidade e logs operacionais em `ops`
 - dashboard executivo e operacional
-- validacao de cenario feliz e de falha controlada
+- evidencia de execucao valida e exercicio de quality gate
 - CI com testes e smoke test do fluxo principal
 
 ## Architecture At A Glance
@@ -41,9 +41,11 @@ Documentacao complementar:
 - [Quickstart local](./docs/local-quickstart.md)
 - [Dashboard](./dashboard/README.md)
 
-## Expected Output
+## Validation Evidence
 
-Execucao saudavel:
+### Reference execution
+
+Execucao de referencia do fluxo principal:
 
 ```json
 {
@@ -59,7 +61,7 @@ Execucao saudavel:
 }
 ```
 
-Artefatos gerados:
+Artefatos esperados:
 
 - `local_output/bronze/landing_date=.../`
 - `local_output/silver/breweries/`
@@ -67,11 +69,11 @@ Artefatos gerados:
 - `local_output/ops/quality_results/`
 - `local_output/ops/execution_events/`
 
-## Scenario With Controlled Failure
+### Quality Gate Exercise
 
 O repositorio inclui um dataset ruim em [examples/sample_breweries_bad.json](./examples/sample_breweries_bad.json).
 
-Para demonstrar a qualidade critica:
+Esse dataset existe para demonstrar o comportamento do pipeline quando regras criticas de qualidade sao violadas:
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -82,12 +84,21 @@ python scripts/run_local_pyspark_demo.py \
   --fail-on-critical-quality
 ```
 
-Comportamento esperado:
+Resultado esperado:
 
 - o comando termina com erro por design
 - `required_fields = fail`
 - `duplicate_primary_keys = fail`
 - os artefatos em `local_output_bad/` continuam disponiveis para inspecao
+
+## Visual Preview
+
+O dashboard em `Streamlit` consolida:
+
+- distribuicao de breweries por tipo
+- concentracao geografica por estado
+- status da ultima execucao
+- resultado dos checks de qualidade
 
 ## What The Evaluator Should Verify
 
