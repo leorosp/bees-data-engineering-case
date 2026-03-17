@@ -191,6 +191,10 @@ O dashboard em `Streamlit` consolida:
 - status da ultima execucao
 - resultado dos checks de qualidade
 
+![Preview do dashboard](./docs/images/dashboard-preview.png)
+
+Visao executiva e operacional do projeto, destacando distribuicao de cervejarias, KPIs da camada `gold` e status de qualidade do pipeline.
+
 ## O Que o Avaliador Deve Verificar
 
 - `bronze` preserva o payload bruto com metadados de ingestao
