@@ -10,6 +10,8 @@ from bees_case.contracts import REQUIRED_BREWERY_FIELDS
 from bees_case.observability import build_execution_event
 from bees_case.quality import (
     build_quality_result,
+    enforce_quality_gate,
+    find_failed_quality_checks,
     has_duplicate_primary_keys,
     summarize_required_field_gaps,
 )
@@ -91,13 +93,12 @@ def build_gold_df(silver_df: DataFrame, run_id: str) -> DataFrame:
     )
 
 
-def build_quality_dfs(
-    spark: SparkSession,
+def build_quality_results(
     bronze_df: DataFrame,
     silver_df: DataFrame,
     gold_df: DataFrame,
     run_id: str,
-) -> tuple[DataFrame, DataFrame]:
+) -> list[dict]:
     silver_records = [
         row.asDict()
         for row in silver_df.select(
@@ -118,7 +119,7 @@ def build_quality_dfs(
     has_duplicates = has_duplicate_primary_keys(bronze_record_ids)
     negative_gold_counts = gold_df.filter(F.col("brewery_count") < 0).count()
 
-    quality_results = [
+    return [
         build_quality_result(
             layer="silver",
             check_name="required_fields",
@@ -135,7 +136,11 @@ def build_quality_dfs(
             metric_name="duplicate_primary_keys",
             metric_value=1 if has_duplicates else 0,
             run_id=run_id,
-            message="Duplicate record_id values found in bronze." if has_duplicates else "No duplicates found in bronze.",
+            message=(
+                "Duplicate record_id values found in bronze."
+                if has_duplicates
+                else "No duplicates found in bronze."
+            ),
         ),
         build_quality_result(
             layer="gold",
@@ -148,21 +153,37 @@ def build_quality_dfs(
         ),
     ]
 
+
+def build_quality_dfs(
+    spark: SparkSession,
+    bronze_df: DataFrame,
+    silver_df: DataFrame,
+    gold_df: DataFrame,
+    run_id: str,
+) -> tuple[DataFrame, DataFrame, list[dict]]:
+    quality_results = build_quality_results(bronze_df, silver_df, gold_df, run_id)
+    failed_critical_checks = find_failed_quality_checks(quality_results)
+
     execution_events = [
         build_execution_event(
             layer="ops",
             stage="local_pyspark_pipeline",
-            status="success",
+            status="failed" if failed_critical_checks else "success",
             run_id=run_id,
             records_in=bronze_df.count(),
             records_out=len(quality_results),
-            details="Local or Colab PySpark validation run completed successfully.",
+            details=(
+                "Critical quality checks failed during the local or Colab PySpark validation run."
+                if failed_critical_checks
+                else "Local or Colab PySpark validation run completed successfully."
+            ),
         )
     ]
 
     return (
         spark.createDataFrame(quality_results),
         spark.createDataFrame(execution_events),
+        quality_results,
     )
 
 
@@ -173,6 +194,7 @@ def run_local_pyspark_pipeline(
     output_root: str | Path,
     landing_date: str,
     run_id: str,
+    fail_on_critical_quality: bool = False,
 ) -> dict:
     root = Path(output_root)
     source_records = load_records(source_path)
@@ -180,7 +202,7 @@ def run_local_pyspark_pipeline(
     bronze_df = build_bronze_df(spark, source_records, landing_date, run_id)
     silver_df = build_silver_df(bronze_df)
     gold_df = build_gold_df(silver_df, run_id)
-    quality_df, execution_df = build_quality_dfs(
+    quality_df, execution_df, quality_results = build_quality_dfs(
         spark,
         bronze_df,
         silver_df,
@@ -200,6 +222,10 @@ def run_local_pyspark_pipeline(
     quality_df.write.mode("overwrite").parquet(str(quality_path))
     execution_df.write.mode("overwrite").parquet(str(execution_path))
 
+    failed_critical_checks = find_failed_quality_checks(quality_results)
+    if fail_on_critical_quality:
+        enforce_quality_gate(quality_results)
+
     return {
         "bronze_output_path": str(bronze_path),
         "silver_output_path": str(silver_path),
@@ -209,5 +235,7 @@ def run_local_pyspark_pipeline(
         "source_record_count": len(source_records),
         "silver_record_count": silver_df.count(),
         "gold_record_count": gold_df.count(),
+        "quality_gate_status": "fail" if failed_critical_checks else "pass",
+        "critical_quality_failure_count": len(failed_critical_checks),
         "run_id": run_id,
     }

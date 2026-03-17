@@ -503,13 +503,13 @@ def render_operational_guide(source_mode: str) -> None:
 
     with st.expander("Como executar o projeto", expanded=False):
         st.markdown("**1. Entrar na pasta do repositorio**")
-        st.code('cd "C:\\Users\\leona\\Documents\\GitHub\\bees-data-engineering-case"', language="powershell")
+        st.code("cd <repo-root>", language="bash")
         st.markdown("**2. Instalar dependencias**")
-        st.code('python -m pip install -e ".[local,dashboard]"', language="powershell")
+        st.code('pip install -e ".[dev,local,dashboard]"', language="bash")
         st.markdown("**3. Gerar artefatos locais**")
-        st.code("python scripts/run_local_pyspark_demo.py", language="powershell")
+        st.code("python scripts/run_local_pyspark_demo.py", language="bash")
         st.markdown("**4. Abrir o dashboard**")
-        st.code("python -m streamlit run dashboard/app.py", language="powershell")
+        st.code("python -m streamlit run dashboard/app.py", language="bash")
 
     with st.expander("Leitura rapida dos modos", expanded=False):
         st.markdown(

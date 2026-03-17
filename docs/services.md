@@ -25,7 +25,6 @@
 
 | Item | Motivo |
 | --- | --- |
-| Azure | Nao e exigencia do PDF |
 | Airflow | Aumenta o escopo sem necessidade |
 | Docker | Opcional no enunciado |
 | BigQuery na V1 | O MVP ja fica forte com Colab + PySpark + dashboard |
@@ -38,4 +37,3 @@
 | Implementado | Dashboard em Streamlit |
 | Implementado | Evidencia de qualidade em cenarios feliz e falho |
 | Documentado | Evolucao para GCP |
-| Opcional | Materiais Azure mantidos como referencia |

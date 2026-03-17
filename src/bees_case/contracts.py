@@ -29,4 +29,5 @@ GOLD_COLUMNS = (
     "state_province",
     "brewery_count",
     "run_id",
+    "generated_at_utc",
 )

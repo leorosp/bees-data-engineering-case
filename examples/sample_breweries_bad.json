@@ -1,0 +1,44 @@
+[
+  {
+    "id": "brew-1",
+    "name": "Sample Brewery A",
+    "brewery_type": "micro",
+    "street": "1 Main St",
+    "city": "Denver",
+    "state_province": "Colorado",
+    "postal_code": "80202",
+    "country": "United States",
+    "longitude": "-104.9903",
+    "latitude": "39.7392",
+    "phone": "3030000001",
+    "website_url": "https://example-a.com"
+  },
+  {
+    "id": "brew-1",
+    "name": "Sample Brewery A Duplicate",
+    "brewery_type": "micro",
+    "street": "1 Main St",
+    "city": "Denver",
+    "state_province": "Colorado",
+    "postal_code": "80202",
+    "country": "United States",
+    "longitude": "-104.9903",
+    "latitude": "39.7392",
+    "phone": "3030000001",
+    "website_url": "https://example-a.com"
+  },
+  {
+    "id": "brew-9",
+    "name": "",
+    "brewery_type": "micro",
+    "street": "9 Broken Ave",
+    "city": "Austin",
+    "state_province": "Texas",
+    "postal_code": "73301",
+    "country": "",
+    "longitude": "-97.7431",
+    "latitude": "30.2672",
+    "phone": "5120000009",
+    "website_url": "https://example-bad.com"
+  }
+]

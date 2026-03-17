@@ -30,6 +30,11 @@ def parse_args() -> argparse.Namespace:
         default=datetime.now(timezone.utc).strftime("local-pyspark-%Y%m%d%H%M%S"),
         help="Execution identifier for the local run.",
     )
+    parser.add_argument(
+        "--fail-on-critical-quality",
+        action="store_true",
+        help="Return a non-zero exit when critical quality checks fail.",
+    )
     return parser.parse_args()
 
 
@@ -43,6 +48,7 @@ def main() -> None:
             output_root=Path(args.output_dir),
             landing_date=args.landing_date,
             run_id=args.run_id,
+            fail_on_critical_quality=args.fail_on_critical_quality,
         )
         print(json.dumps(summary, indent=2))
     finally:

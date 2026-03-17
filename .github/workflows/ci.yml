@@ -17,13 +17,29 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Run unit and integration tests
+      - name: Check Python syntax
+        run: |
+          python -m compileall src scripts dashboard
+
+      - name: Run unit, quality, and integration tests
         env:
           PYTHONPATH: src
         run: |
-          pytest tests/unit tests/integration
+          pytest tests/unit tests/data_quality tests/integration
+
+      - name: Run PySpark smoke test
+        run: |
+          python scripts/run_local_pyspark_demo.py --output-dir ci_output --run-id ci-smoke-run --landing-date 2026-03-16
+          test -d ci_output/gold/breweries_by_type_location
+          test -d ci_output/ops/quality_results

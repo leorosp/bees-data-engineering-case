@@ -14,7 +14,7 @@ Este e o caminho oficial do projeto a partir desta versao.
 ```python
 !git clone https://github.com/leorosp/bees-data-engineering-case.git
 %cd bees-data-engineering-case
-!pip install -q -e ".[local,dashboard]"
+!pip install -q -e ".[dev,local,dashboard]"
 !python scripts/run_local_pyspark_demo.py
 ```
 
@@ -40,4 +40,5 @@ spark.read.parquet("local_output/ops/quality_results").show(truncate=False)
 - logica do pipeline em `PySpark`
 - artefatos `bronze/silver/gold/ops`
 - regras de qualidade
+- quality gate critico com falha automatica opcional
 - dashboard local como referencia funcional

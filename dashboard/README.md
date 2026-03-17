@@ -1,56 +1,44 @@
 # Streamlit Dashboard
 
-Este dashboard enriquece o projeto com duas visoes:
+O dashboard e a camada de demonstracao do projeto. Ele consolida:
 
-- executiva: distribuicao de breweries por tipo e por estado
-- operacional: checks de qualidade e ultima execucao
-- acoes rapidas: atualizar o painel e tentar gerar os artefatos locais
-
-Ele faz parte do caminho principal `Colab + PySpark` do projeto.
+- resumo executivo do `gold`
+- saude tecnica da execucao em `ops`
+- acoes operacionais para atualizar o painel ou tentar gerar os artefatos locais
 
 ## Como rodar
 
-1. Entre na pasta do projeto:
-
-```powershell
-cd "C:\Users\leona\Documents\GitHub\bees-data-engineering-case"
-```
-
-2. Instale as dependencias:
+Execute os comandos abaixo a partir da raiz do repositorio:
 
 ```bash
-pip install -e ".[local,dashboard]"
-```
-
-3. Gere os artefatos locais:
-
-```bash
+pip install -e ".[dev,local,dashboard]"
 python scripts/run_local_pyspark_demo.py
-```
-
-4. Rode o app:
-
-```bash
 python -m streamlit run dashboard/app.py
 ```
 
-5. Abra no navegador:
+Abra `http://localhost:8501`.
 
-`http://localhost:8501`
+Se `local_output/` ainda nao existir, o app abre automaticamente em `Demo do projeto`.
 
-Se o projeto ainda nao tiver `local_output/`, o app abre automaticamente com um dataset demo embutido no repositorio.
+## Como usar
 
-## Como usar a interface
+- `Demo do projeto`: modo padrao para apresentacao rapida
+- `Artefatos locais`: habilita os dados gerados pelo fluxo `PySpark`
+- `Atualizar painel`: recarrega os dados
+- `Gerar local_output`: tenta rodar o pipeline local a partir do proprio app
 
-- `Demo do projeto`: modo padrao e mais simples para apresentacao
-- `Artefatos locais`: aparece quando o pipeline local ja gerou `local_output`
-- `Atualizar painel`: recarrega os dados exibidos
-- `Gerar local_output`: tenta executar `scripts/run_local_pyspark_demo.py` a partir do proprio app
+Os filtros e controles ficam concentrados na sidebar recolhida.
 
-O layout atual concentra os controles e filtros na sidebar recolhida, deixando a area principal mais limpa e direta.
-O painel tambem possui um bloco `Guia operacional do projeto` com status do ambiente, comandos principais e proximos passos.
+## Guia operacional no proprio painel
 
-## Pastas de entrada esperadas
+O app possui uma secao `Guia operacional do projeto` com:
+
+- status do ambiente
+- modo atual
+- resumo de como executar o projeto
+- proximos passos recomendados
+
+## Fontes de dados esperadas
 
 Por padrao, o app le:
 
@@ -58,31 +46,12 @@ Por padrao, o app le:
 - `local_output/ops/quality_results`
 - `local_output/ops/execution_events`
 
-Voce tambem pode apontar o dashboard para `local_output_bad` para mostrar um cenario com falhas de qualidade.
-
-## Como apresentar os dois cenarios
-
-- `local_output`: execucao saudavel com checks em `pass`
-- `local_output_bad`: execucao com falhas controladas de qualidade
-
-Troque a fonte para `Artefatos locais` e selecione o conjunto desejado na sidebar.
+Para demonstrar a falha controlada, gere primeiro `local_output_bad/` e depois selecione esse conjunto na sidebar.
 
 ## Erro mais comum
 
-Se aparecer algo como:
-
-- `pyproject.toml not found`
-- `can't open file scripts/run_local_pyspark_demo.py`
-- `dashboard/app.py does not exist`
-
-o terminal foi aberto fora da pasta do repositorio. Volte para:
-
-```powershell
-cd "C:\Users\leona\Documents\GitHub\bees-data-engineering-case"
-```
+Se o app nao achar `dashboard/app.py`, `pyproject.toml` ou `scripts/run_local_pyspark_demo.py`, o comando foi executado fora da raiz do repositorio.
 
 ## Observacao sobre PySpark local
 
-Se o botao `Gerar dados locais` falhar com mensagem sobre `Java` ou `JAVA_HOME`, isso significa que o `PySpark` local ainda nao esta pronto nesta maquina.
-
-Nessa situacao, o dashboard continua funcionando normalmente no `Demo do projeto`.
+Se `Gerar local_output` falhar com mensagem sobre `Java` ou `JAVA_HOME`, o dashboard continua funcionando normalmente no modo demo.

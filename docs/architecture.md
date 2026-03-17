@@ -47,7 +47,6 @@ flowchart LR
 - `PySpark` foi mantido como tecnologia central para aderir ao perfil do desafio.
 - `Streamlit` entra como camada de consumo e demonstracao do valor do pipeline.
 - `GCP` foi definido como trilha natural de cloud por combinar bem com `Colab`.
-- `Azure` continua no repositorio apenas como referencia opcional de uma evolucao enterprise, nao como requisito do case.
 
 ## O que foi herdado de cada referencia
 
