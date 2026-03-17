@@ -3,11 +3,12 @@
 ## Ordem de execucao recomendada
 
 1. Rodar o pipeline local ou no `Google Colab` com `PySpark`
-2. Validar as camadas `bronze`, `silver`, `gold` e `ops`
-3. Abrir o dashboard em `Streamlit`
-4. Demonstrar a execucao de referencia
-5. Demonstrar o quality gate com dataset problematico
-6. So depois considerar evolucao para `GCP`
+2. Validar a execucao orquestrada com `Luigi`
+3. Validar as camadas `bronze`, `silver`, `gold` e `ops`
+4. Abrir o dashboard em `Streamlit`
+5. Demonstrar a execucao de referencia
+6. Demonstrar o quality gate com dataset problematico
+7. So depois considerar evolucao para `GCP`
 
 ## Parametros minimos do demo
 
@@ -21,6 +22,7 @@
 
 - arquivos raw em `bronze/landing_date=...`
 - artefato `silver/breweries`
+- particoes `country=.../state_province=...` dentro de `silver/breweries`
 - artefato `gold/breweries_by_type_location`
 - quality logs em `ops/quality_results`
 - execution logs em `ops/execution_events`
@@ -30,10 +32,11 @@
 ## Sequencia de teste recomendada
 
 1. Rodar `python scripts/run_local_pyspark_demo.py`
-2. Inspecionar os artefatos gerados
-3. Rodar `python -m streamlit run dashboard/app.py`
-4. Reexecutar com `examples/sample_breweries_bad.json`
-5. Confirmar `fail` nas regras esperadas
+2. Rodar `python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration --local-scheduler`
+3. Inspecionar os artefatos gerados
+4. Rodar `python -m streamlit run dashboard/app.py`
+5. Reexecutar com `examples/sample_breweries_bad.json`
+6. Confirmar `fail` nas regras esperadas
 
 ## Quality gate em execucao
 

@@ -6,11 +6,11 @@ O desenho abaixo prioriza simplicidade, aderencia ao case e execucao pratica em 
 
 ```mermaid
 flowchart LR
-    A["Open Brewery DB API"] --> B["Google Colab / PySpark"]
+    A["Open Brewery DB API"] --> B["Luigi orchestration"]
     Z["Sample dataset for controlled tests"] --> B
-    B --> C["Bronze<br/>raw json by ingestion date"]
-    C --> D["Silver<br/>cleaned and deduplicated parquet"]
-    D --> E["Gold<br/>aggregations by type and location"]
+    B --> C["PySpark bronze<br/>raw json by ingestion date"]
+    C --> D["PySpark silver<br/>parquet partitioned by location"]
+    D --> E["PySpark gold<br/>aggregations by type and location"]
     E --> F["Streamlit Dashboard"]
 
     E --> G["Optional GCP serving layer"]
@@ -31,7 +31,7 @@ flowchart LR
 - `PySpark` le os arquivos bronze.
 - Normaliza schema, remove duplicidades, padroniza tipos e trata nulos.
 - Grava em `parquet` no caminho local/Colab.
-- Particionamento recomendado: `country` e `state_province`.
+- Particionamento implementado por `country` e `state_province`.
 
 ### Gold
 
@@ -45,6 +45,7 @@ flowchart LR
 
 - `Google Colab` foi escolhido como caminho principal porque permite validar o case rapidamente sem overhead de infraestrutura.
 - `PySpark` foi mantido como tecnologia central para aderir ao perfil do desafio.
+- `Luigi` foi adotado como orquestrador leve para explicitar dependencias, retries e error handling.
 - `Streamlit` entra como camada de consumo e demonstracao do valor do pipeline.
 - `GCP` foi definido como trilha natural de cloud por combinar bem com `Colab`.
 

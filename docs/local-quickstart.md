@@ -5,10 +5,11 @@ Este e o caminho principal do projeto para validar o case com `PySpark`, sem dep
 ## O que esse fluxo valida
 
 - geracao da camada `bronze`
-- transformacao da camada `silver`
+- transformacao da camada `silver` com particionamento por localizacao
 - agregacao da camada `gold`
 - resultados de qualidade e eventos em `ops`
 - quality gate critico para `required_fields` e `duplicate_primary_keys`
+- orquestracao opcional com `Luigi`
 
 ## Como rodar localmente
 
@@ -43,6 +44,17 @@ python scripts/run_local_pyspark_demo.py
 
 ```bash
 python -m streamlit run dashboard/app.py
+```
+
+6. Se quiser executar com orquestracao:
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-file examples/sample_breweries.json \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
 ```
 
 ## Como rodar no Google Colab

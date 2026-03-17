@@ -8,6 +8,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 - transformacao tipada e deduplicacao em `silver`
 - agregacao analitica em `gold`
 - checks de qualidade e logs operacionais em `ops`
+- orquestracao com `Luigi`, incluindo retries e tratamento de erro
 - dashboard executivo e operacional
 - evidencia de execucao valida e exercicio do gate de qualidade
 - CI com testes e validacao rapida do fluxo principal
@@ -16,6 +17,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 
 - `bronze`: preserva o payload bruto da API
 - `silver`: normaliza colunas, aplica tipos e deduplica `brewery_id`
+- `silver`: persiste em `parquet` particionado por `country` e `state_province`
 - `gold`: agrega quantidade de breweries por `brewery_type`, `country` e `state_province`
 - `ops`: persiste resultados de qualidade e eventos de execucao
 
@@ -40,6 +42,26 @@ Documentacao complementar:
 - [Guia rapido do avaliador](./docs/evaluator-quickstart.md)
 - [Guia rapido local](./docs/local-quickstart.md)
 - [Dashboard](./dashboard/README.md)
+
+## Orquestracao do Pipeline
+
+O projeto agora inclui uma trilha explicita com `Luigi`, cobrindo:
+
+- dependencias entre `bronze`, `silver`, `gold` e `ops`
+- scheduling local com `--local-scheduler` e trilha natural para `luigid`
+- retries configuraveis por etapa
+- falha opcional quando um check critico de qualidade quebra
+
+Execucao de exemplo:
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-file examples/sample_breweries.json \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
+```
 
 ## Evidencias de Validacao
 

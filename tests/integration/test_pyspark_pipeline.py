@@ -216,6 +216,10 @@ def test_run_local_pyspark_pipeline_writes_expected_outputs(spark, tmp_path) -> 
     assert (tmp_path / "artifacts" / "gold" / "breweries_by_type_location").exists()
     assert (tmp_path / "artifacts" / "ops" / "quality_results").exists()
     assert (tmp_path / "artifacts" / "ops" / "execution_events").exists()
+    assert any(
+        path.name.startswith("country=")
+        for path in (tmp_path / "artifacts" / "silver" / "breweries").iterdir()
+    )
 
 
 def test_run_local_pyspark_pipeline_enforces_quality_gate(spark, tmp_path) -> None:

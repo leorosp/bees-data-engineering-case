@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | Google Colab | Ambiente principal de execucao e validacao | Baixo atrito para demonstrar o case |
 | PySpark | Transformacoes, validacoes e agregacoes | Aderencia tecnica ao desafio |
+| Luigi | Orquestracao das etapas bronze-silver-gold-ops | Atende scheduling, retries e error handling de forma leve |
 | Arquivos locais / artefatos parquet-json | Persistencia de `bronze`, `silver`, `gold` e `ops` | Simples, reprodutivel e suficiente para o MVP |
 | Streamlit | Dashboard executivo e operacional | Enriquecimento visual do projeto |
 | GitHub Actions | CI/CD | Integra bem com o repositorio |
@@ -25,7 +26,7 @@
 
 | Item | Motivo |
 | --- | --- |
-| Airflow | Aumenta o escopo sem necessidade |
+| Airflow | Mais pesado que o necessario para a V1, dado que `Luigi` ja atende a orquestracao |
 | Docker | Opcional no enunciado |
 | BigQuery na V1 | O MVP ja fica forte com Colab + PySpark + dashboard |
 
@@ -34,6 +35,7 @@
 | Status | Item |
 | --- | --- |
 | Implementado | Colab + PySpark |
+| Implementado | Orquestracao com Luigi |
 | Implementado | Dashboard em Streamlit |
 | Implementado | Evidencia de qualidade em cenarios feliz e falho |
 | Documentado | Evolucao para GCP |

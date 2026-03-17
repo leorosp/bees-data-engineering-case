@@ -36,7 +36,7 @@ jobs:
 
       - name: Check Python syntax
         run: |
-          python -m compileall src scripts dashboard
+          python -m compileall src scripts dashboard orchestration
 
       - name: Run unit, quality, and integration tests
         env:
@@ -56,3 +56,8 @@ jobs:
           python scripts/run_local_pyspark_demo.py --output-dir ci_output --run-id ci-smoke-run --landing-date 2026-03-16
           test -d ci_output/gold/breweries_by_type_location
           test -d ci_output/ops/quality_results
+
+      - name: Run Luigi orchestration smoke test
+        run: |
+          python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration --local-scheduler --source-file examples/sample_breweries.json --output-dir luigi_ci_output --landing-date 2026-03-16 --run-id luigi-ci-run
+          test -f luigi_ci_output/_orchestration/pipeline_summary.json

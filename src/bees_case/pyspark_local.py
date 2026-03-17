@@ -57,6 +57,17 @@ def load_records(source_path: str | Path) -> list[dict]:
         return json.load(source_file)
 
 
+def build_output_paths(output_root: str | Path, landing_date: str) -> dict[str, Path]:
+    root = Path(output_root)
+    return {
+        "bronze": root / "bronze" / f"landing_date={landing_date}",
+        "silver": root / "silver" / "breweries",
+        "gold": root / "gold" / "breweries_by_type_location",
+        "quality": root / "ops" / "quality_results",
+        "execution": root / "ops" / "execution_events",
+    }
+
+
 def build_bronze_df(
     spark: SparkSession,
     source_records: list[dict],
@@ -200,6 +211,30 @@ def build_quality_dfs(
     )
 
 
+def write_bronze_df(bronze_df: DataFrame, bronze_path: str | Path) -> None:
+    bronze_df.write.mode("overwrite").json(str(bronze_path))
+
+
+def write_silver_df(silver_df: DataFrame, silver_path: str | Path) -> None:
+    silver_df.write.mode("overwrite").partitionBy("country", "state_province").parquet(
+        str(silver_path)
+    )
+
+
+def write_gold_df(gold_df: DataFrame, gold_path: str | Path) -> None:
+    gold_df.write.mode("overwrite").parquet(str(gold_path))
+
+
+def write_ops_dfs(
+    quality_df: DataFrame,
+    execution_df: DataFrame,
+    quality_path: str | Path,
+    execution_path: str | Path,
+) -> None:
+    quality_df.write.mode("overwrite").parquet(str(quality_path))
+    execution_df.write.mode("overwrite").parquet(str(execution_path))
+
+
 def run_local_pyspark_pipeline(
     *,
     spark: SparkSession,
@@ -209,8 +244,8 @@ def run_local_pyspark_pipeline(
     run_id: str,
     fail_on_critical_quality: bool = False,
 ) -> dict:
-    root = Path(output_root)
     source_records = load_records(source_path)
+    paths = build_output_paths(output_root, landing_date)
 
     bronze_df = build_bronze_df(spark, source_records, landing_date, run_id)
     silver_df = build_silver_df(bronze_df)
@@ -223,28 +258,21 @@ def run_local_pyspark_pipeline(
         run_id,
     )
 
-    bronze_path = root / "bronze" / f"landing_date={landing_date}"
-    silver_path = root / "silver" / "breweries"
-    gold_path = root / "gold" / "breweries_by_type_location"
-    quality_path = root / "ops" / "quality_results"
-    execution_path = root / "ops" / "execution_events"
-
-    bronze_df.write.mode("overwrite").json(str(bronze_path))
-    silver_df.write.mode("overwrite").parquet(str(silver_path))
-    gold_df.write.mode("overwrite").parquet(str(gold_path))
-    quality_df.write.mode("overwrite").parquet(str(quality_path))
-    execution_df.write.mode("overwrite").parquet(str(execution_path))
+    write_bronze_df(bronze_df, paths["bronze"])
+    write_silver_df(silver_df, paths["silver"])
+    write_gold_df(gold_df, paths["gold"])
+    write_ops_dfs(quality_df, execution_df, paths["quality"], paths["execution"])
 
     failed_critical_checks = find_failed_quality_checks(quality_results)
     if fail_on_critical_quality:
         enforce_quality_gate(quality_results)
 
     return {
-        "bronze_output_path": str(bronze_path),
-        "silver_output_path": str(silver_path),
-        "gold_output_path": str(gold_path),
-        "quality_results_path": str(quality_path),
-        "execution_events_path": str(execution_path),
+        "bronze_output_path": str(paths["bronze"]),
+        "silver_output_path": str(paths["silver"]),
+        "gold_output_path": str(paths["gold"]),
+        "quality_results_path": str(paths["quality"]),
+        "execution_events_path": str(paths["execution"]),
         "source_record_count": len(source_records),
         "silver_record_count": silver_df.count(),
         "gold_record_count": gold_df.count(),

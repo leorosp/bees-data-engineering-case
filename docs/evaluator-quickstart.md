@@ -12,11 +12,23 @@ python -m streamlit run dashboard/app.py
 
 Abra `http://localhost:8501`.
 
+## Orquestracao rapida com Luigi
+
+```bash
+python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
+  --local-scheduler \
+  --source-file examples/sample_breweries.json \
+  --output-dir luigi_output \
+  --landing-date 2026-03-16 \
+  --run-id luigi-run-001
+```
+
 ## O que verificar
 
 1. O pipeline gera `bronze`, `silver`, `gold` e `ops` em `local_output/`
-2. O dashboard mostra o resumo executivo e a saude do pipeline
-3. A execucao padrao termina com `quality_gate_status = pass`
+2. A `silver` e gravada em `parquet` particionado por `country` e `state_province`
+3. O dashboard mostra o resumo executivo e a saude do pipeline
+4. A execucao padrao termina com `quality_gate_status = pass`
 
 ## Exercising The Quality Gate
 
