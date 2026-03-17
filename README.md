@@ -2,6 +2,23 @@
 
 Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, validado localmente e em `Google Colab`, usando arquitetura medallion e um dashboard em `Streamlit` para a camada de demonstracao.
 
+![PySpark](https://img.shields.io/badge/PySpark-Transformacoes-F5C400?style=for-the-badge&logo=apachespark&logoColor=141414&labelColor=141414)
+![Luigi](https://img.shields.io/badge/Luigi-Orquestracao-F5C400?style=for-the-badge&logo=python&logoColor=141414&labelColor=141414)
+![Medallion](https://img.shields.io/badge/Arquitetura-Medallion-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
+![Quality Gate](https://img.shields.io/badge/Qualidade-Gate_Critico-F5C400?style=for-the-badge&logoColor=141414&labelColor=141414)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-F5C400?style=for-the-badge&logo=streamlit&logoColor=141414&labelColor=141414)
+![CI](https://img.shields.io/github/actions/workflow/status/leorosp/bees-data-engineering-case/ci.yml?branch=main&style=for-the-badge&label=CI)
+
+## Destaques
+
+| Ponto | Evidencia |
+| --- | --- |
+| Orquestracao | Pipeline com `Luigi`, retries e tratamento de erro |
+| Arquitetura | Camadas `bronze`, `silver`, `gold` e `ops` |
+| Qualidade | `quality gate` critico com cenario de falha controlada |
+| Demonstracao | Dashboard em `Streamlit` e quickstart de avaliacao |
+| Confianca | `CI` com smoke tests de `PySpark`, dashboard e orquestracao |
+
 ## O que este repositorio entrega
 
 - ingestao para `bronze`
@@ -26,6 +43,11 @@ flowchart LR
     E --> F
     E --> G["Dashboard<br/>Streamlit"]
     F --> G
+
+    classDef bees fill:#F5C400,stroke:#141414,color:#141414,stroke-width:2px;
+    classDef neutral fill:#FFF8D6,stroke:#141414,color:#141414,stroke-width:1.5px;
+    class A,B,G bees;
+    class C,D,E,F neutral;
 ```
 
 Leitura rapida:
