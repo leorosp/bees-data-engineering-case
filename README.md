@@ -32,8 +32,8 @@ python -m streamlit run dashboard/app.py
 Depois:
 
 - abra `http://localhost:8501`
-- use `Demo do projeto` para a apresentacao mais rapida
-- use `Artefatos locais` quando `local_output/` tiver sido gerado
+- use `Demo Dataset` para a apresentacao mais rapida
+- use `Local Output` quando `local_output/` tiver sido gerado
 
 Documentacao complementar:
 

@@ -6,7 +6,7 @@
 2. Validar as camadas `bronze`, `silver`, `gold` e `ops`
 3. Abrir o dashboard em `Streamlit`
 4. Demonstrar a execucao de referencia
-5. Demonstrar o quality gate com dataset problemático
+5. Demonstrar o quality gate com dataset problematico
 6. So depois considerar evolucao para `GCP`
 
 ## Parametros minimos do demo

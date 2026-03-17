@@ -27,7 +27,7 @@ Os filtros e controles ficam na sidebar recolhida:
 - `Data Source`: escolhe entre `Demo Dataset` e os artefatos locais disponiveis
 - `Refresh Dashboard`: recarrega os dados
 - `Generate Local Output`: tenta gerar `local_output` a partir do proprio app
-- `Brewery Type` e `State`: aplicam filtros na visualizacao
+- `Brewery Types` e `States`: aplicam filtros na visualizacao
 
 ## Fontes de dados
 
