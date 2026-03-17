@@ -85,6 +85,11 @@ Depois:
 
 O repositorio tambem inclui um caminho conteinerizado para capturar o bonus de `containerization` do enunciado:
 
+Observacao importante:
+
+- a trilha principal validada para o case continua sendo `local` ou `Google Colab`
+- a trilha com `Docker` foi adicionada como caminho opcional de empacotamento e demonstracao do projeto
+
 ```bash
 docker compose run --rm pipeline
 docker compose up dashboard
