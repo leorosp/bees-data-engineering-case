@@ -8,6 +8,11 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    env:
+      SPARK_LOCAL_IP: 127.0.0.1
+      SPARK_LOCAL_HOSTNAME: localhost
+      PYSPARK_PYTHON: python
+      PYSPARK_DRIVER_PYTHON: python
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -16,6 +21,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -36,7 +42,7 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          pytest tests/unit tests/data_quality tests/integration
+          python -m pytest tests/unit tests/data_quality tests/integration -q
 
       - name: Run dashboard smoke test
         env:

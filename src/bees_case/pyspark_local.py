@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from pyspark.sql import DataFrame, SparkSession
@@ -36,10 +37,17 @@ BREWERY_SCHEMA = T.StructType(
 
 
 def create_spark_session(app_name: str = "bees-case-local") -> SparkSession:
+    # Spark can fail to resolve the runner hostname in CI unless these are pinned.
+    os.environ.setdefault("SPARK_LOCAL_IP", "127.0.0.1")
+    os.environ.setdefault("SPARK_LOCAL_HOSTNAME", "localhost")
+
     return (
         SparkSession.builder.master("local[*]")
         .appName(app_name)
         .config("spark.sql.session.timeZone", "UTC")
+        .config("spark.driver.host", "127.0.0.1")
+        .config("spark.driver.bindAddress", "127.0.0.1")
+        .config("spark.ui.enabled", "false")
         .getOrCreate()
     )
 
