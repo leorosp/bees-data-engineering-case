@@ -1,10 +1,10 @@
 # Streamlit Dashboard
 
-O dashboard e a camada de demonstracao do projeto. Ele consolida:
+O dashboard e a camada de apresentacao do projeto. Ele organiza a experiencia em tres blocos:
 
-- resumo executivo do `gold`
-- saude tecnica da execucao em `ops`
-- acoes operacionais para atualizar o painel ou tentar gerar os artefatos locais
+- `Overview`: KPIs do `gold`, status do pipeline e ultimo run
+- `Analytics`: distribuicao por tipo, concentracao geografica e tabela filtravel
+- `Operational Details`: checks de qualidade, resumo da execucao e instrucoes locais
 
 ## Como rodar
 
@@ -18,37 +18,25 @@ python -m streamlit run dashboard/app.py
 
 Abra `http://localhost:8501`.
 
-Se `local_output/` ainda nao existir, o app abre automaticamente em `Demo do projeto`.
+Se `local_output/` ainda nao existir, o app abre automaticamente com o `Demo Dataset`.
 
-## Como usar
+## Controles do painel
 
-- `Demo do projeto`: modo padrao para apresentacao rapida
-- `Artefatos locais`: habilita os dados gerados pelo fluxo `PySpark`
-- `Atualizar painel`: recarrega os dados
-- `Gerar local_output`: tenta rodar o pipeline local a partir do proprio app
+Os filtros e controles ficam na sidebar recolhida:
 
-Os filtros e controles ficam concentrados na sidebar recolhida.
+- `Data Source`: escolhe entre `Demo Dataset` e os artefatos locais disponiveis
+- `Refresh Dashboard`: recarrega os dados
+- `Generate Local Output`: tenta gerar `local_output` a partir do proprio app
+- `Brewery Type` e `State`: aplicam filtros na visualizacao
 
-## Como usar no proprio painel
+## Fontes de dados
 
-O app possui uma secao `Como usar` com:
-
-- fonte atual
-- disponibilidade de `local_output`
-- comandos minimos para executar o pipeline local
-
-## Fontes de dados esperadas
-
-Por padrao, o app le:
+Quando os artefatos locais existem, o app le:
 
 - `local_output/gold/breweries_by_type_location`
 - `local_output/ops/quality_results`
 - `local_output/ops/execution_events`
 
-## Erro mais comum
-
-Se o app nao achar `dashboard/app.py`, `pyproject.toml` ou `scripts/run_local_pyspark_demo.py`, o comando foi executado fora da raiz do repositorio.
-
 ## Observacao sobre PySpark local
 
-Se `Gerar local_output` falhar, o dashboard continua funcionando normalmente no modo demo.
+Se `Generate Local Output` falhar, o dashboard continua funcionando normalmente com o dataset demo.

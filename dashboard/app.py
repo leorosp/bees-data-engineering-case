@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 import subprocess
 import sys
@@ -8,107 +10,129 @@ import streamlit as st
 
 from bees_case.dashboard_data import DashboardData, load_dashboard_data, load_demo_dashboard_data
 
-
-st.set_page_config(
-    page_title="BEES Brewery Dashboard",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
-KNOWN_OUTPUTS = ("local_output", "local_output_bad")
 DEMO_ROOT = REPO_ROOT / "dashboard" / "demo_data"
-
-SOURCE_MODE_LABELS = {
-    "demo": "Demo do projeto",
-    "artifacts": "Artefatos locais",
+KNOWN_OUTPUTS = {
+    "Local Output": REPO_ROOT / "local_output",
+    "Quality Gate Exercise": REPO_ROOT / "local_output_bad",
 }
 
 BEES_YELLOW = "#f5c400"
 BEES_BLACK = "#141414"
 BEES_CHARCOAL = "#232323"
 BEES_RED = "#a52333"
-BEES_GREEN = "#6f8a4b"
+BEES_GREEN = "#5f7c35"
+BEES_CREAM = "#fff9de"
 
 
 def inject_styles() -> None:
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');
-
         .stApp {{
-            background:
-                radial-gradient(circle at top left, rgba(245, 196, 0, 0.12), transparent 24%),
-                linear-gradient(180deg, #fffef9 0%, #f5f1e7 100%);
-            font-family: "Sora", "Segoe UI", sans-serif;
+            background: linear-gradient(180deg, #fffef7 0%, #fff9de 100%);
+            color: {BEES_BLACK};
         }}
-
-        [data-testid="stHeader"] {{
-            background: transparent;
+        .block-container {{
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+            max-width: 1200px;
         }}
-
-        [data-testid="stSidebar"] {{
-            background: linear-gradient(180deg, {BEES_BLACK} 0%, {BEES_CHARCOAL} 100%);
+        h1, h2, h3 {{
+            color: {BEES_BLACK};
+            letter-spacing: -0.02em;
         }}
-
-        [data-testid="stSidebar"] * {{
-            color: #f7fafc;
-        }}
-
-        .hero-box {{
+        .hero-card {{
             background: linear-gradient(135deg, {BEES_BLACK} 0%, {BEES_CHARCOAL} 100%);
-            border: 1px solid rgba(245, 196, 0, 0.34);
             border-radius: 24px;
-            padding: 1.4rem 1.5rem;
-            color: #fbfcfd;
+            padding: 1.5rem 1.7rem;
+            color: white;
+            border: 1px solid rgba(245, 196, 0, 0.24);
+            box-shadow: 0 18px 40px rgba(20, 20, 20, 0.12);
             margin-bottom: 1rem;
         }}
-
-        .hero-eyebrow {{
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            font-size: 0.72rem;
-            opacity: 0.75;
-        }}
-
-        .hero-title {{
-            font-size: 1.9rem;
-            font-weight: 800;
-            line-height: 1.08;
-            margin: 0.45rem 0 0.55rem 0;
-            max-width: 34rem;
-        }}
-
-        .hero-copy {{
-            max-width: 38rem;
-            line-height: 1.6;
-            color: rgba(251, 252, 253, 0.88);
-        }}
-
-        .info-chip {{
-            display: inline-block;
-            border-radius: 999px;
-            padding: 0.35rem 0.8rem;
-            margin-right: 0.45rem;
-            margin-top: 0.85rem;
-            font-size: 0.82rem;
+        .hero-kicker {{
+            color: {BEES_YELLOW};
+            font-size: 0.88rem;
             font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }}
-
-        .info-neutral {{
-            background: rgba(255,255,255,0.12);
-            color: #fbfcfd;
+        .hero-title {{
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0.45rem 0 0.35rem 0;
+            line-height: 1.05;
         }}
-
-        .info-ok {{
-            background: rgba(111, 138, 75, 0.24);
-            color: #f4f8ee;
+        .hero-copy {{
+            margin: 0;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 1rem;
+            line-height: 1.55;
+            max-width: 60rem;
         }}
-
-        .info-warn {{
-            background: rgba(165, 35, 51, 0.24);
-            color: #fff3f4;
+        .badge-row {{
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }}
+        .badge {{
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }}
+        .badge--healthy {{
+            background: rgba(95, 124, 53, 0.18);
+            border-color: rgba(95, 124, 53, 0.35);
+            color: #d6f0b0;
+        }}
+        .badge--attention {{
+            background: rgba(165, 35, 51, 0.18);
+            border-color: rgba(165, 35, 51, 0.35);
+            color: #ffd7dc;
+        }}
+        [data-testid="stMetric"] {{
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(20, 20, 20, 0.08);
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            box-shadow: 0 10px 24px rgba(20, 20, 20, 0.06);
+        }}
+        [data-testid="stMetricLabel"] {{
+            color: #575757;
+            font-weight: 600;
+        }}
+        [data-testid="stMetricValue"] {{
+            color: {BEES_BLACK};
+            font-weight: 800;
+        }}
+        .section-label {{
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a6a1e;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }}
+        .section-copy {{
+            color: #4f4f4f;
+            margin-bottom: 0;
+        }}
+        div[data-testid="stDataFrame"] {{
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(20, 20, 20, 0.08);
+        }}
+        section[data-testid="stSidebar"] {{
+            background: #fffdf4;
+            border-right: 1px solid rgba(20, 20, 20, 0.06);
         }}
         </style>
         """,
@@ -116,415 +140,411 @@ def inject_styles() -> None:
     )
 
 
-def discover_available_outputs() -> list[Path]:
-    return [REPO_ROOT / name for name in KNOWN_OUTPUTS if (REPO_ROOT / name).exists()]
+def discover_available_outputs() -> dict[str, Path]:
+    return {label: path for label, path in KNOWN_OUTPUTS.items() if path.exists()}
 
 
-def detect_environment_status() -> dict[str, str]:
-    has_local_output = (REPO_ROOT / "local_output").exists()
-
-    return {
-        "source_mode": "Artefatos locais" if has_local_output else "Demo do projeto",
-        "local_output": "disponivel" if has_local_output else "nao encontrado",
-    }
-
-
-def run_local_pipeline(output_dir: str = "local_output") -> None:
-    command = [
-        sys.executable,
-        "scripts/run_local_pyspark_demo.py",
-        "--output-dir",
-        output_dir,
-    ]
-    try:
-        completed = subprocess.run(
-            command,
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            timeout=240,
-            check=False,
-        )
-    except Exception as error:
-        st.session_state["dashboard_feedback"] = {
-            "status": "error",
-            "title": "Nao foi possivel executar o pipeline local",
-            "message": str(error),
-        }
-        return
-
-    stdout = completed.stdout.strip()
-    stderr = completed.stderr.strip()
-    combined = "\n".join(part for part in [stdout, stderr] if part).strip()
-
-    if completed.returncode == 0:
-        st.session_state["dashboard_feedback"] = {
-            "status": "success",
-            "title": "Artefatos locais atualizados",
-            "message": "O pipeline local foi executado com sucesso. Agora voce pode trocar a fonte para artefatos locais.",
-        }
-        return
-
-    friendly_message = "A execucao local falhou."
-    if "JAVA_HOME" in combined or "Java not found" in combined:
-        friendly_message = (
-            "O ambiente local nao conseguiu executar o pipeline agora. "
-            "Voce pode seguir no modo demo ou ajustar o runtime local depois."
-        )
-    elif combined:
-        friendly_message = combined.splitlines()[-1]
-
-    st.session_state["dashboard_feedback"] = {
-        "status": "error",
-        "title": "Nao foi possivel gerar os artefatos locais",
-        "message": friendly_message,
-    }
-
-
-def load_selected_data(source_mode: str, output_root: Path) -> tuple[DashboardData, str | None]:
-    if source_mode == "demo":
-        return load_demo_dashboard_data(DEMO_ROOT), None
-
-    try:
-        return load_dashboard_data(output_root), None
-    except Exception as error:
-        fallback = load_demo_dashboard_data(DEMO_ROOT)
-        return fallback, (
-            "Nao foi possivel abrir os artefatos locais. O painel voltou automaticamente para o modo demo. "
-            f"Detalhe: {error}"
-        )
-
-
-def build_health_state(quality_df: pd.DataFrame) -> tuple[str, str]:
-    failed_checks = int(quality_df["status"].astype(str).str.lower().eq("fail").sum())
-    if failed_checks:
-        return "Em atencao", "info-warn"
-    return "Saudavel", "info-ok"
-
-
-def build_summary(filtered_gold: pd.DataFrame, quality_df: pd.DataFrame) -> dict[str, str]:
-    latest_run = (
-        quality_df.sort_values("checked_at_utc")["run_id"].dropna().astype(str).iloc[-1]
-        if not quality_df.empty
-        else "-"
-    )
-    failed_checks = int(quality_df["status"].astype(str).str.lower().eq("fail").sum())
-
-    top_type = (
-        filtered_gold.groupby("brewery_type", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=False)
-        .head(1)
-    )
-    top_state = (
-        filtered_gold.groupby("state_province", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=False)
-        .head(1)
-    )
-
-    return {
-        "total_breweries": str(int(filtered_gold["brewery_count"].sum())),
-        "total_types": str(int(filtered_gold["brewery_type"].nunique())),
-        "total_states": str(int(filtered_gold["state_province"].nunique())),
-        "latest_run": latest_run,
-        "top_type": top_type.iloc[0]["brewery_type"] if not top_type.empty else "-",
-        "top_state": top_state.iloc[0]["state_province"] if not top_state.empty else "-",
-        "failed_checks": str(failed_checks),
-    }
-
-
-def filter_gold(gold_df: pd.DataFrame, selected_types: list[str], selected_states: list[str]) -> pd.DataFrame:
-    filtered = gold_df.copy()
+def filter_gold(gold: pd.DataFrame, selected_types: list[str], selected_states: list[str]) -> pd.DataFrame:
+    filtered = gold.copy()
     if selected_types:
         filtered = filtered[filtered["brewery_type"].isin(selected_types)]
     if selected_states:
         filtered = filtered[filtered["state_province"].isin(selected_states)]
-    return filtered
+    return filtered.sort_values(["brewery_count", "state_province", "brewery_type"], ascending=[False, True, True])
 
 
-def render_sidebar_controls(available_outputs: list[Path]) -> tuple[str, Path, list[str], list[str]]:
-    st.sidebar.markdown("## Controles")
+def build_health_state(quality: pd.DataFrame) -> str:
+    if quality.empty:
+        return "Unknown"
+    return "Attention" if (quality["status"].str.lower() == "fail").any() else "Healthy"
 
-    source_options = ["demo"]
-    if available_outputs:
-        source_options.append("artifacts")
 
-    source_mode = st.sidebar.radio(
-        "Fonte dos dados",
-        options=source_options,
-        format_func=lambda value: SOURCE_MODE_LABELS[value],
+def latest_run_id(data: DashboardData) -> str:
+    if not data.execution.empty and "run_id" in data.execution.columns:
+        return str(data.execution.iloc[-1]["run_id"])
+    if not data.quality.empty and "run_id" in data.quality.columns:
+        return str(data.quality.iloc[-1]["run_id"])
+    if not data.gold.empty and "run_id" in data.gold.columns:
+        return str(data.gold.iloc[-1]["run_id"])
+    return "n/a"
+
+
+def latest_execution_summary(execution: pd.DataFrame) -> dict[str, str]:
+    if execution.empty:
+        return {
+            "stage": "n/a",
+            "status": "n/a",
+            "records_in": "n/a",
+            "records_out": "n/a",
+            "details": "No execution events were found.",
+            "timestamp": "n/a",
+        }
+
+    latest = execution.sort_values("event_timestamp_utc").iloc[-1]
+    timestamp = latest.get("event_timestamp_utc")
+    timestamp_text = timestamp.strftime("%Y-%m-%d %H:%M UTC") if pd.notna(timestamp) else "n/a"
+    return {
+        "stage": str(latest.get("stage", "n/a")),
+        "status": str(latest.get("status", "n/a")).title(),
+        "records_in": str(latest.get("records_in", "n/a")),
+        "records_out": str(latest.get("records_out", "n/a")),
+        "details": str(latest.get("details", "No execution details available.")),
+        "timestamp": timestamp_text,
+    }
+
+
+def make_type_chart(gold: pd.DataFrame):
+    chart_df = (
+        gold.groupby("brewery_type", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=False)
+    )
+    fig = px.bar(
+        chart_df,
+        x="brewery_type",
+        y="brewery_count",
+        text="brewery_count",
+        labels={"brewery_type": "Brewery Type", "brewery_count": "Breweries"},
+    )
+    fig.update_traces(marker_color=BEES_YELLOW, textposition="outside")
+    fig.update_layout(
+        height=360,
+        margin=dict(l=10, r=10, t=20, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=BEES_BLACK),
+    )
+    return fig
+
+
+def make_state_chart(gold: pd.DataFrame):
+    chart_df = (
+        gold.groupby("state_province", as_index=False)["brewery_count"]
+        .sum()
+        .sort_values("brewery_count", ascending=True)
+    )
+    fig = px.bar(
+        chart_df,
+        x="brewery_count",
+        y="state_province",
+        orientation="h",
+        text="brewery_count",
+        labels={"state_province": "State", "brewery_count": "Breweries"},
+    )
+    fig.update_traces(marker_color=BEES_BLACK, textposition="outside")
+    fig.update_layout(
+        height=360,
+        margin=dict(l=10, r=10, t=20, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=BEES_BLACK),
+    )
+    return fig
+
+
+def make_quality_chart(quality: pd.DataFrame):
+    chart_df = (
+        quality.assign(status=quality["status"].str.title())
+        .groupby(["layer", "status"], as_index=False)["check_name"]
+        .count()
+        .rename(columns={"check_name": "checks"})
+    )
+    fig = px.bar(
+        chart_df,
+        x="layer",
+        y="checks",
+        color="status",
+        barmode="group",
+        labels={"layer": "Layer", "checks": "Checks"},
+        color_discrete_map={"Pass": BEES_GREEN, "Fail": BEES_RED},
+    )
+    fig.update_layout(
+        height=330,
+        margin=dict(l=10, r=10, t=20, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=BEES_BLACK),
+        legend_title_text="Status",
+    )
+    return fig
+
+
+def quality_status_by_layer(quality: pd.DataFrame) -> pd.DataFrame:
+    rows: list[dict[str, str | int]] = []
+    for layer, layer_df in quality.groupby("layer"):
+        failed = int((layer_df["status"].str.lower() == "fail").sum())
+        status = "Attention" if failed else "Passed"
+        rows.append(
+            {
+                "layer": str(layer).title(),
+                "status": status,
+                "failed_checks": failed,
+                "total_checks": int(len(layer_df)),
+            }
+        )
+    return pd.DataFrame(rows, columns=["layer", "status", "failed_checks", "total_checks"]).sort_values(
+        "layer"
     )
 
-    output_root = REPO_ROOT / "local_output"
-    if source_mode == "artifacts":
-        selected_name = st.sidebar.selectbox(
-            "Conjunto local",
-            options=[path.name for path in available_outputs],
+
+def describe_source(data: DashboardData) -> str:
+    if data.source_mode == "demo":
+        return "Demo dataset"
+    return data.source_root.name.replace("_", " ").title()
+
+
+def load_selected_data(source_label: str, available_outputs: dict[str, Path]) -> tuple[DashboardData, str | None]:
+    if source_label == "Demo Dataset":
+        return load_demo_dashboard_data(DEMO_ROOT), None
+
+    target = available_outputs.get(source_label)
+    if not target:
+        return (
+            load_demo_dashboard_data(DEMO_ROOT),
+            "Local artifacts are not available yet. The dashboard is showing the bundled demo dataset.",
         )
-        output_root = REPO_ROOT / selected_name
-    else:
-        st.sidebar.caption("Modo recomendado para apresentacao rapida.")
 
-    st.sidebar.markdown("---")
-    if st.sidebar.button("Atualizar painel", use_container_width=True):
-        st.rerun()
-
-    if st.sidebar.button("Gerar local_output", use_container_width=True):
-        with st.spinner("Executando pipeline local..."):
-            run_local_pipeline()
-        st.rerun()
-
-    preview_data, _ = load_selected_data(source_mode, output_root)
-    available_types = sorted(preview_data.gold["brewery_type"].dropna().astype(str).unique().tolist())
-    available_states = sorted(preview_data.gold["state_province"].dropna().astype(str).unique().tolist())
-
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("## Filtros")
-    selected_types = st.sidebar.multiselect("Tipos", options=available_types, default=available_types)
-    selected_states = st.sidebar.multiselect("Estados", options=available_states, default=available_states)
-    st.sidebar.caption("Deixe tudo marcado para ver o painel completo.")
-
-    return source_mode, output_root, selected_types, selected_states
+    try:
+        return load_dashboard_data(target), None
+    except FileNotFoundError:
+        return (
+            load_demo_dashboard_data(DEMO_ROOT),
+            f"{source_label} is incomplete right now. The dashboard is showing the bundled demo dataset instead.",
+        )
 
 
-def render_hero(source_mode: str, quality_df: pd.DataFrame) -> None:
-    source_label = SOURCE_MODE_LABELS.get(source_mode, source_mode)
-    health_label, health_class = build_health_state(quality_df)
+def run_local_pipeline(output_dir: str = "local_output") -> tuple[bool, str]:
+    command = [sys.executable, "scripts/run_local_pyspark_demo.py", "--output-dir", output_dir]
+    completed = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode == 0:
+        return True, f"{output_dir} was generated successfully."
+    return False, (
+        "The local environment could not run the pipeline right now. "
+        "You can continue in demo mode or adjust the local runtime later."
+    )
+
+
+def render_hero(source_label: str, health_label: str) -> None:
+    health_class = "badge--healthy" if health_label == "Healthy" else "badge--attention"
     st.markdown(
         f"""
-        <div class="hero-box">
-            <div class="hero-eyebrow">BEES Case Dashboard</div>
-            <div class="hero-title">Visao executiva da camada gold</div>
-            <div class="hero-copy">
-                Distribuicao de breweries, concentracao geografica e status da ultima execucao.
+        <section class="hero-card">
+            <div class="hero-kicker">BEES Breweries Pipeline Overview</div>
+            <div class="hero-title">Gold-layer analytics and pipeline health overview</div>
+            <p class="hero-copy">
+                Executive summary of final gold-layer results, geographic coverage, and pipeline quality status.
+            </p>
+            <div class="badge-row">
+                <span class="badge">Data source: {source_label}</span>
+                <span class="badge {health_class}">Pipeline health: {health_label}</span>
             </div>
-            <span class="info-chip info-neutral">{source_label}</span>
-            <span class="info-chip {health_class}">{health_label}</span>
-        </div>
+        </section>
         """,
         unsafe_allow_html=True,
     )
 
 
-def render_feedback(feedback: dict[str, str] | None, fallback_message: str | None) -> None:
-    payload = feedback
-    if not payload and fallback_message:
-        payload = {
-            "status": "warning",
-            "title": "Artefatos locais nao encontrados",
-            "message": fallback_message,
-        }
+def render_kpis(gold: pd.DataFrame, quality: pd.DataFrame, latest_run: str, health_label: str) -> None:
+    total_breweries = int(gold["brewery_count"].sum()) if not gold.empty else 0
+    total_types = int(gold["brewery_type"].nunique()) if not gold.empty else 0
+    total_states = int(gold["state_province"].nunique()) if not gold.empty else 0
+    failed_checks = int((quality["status"].str.lower() == "fail").sum()) if not quality.empty else 0
 
-    if not payload:
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Breweries", f"{total_breweries}")
+    col2.metric("Brewery Types", f"{total_types}")
+    col3.metric("States Covered", f"{total_states}")
+    col4.metric("Pipeline Health", health_label)
+    col5.metric("Latest Run", latest_run)
+    if failed_checks:
+        st.caption(f"{failed_checks} quality check(s) currently require attention.")
+
+
+def render_overview_tab(data: DashboardData, filtered_gold: pd.DataFrame) -> None:
+    summary = latest_execution_summary(data.execution)
+    quality_by_layer = quality_status_by_layer(data.quality)
+
+    left, right = st.columns([1.35, 1])
+    with left:
+        st.markdown("#### Brewery mix")
+        if filtered_gold.empty:
+            st.info("No rows match the current filters.")
+        else:
+            st.plotly_chart(make_type_chart(filtered_gold), use_container_width=True)
+
+    with right:
+        st.markdown("#### Pipeline quality checks")
+        layer_columns = st.columns(max(len(quality_by_layer), 1))
+        if quality_by_layer.empty:
+            layer_columns[0].metric("Pipeline", "Unknown")
+        else:
+            for col, row in zip(layer_columns, quality_by_layer.itertuples(index=False)):
+                suffix = "failed" if row.failed_checks else "clear"
+                col.metric(row.layer, row.status, delta=f"{row.failed_checks} {suffix}")
+
+        st.markdown("#### Latest execution summary")
+        st.markdown(
+            f"""
+            <div class="section-label">Latest execution</div>
+            <p class="section-copy">
+                Stage <strong>{summary["stage"]}</strong> finished with status
+                <strong>{summary["status"]}</strong> at <strong>{summary["timestamp"]}</strong>.
+            </p>
+            """,
+            unsafe_allow_html=True,
+        )
+        metric_a, metric_b = st.columns(2)
+        metric_a.metric("Records In", summary["records_in"])
+        metric_b.metric("Records Out", summary["records_out"])
+        st.caption(summary["details"])
+
+
+def render_analytics_tab(filtered_gold: pd.DataFrame) -> None:
+    if filtered_gold.empty:
+        st.info("No rows match the current filters.")
         return
 
-    if payload["status"] == "success":
-        st.success(f"{payload['title']}: {payload['message']}")
-    else:
-        st.warning(f"{payload['title']}: {payload['message']}")
+    chart_a, chart_b = st.columns(2)
+    with chart_a:
+        st.markdown("#### Breweries by Type")
+        st.plotly_chart(make_type_chart(filtered_gold), use_container_width=True)
+    with chart_b:
+        st.markdown("#### Top States by Brewery Count")
+        st.plotly_chart(make_state_chart(filtered_gold), use_container_width=True)
+
+    st.markdown("#### Filtered Gold Dataset")
+    display_df = filtered_gold.rename(
+        columns={
+            "brewery_type": "Brewery Type",
+            "country": "Country",
+            "state_province": "State",
+            "brewery_count": "Breweries",
+            "run_id": "Run ID",
+            "generated_at_utc": "Generated At UTC",
+        }
+    )
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
 
 
-def prepare_type_chart(filtered_gold: pd.DataFrame):
-    chart_df = (
-        filtered_gold.groupby("brewery_type", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=True)
-        .rename(columns={"brewery_type": "Tipo", "brewery_count": "Quantidade"})
-    )
-    fig = px.bar(
-        chart_df,
-        x="Quantidade",
-        y="Tipo",
-        orientation="h",
-        text="Quantidade",
-        color_discrete_sequence=[BEES_BLACK],
-    )
-    fig.update_layout(
-        height=340,
-        margin=dict(l=10, r=10, t=10, b=10),
-        showlegend=False,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(255,255,255,0.72)",
-    )
-    fig.update_traces(marker_line_width=0, textposition="outside")
-    return fig
+def render_operational_tab(data: DashboardData, available_outputs: dict[str, Path]) -> None:
+    chart_col, table_col = st.columns([1.05, 1])
+    with chart_col:
+        st.markdown("#### Quality Checks by Layer")
+        st.plotly_chart(make_quality_chart(data.quality), use_container_width=True)
 
-
-def prepare_state_chart(filtered_gold: pd.DataFrame):
-    chart_df = (
-        filtered_gold.groupby("state_province", as_index=False)["brewery_count"]
-        .sum()
-        .sort_values("brewery_count", ascending=False)
-        .head(10)
-        .rename(columns={"state_province": "Estado", "brewery_count": "Quantidade"})
-    )
-    fig = px.bar(
-        chart_df,
-        x="Estado",
-        y="Quantidade",
-        text="Quantidade",
-        color="Quantidade",
-        color_continuous_scale=[BEES_YELLOW, BEES_BLACK],
-    )
-    fig.update_layout(
-        height=340,
-        margin=dict(l=10, r=10, t=10, b=10),
-        coloraxis_showscale=False,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(255,255,255,0.72)",
-    )
-    fig.update_traces(marker_line_width=0, textposition="outside")
-    return fig
-
-
-def prepare_quality_chart(quality_df: pd.DataFrame):
-    chart_df = (
-        quality_df.assign(
-            camada=lambda df: df["layer"].replace(
-                {"bronze": "Bronze", "silver": "Silver", "gold": "Gold", "ops": "Ops"}
-            ),
-            resultado=lambda df: df["status"].replace({"pass": "Passou", "fail": "Falhou"}),
+    with table_col:
+        st.markdown("#### Latest Execution Summary")
+        execution_df = data.execution.sort_values("event_timestamp_utc", ascending=False).rename(
+            columns={
+                "layer": "Layer",
+                "stage": "Stage",
+                "status": "Status",
+                "run_id": "Run ID",
+                "records_in": "Records In",
+                "records_out": "Records Out",
+                "details": "Details",
+                "event_timestamp_utc": "Event Timestamp UTC",
+            }
         )
-        .groupby(["camada", "resultado"], as_index=False)
-        .size()
-        .rename(columns={"size": "checks"})
-    )
-    fig = px.bar(
-        chart_df,
-        x="camada",
-        y="checks",
-        color="resultado",
-        barmode="group",
-        text="checks",
-        color_discrete_map={"Passou": BEES_GREEN, "Falhou": BEES_RED},
-    )
-    fig.update_layout(
-        height=320,
-        margin=dict(l=10, r=10, t=10, b=10),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(255,255,255,0.72)",
-        xaxis_title="",
-        yaxis_title="Checks",
-        legend_title="Resultado",
-    )
-    fig.update_traces(textposition="outside")
-    return fig
+        st.dataframe(execution_df, use_container_width=True, hide_index=True)
 
-
-def build_quality_table(quality_df: pd.DataFrame) -> pd.DataFrame:
-    display_df = quality_df.rename(
+    st.markdown("#### Detailed Quality Checks")
+    quality_df = data.quality.sort_values(["layer", "status", "check_name"]).rename(
         columns={
             "check_name": "Check",
-            "checked_at_utc": "Checado em UTC",
-            "layer": "Camada",
-            "message": "Mensagem",
-            "metric_name": "Metrica",
-            "metric_value": "Valor",
+            "checked_at_utc": "Checked At UTC",
+            "layer": "Layer",
+            "message": "Message",
+            "metric_name": "Metric",
+            "metric_value": "Metric Value",
             "run_id": "Run ID",
             "status": "Status",
         }
-    ).copy()
-    display_df["Status"] = display_df["Status"].replace({"pass": "Passou", "fail": "Falhou"})
-    display_df["Camada"] = display_df["Camada"].replace(
-        {"bronze": "Bronze", "silver": "Silver", "gold": "Gold", "ops": "Ops"}
     )
-    return display_df.sort_values(["Status", "Camada", "Check"])
+    st.dataframe(quality_df, use_container_width=True, hide_index=True)
 
+    with st.expander("Operational details", expanded=False):
+        availability = ["Demo dataset: available"]
+        for label in KNOWN_OUTPUTS:
+            availability.append(
+                f"{label}: {'available' if label in available_outputs else 'not available'}"
+            )
 
-def render_business_section(filtered_gold: pd.DataFrame, quality_df: pd.DataFrame) -> None:
-    if filtered_gold.empty:
-        st.info("Nenhum registro atende aos filtros atuais.")
-        return
-
-    summary = build_summary(filtered_gold, quality_df)
-    kpi_cols = st.columns(4)
-    kpi_cols[0].metric("Cervejarias", summary["total_breweries"])
-    kpi_cols[1].metric("Tipos", summary["total_types"])
-    kpi_cols[2].metric("Estados", summary["total_states"])
-    kpi_cols[3].metric("Ultimo run", summary["latest_run"])
-
-    chart_cols = st.columns(2)
-    with chart_cols[0]:
-        st.subheader("Distribuicao por tipo")
-        st.caption("Quais categorias dominam o resultado final.")
-        st.plotly_chart(prepare_type_chart(filtered_gold), use_container_width=True)
-
-    with chart_cols[1]:
-        st.subheader("Top estados")
-        st.caption("Onde esta a maior concentracao de cervejarias.")
-        st.plotly_chart(prepare_state_chart(filtered_gold), use_container_width=True)
-
-
-def render_operations_section(quality_df: pd.DataFrame, execution_df: pd.DataFrame) -> None:
-    latest_run = (
-        quality_df.sort_values("checked_at_utc")["run_id"].dropna().astype(str).iloc[-1]
-        if not quality_df.empty
-        else "-"
-    )
-
-    left, right = st.columns((1.05, 0.95))
-    with left:
-        st.subheader("Saude do pipeline")
-        st.caption("Distribuicao dos checks por camada.")
-        st.plotly_chart(prepare_quality_chart(quality_df), use_container_width=True)
-
-    with right:
-        st.subheader("Ultima execucao")
-        st.metric("Run analisado", latest_run)
-        if execution_df.empty:
-            st.info("Nenhum evento operacional foi encontrado.")
-        else:
-            latest_event = execution_df.sort_values("event_timestamp_utc").iloc[-1].to_dict()
-            event_cols = st.columns(2)
-            event_cols[0].metric("Entradas", str(latest_event.get("records_in", "-")))
-            event_cols[1].metric("Saidas", str(latest_event.get("records_out", "-")))
-            st.caption(str(latest_event.get("details", "-")))
-
-    with st.expander("Ver tabela de qualidade"):
-        st.dataframe(build_quality_table(quality_df), use_container_width=True, hide_index=True)
-
-
-def render_operational_guide(source_mode: str) -> None:
-    env = detect_environment_status()
-    st.subheader("Como usar")
-    st.caption("Somente o essencial para operar e interpretar o painel.")
-
-    status_cols = st.columns(2)
-    status_cols[0].metric("Fonte atual", SOURCE_MODE_LABELS.get(source_mode, source_mode))
-    status_cols[1].metric("Artefatos locais", env["local_output"])
-
-    with st.expander("Executar pipeline local", expanded=False):
-        st.code("cd <repo-root>", language="bash")
-        st.code('pip install -e ".[dev,local,dashboard]"', language="bash")
-        st.code("python scripts/run_local_pyspark_demo.py", language="bash")
-        st.code("python -m streamlit run dashboard/app.py", language="bash")
-
-    with st.expander("Leitura rapida", expanded=False):
-        st.markdown(
-            """
-            - `Demo do projeto`: usa o dataset demonstrativo embutido no repositorio.
-            - `Artefatos locais`: usa os arquivos gerados pelo pipeline local em `local_output/`.
-            """
+        st.markdown("**How to run locally**")
+        st.code(
+            "\n".join(
+                [
+                    'pip install -e ".[dev,local,dashboard]"',
+                    "python scripts/run_local_pyspark_demo.py",
+                    "python -m streamlit run dashboard/app.py",
+                ]
+            ),
+            language="bash",
         )
+        st.markdown("**Available data sources**")
+        for item in availability:
+            st.write(f"- {item}")
 
 
 def main() -> None:
+    st.set_page_config(
+        page_title="BEES Data Engineering Case Dashboard",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
     inject_styles()
 
     available_outputs = discover_available_outputs()
-    source_mode, output_root, selected_types, selected_states = render_sidebar_controls(available_outputs)
-    data, fallback_message = load_selected_data(source_mode, output_root)
+    source_options = ["Demo Dataset", *available_outputs.keys()]
 
-    render_hero(data.source_mode, data.quality)
-    render_feedback(st.session_state.pop("dashboard_feedback", None), fallback_message)
+    st.sidebar.title("Controls")
+    selected_source = st.sidebar.radio("Data Source", options=source_options, index=0)
+
+    feedback_level = st.session_state.pop("pipeline_feedback_level", None)
+    feedback_message = st.session_state.pop("pipeline_feedback_message", None)
+    if st.sidebar.button("Refresh Dashboard", use_container_width=True):
+        st.rerun()
+
+    if st.sidebar.button("Generate Local Output", use_container_width=True):
+        success, message = run_local_pipeline("local_output")
+        st.session_state["pipeline_feedback_level"] = "success" if success else "info"
+        st.session_state["pipeline_feedback_message"] = message
+        st.rerun()
+
+    data, info_message = load_selected_data(selected_source, available_outputs)
+    all_types = sorted(str(item) for item in data.gold["brewery_type"].dropna().unique())
+    all_states = sorted(str(item) for item in data.gold["state_province"].dropna().unique())
+
+    selected_types = st.sidebar.multiselect("Brewery Type", options=all_types, default=all_types)
+    selected_states = st.sidebar.multiselect("State", options=all_states, default=all_states)
+    st.sidebar.caption("Keep all filters selected for the full view.")
 
     filtered_gold = filter_gold(data.gold, selected_types, selected_states)
-    render_business_section(filtered_gold, data.quality)
-    st.divider()
-    render_operations_section(data.quality, data.execution)
-    st.divider()
-    render_operational_guide(data.source_mode)
+    health_label = build_health_state(data.quality)
+    run_id = latest_run_id(data)
+
+    render_hero(describe_source(data), health_label)
+    if feedback_message:
+        getattr(st, feedback_level or "info")(feedback_message)
+    if info_message:
+        st.caption(info_message)
+    render_kpis(filtered_gold, data.quality, run_id, health_label)
+
+    overview_tab, analytics_tab, operations_tab = st.tabs(
+        ["Overview", "Analytics", "Operational Details"]
+    )
+    with overview_tab:
+        render_overview_tab(data, filtered_gold)
+    with analytics_tab:
+        render_analytics_tab(filtered_gold)
+    with operations_tab:
+        render_operational_tab(data, available_outputs)
 
 
 if __name__ == "__main__":
