@@ -29,8 +29,9 @@ python -m luigi --module orchestration.luigi_pipeline PipelineOrchestration \
 2. A `silver` e gravada em `parquet` particionado por `country` e `state_province`
 3. O dashboard mostra o resumo executivo e a saude do pipeline
 4. A execucao padrao termina com `quality_gate_status = pass`
+5. A camada `ops` registra qualidade e execucao para observabilidade
 
-## Exercising The Quality Gate
+## Exercitando o Quality Gate
 
 ```bash
 python scripts/run_local_pyspark_demo.py \
@@ -47,6 +48,17 @@ python scripts/run_local_pyspark_demo.py \
 - `required_fields` falha
 - `duplicate_primary_keys` falha
 - `local_output_bad/ops/quality_results/` continua disponivel para inspecao
+
+## Monitoramento e alertas
+
+O projeto tambem inclui um desenho explicito de monitoramento e alertas para:
+
+- falha de pipeline
+- falha critica de qualidade
+- atraso de execucao
+- queda anormal de volume
+
+Detalhes em [monitoring-alerting.md](./monitoring-alerting.md).
 
 ## Se quiser avaliar so os dados
 

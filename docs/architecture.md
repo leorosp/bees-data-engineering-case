@@ -6,15 +6,21 @@ O desenho abaixo prioriza simplicidade, aderencia ao case e execucao pratica em 
 
 ```mermaid
 flowchart LR
-    A["Open Brewery DB API"] --> B["Luigi orchestration"]
-    Z["Sample dataset for controlled tests"] --> B
-    B --> C["PySpark bronze<br/>raw json by ingestion date"]
-    C --> D["PySpark silver<br/>parquet partitioned by location"]
-    D --> E["PySpark gold<br/>aggregations by type and location"]
+    A["Open Brewery DB API"] --> B["Orquestracao com Luigi"]
+    Z["Dataset de exemplo para testes controlados"] --> B
+    B --> C["PySpark bronze<br/>json bruto por data de ingestao"]
+    C --> D["PySpark silver<br/>parquet particionado por localizacao"]
+    D --> E["PySpark gold<br/>agregacoes por tipo e localizacao"]
+    C --> O["Camada ops<br/>qualidade e eventos de execucao"]
+    D --> O
+    E --> O
     E --> F["Streamlit Dashboard"]
+    O --> F
+    O --> M["Desenho de monitoramento e alertas"]
 
-    E --> G["Optional GCP serving layer"]
+    E --> G["Camada opcional de serving em GCP"]
     G --> H["Google Cloud Storage / BigQuery / Looker Studio"]
+    M --> I["Cloud Logging / Cloud Monitoring"]
 ```
 
 ## Fluxo por camada
@@ -40,6 +46,13 @@ flowchart LR
   - quantidade de breweries por `brewery_type`
   - quantidade de breweries por localizacao
   - quantidade de breweries por `brewery_type + country + state_province`
+
+### Ops
+
+- Centraliza sinais operacionais do pipeline.
+- Persiste checks de qualidade em `ops/quality_results`.
+- Persiste eventos de execucao em `ops/execution_events`.
+- Alimenta o dashboard e a estrategia de monitoramento e alertas.
 
 ## Decisoes principais
 

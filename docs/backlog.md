@@ -21,11 +21,12 @@
 - [x] Implementar checks de duplicidade
 - [x] Persistir resultados em `ops`
 - [x] Falhar execucao automaticamente quando regra critica for violada
+- [x] Documentar monitoramento e alertas do MVP
 
 ## Fase 3 - Evidencia do case
 
 - [x] Validar execucao de referencia
-- [x] Validar o quality gate com dataset problemático
+- [x] Validar o quality gate com dataset problematico
 - [x] Documentar evidencias no repositorio
 - [x] Criar quickstart para avaliacao
 

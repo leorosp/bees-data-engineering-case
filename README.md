@@ -41,6 +41,7 @@ Documentacao complementar:
 
 - [Guia rapido do avaliador](./docs/evaluator-quickstart.md)
 - [Guia rapido local](./docs/local-quickstart.md)
+- [Monitoramento e alertas](./docs/monitoring-alerting.md)
 - [Dashboard](./dashboard/README.md)
 
 ## Orquestracao do Pipeline
@@ -131,6 +132,24 @@ O dashboard em `Streamlit` consolida:
 - `gold` responde a pergunta do case com agregacao por tipo e localizacao
 - `ops` mostra checks de qualidade e status da execucao
 - o dashboard resume negocio e saude tecnica no mesmo lugar
+
+## Monitoramento e Alertas
+
+O requisito de observabilidade do case esta coberto em dois niveis:
+
+- no MVP, o pipeline persiste sinais operacionais em `ops/quality_results` e `ops/execution_events`
+- na documentacao, o projeto descreve como transformar esses sinais em alertas para falha de pipeline, falha critica de qualidade, atraso de execucao e queda anormal de volume
+
+Resumo do desenho:
+
+- falha de pipeline apos retries: alerta de alta prioridade
+- check critico com `status = fail`: falha do job e alerta imediato
+- ausencia de execucao no SLA: alerta de frescor
+- queda anormal entre `records_in` e `records_out`: alerta de anomalia operacional
+
+Detalhamento completo:
+
+- [Monitoramento e alertas](./docs/monitoring-alerting.md)
 
 ## Testes e CI
 

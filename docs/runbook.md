@@ -29,6 +29,17 @@
 - `quality_gate_status = pass`
 - dashboard carregando `gold` e `ops`
 
+## Monitoramento e alertas
+
+O pipeline ja produz a base operacional que sustenta a observabilidade:
+
+- `ops/quality_results` para checks de qualidade
+- `ops/execution_events` para status, volumes e detalhes da execucao
+- falha automatica opcional com `--fail-on-critical-quality`
+- retries no `Luigi`
+
+As regras de alerta recomendadas para producao estao em [monitoring-alerting.md](./monitoring-alerting.md).
+
 ## Sequencia de teste recomendada
 
 1. Rodar `python scripts/run_local_pyspark_demo.py`
@@ -52,5 +63,5 @@ python scripts/run_local_pyspark_demo.py \
 ## Pendencias para producao
 
 - persistencia em cloud
-- monitoramento real
+- roteamento gerenciado de alertas em cloud
 - camada de BI em `GCP`
