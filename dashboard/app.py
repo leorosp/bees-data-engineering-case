@@ -193,6 +193,12 @@ def latest_execution_summary(execution: pd.DataFrame) -> dict[str, str]:
     }
 
 
+def format_stage_label(stage: str) -> str:
+    if not stage or stage == "n/a":
+        return "Pipeline"
+    return stage.replace("_", " ").title().replace("Pyspark", "PySpark")
+
+
 def make_type_chart(gold: pd.DataFrame):
     chart_df = (
         gold.groupby("brewery_type", as_index=False)["brewery_count"]
@@ -338,7 +344,7 @@ def render_hero(source_label: str, health_label: str) -> None:
             <div class="hero-kicker">BEES Breweries Pipeline Overview</div>
             <div class="hero-title">Brewery distribution and pipeline health</div>
             <p class="hero-copy">
-                Executive summary of curated brewery counts, geographic coverage, and quality status.
+                Executive summary of gold-layer metrics, geographic coverage, and pipeline quality status.
             </p>
             <div class="badge-row">
                 <span class="badge">Data source: {source_label}</span>
@@ -369,6 +375,16 @@ def render_kpis(gold: pd.DataFrame, quality: pd.DataFrame, latest_run: str, heal
 def render_overview_tab(data: DashboardData, filtered_gold: pd.DataFrame) -> None:
     summary = latest_execution_summary(data.execution)
     quality_by_layer = quality_status_by_layer(data.quality)
+    stage_label = format_stage_label(summary["stage"])
+    execution_text = (
+        f"{stage_label} completed successfully on {summary['timestamp']}."
+        if summary["status"].lower() == "success" and summary["timestamp"] != "n/a"
+        else (
+            f"{stage_label} finished with status {summary['status']}."
+            if summary["status"] != "n/a"
+            else "No execution summary is available yet."
+        )
+    )
 
     left, right = st.columns([1.35, 1])
     with left:
@@ -389,23 +405,21 @@ def render_overview_tab(data: DashboardData, filtered_gold: pd.DataFrame) -> Non
             layer_columns[0].metric("Pipeline", "Unknown")
         else:
             for col, row in zip(layer_columns, quality_by_layer.itertuples(index=False)):
-                suffix = "failed" if row.failed_checks else "clear"
-                col.metric(row.layer, row.status, delta=f"{row.failed_checks} {suffix}")
+                col.metric(row.layer, row.status)
 
         st.markdown("#### Latest execution summary")
         st.markdown(
             f"""
             <div class="section-label">Latest execution</div>
             <p class="section-copy">
-                Stage <strong>{summary["stage"]}</strong> finished with status
-                <strong>{summary["status"]}</strong> at <strong>{summary["timestamp"]}</strong>.
+                {execution_text}
             </p>
             """,
             unsafe_allow_html=True,
         )
         metric_a, metric_b = st.columns(2)
-        metric_a.metric("Records In", summary["records_in"])
-        metric_b.metric("Records Out", summary["records_out"])
+        metric_a.metric("Source Records", summary["records_in"])
+        metric_b.metric("Curated Records", summary["records_out"])
         st.caption(summary["details"])
 
 
@@ -537,8 +551,8 @@ def main() -> None:
     all_types = sorted(str(item) for item in data.gold["brewery_type"].dropna().unique())
     all_states = sorted(str(item) for item in data.gold["state_province"].dropna().unique())
 
-    selected_types = st.sidebar.multiselect("Brewery Type", options=all_types, default=all_types)
-    selected_states = st.sidebar.multiselect("State", options=all_states, default=all_states)
+    selected_types = st.sidebar.multiselect("Brewery Types", options=all_types, default=all_types)
+    selected_states = st.sidebar.multiselect("States", options=all_states, default=all_states)
     st.sidebar.caption("Keep all filters selected for the full view.")
 
     filtered_gold = filter_gold(data.gold, selected_types, selected_states)
