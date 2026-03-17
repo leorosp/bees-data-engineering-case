@@ -51,4 +51,3 @@ python scripts/run_local_pyspark_demo.py \
 - persistencia em cloud
 - monitoramento real
 - camada de BI em `GCP`
-- screenshots publicadas no README principal
