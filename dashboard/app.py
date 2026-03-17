@@ -325,8 +325,8 @@ def run_local_pipeline(output_dir: str = "local_output") -> tuple[bool, str]:
     if completed.returncode == 0:
         return True, f"{output_dir} was generated successfully."
     return False, (
-        "The local environment could not run the pipeline right now. "
-        "You can continue in demo mode or adjust the local runtime later."
+        "Demo mode is active for presentation. "
+        "Local execution can be enabled in a fully configured runtime."
     )
 
 
