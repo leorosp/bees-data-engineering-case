@@ -13,7 +13,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 
 | Ponto | Evidencia |
 | --- | --- |
-| Orquestracao | Pipeline com `Luigi`, retries e tratamento de erro |
+| Orquestracao | Pipeline com `Luigi` para coordenar etapas e lidar com falhas |
 | Arquitetura | Camadas `bronze`, `silver`, `gold` e `ops` |
 | Qualidade | `quality gate` critico com cenario de falha controlada |
 | Demonstracao | Dashboard em `Streamlit` e quickstart de avaliacao |
@@ -25,7 +25,7 @@ Implementacao do case da Open Brewery DB com caminho principal em `PySpark`, val
 - transformacao tipada e deduplicacao em `silver`
 - agregacao analitica em `gold`
 - checks de qualidade e logs operacionais em `ops`
-- orquestracao com `Luigi`, incluindo retries e tratamento de erro
+- orquestracao com `Luigi` para coordenar a execucao do pipeline
 - dashboard executivo e operacional
 - evidencia de execucao valida e exercicio do gate de qualidade
 - CI com testes e validacao rapida do fluxo principal
@@ -53,7 +53,7 @@ flowchart LR
 Leitura rapida:
 
 - a API alimenta a ingestao do pipeline
-- o `Luigi` organiza dependencias, retries e tratamento de erro
+- o `Luigi` coordena as etapas do pipeline, com suporte a retries e falhas
 - o `PySpark` transforma os dados nas camadas `bronze`, `silver`, `gold` e `ops`
 - o dashboard consome os resultados analiticos e operacionais
 
@@ -90,12 +90,14 @@ Documentacao complementar:
 
 ## Orquestracao do Pipeline
 
-O projeto agora inclui uma trilha explicita com `Luigi`, cobrindo:
+O projeto inclui uma trilha explicita com `Luigi` para orquestrar a execucao do fluxo principal.
 
-- dependencias entre `bronze`, `silver`, `gold` e `ops`
-- scheduling local com `--local-scheduler` e trilha natural para `luigid`
-- retries configuraveis por etapa
-- falha opcional quando um check critico de qualidade quebra
+Na pratica, isso cobre:
+
+- encadeamento entre `bronze`, `silver`, `gold` e `ops`
+- execucao local com `--local-scheduler` e trilha natural para `luigid`
+- tentativas de reexecucao por etapa
+- interrupcao opcional quando um check critico de qualidade falha
 
 Execucao de exemplo:
 
